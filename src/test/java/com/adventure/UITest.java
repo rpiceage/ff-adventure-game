@@ -177,6 +177,42 @@ public class UITest {
         assertFalse(textArea.isOpaque(), "TextArea should not be opaque to show background");
     }
 
+    @Test
+    public void testLuck_Decreases_WhenTesting() throws Exception {
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-luck.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+
+        SwingUtilities.invokeAndWait(() -> {
+            window = new GameWindow(adventure);
+        });
+
+        GameController controller = getField(window, "controller");
+        int initialLuck = controller.getHero().getLuck();
+
+        // Start luck test
+        SwingUtilities.invokeAndWait(() -> {
+            JButton luckButton = findButton(window, Messages.get(Messages.Key.LUCK_TEST_BUTTON));
+            luckButton.doClick();
+        });
+
+        // Execute test
+        SwingUtilities.invokeAndWait(() -> {
+            JButton testButton = findButton(window, Messages.get(Messages.Key.LUCK_TEST_BUTTON));
+            if (testButton != null) {
+                testButton.doClick();
+            }
+        });
+
+        // Wait for dice animation
+        Thread.sleep(1500);
+
+        // Verify luck decreased by 1
+        SwingUtilities.invokeAndWait(() -> {
+            assertEquals(initialLuck - 1, controller.getHero().getLuck());
+        });
+    }
+
     // Helper methods
     private JButton findButton(Container container, String text) {
         for (Component c : container.getComponents()) {

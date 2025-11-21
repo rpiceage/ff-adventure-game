@@ -94,6 +94,7 @@
   - Roll 2d6 and compare to hero's LUCK attribute
   - If roll ≤ LUCK: "You were lucky!" → go to lucky chapter
   - If roll > LUCK: "You were unlucky!" → go to unlucky chapter
+  - Testing luck decreases LUCK by 1 (applied silently, no notification)
 - Luck test UI:
   - "Test your luck!" button appears when luck action is present
   - Animated dice panel with table.jpg background (2 dice)

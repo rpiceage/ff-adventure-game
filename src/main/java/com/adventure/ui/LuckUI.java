@@ -48,6 +48,9 @@ public class LuckUI {
             int heroLuck = controller.getHero().getLuck();
             boolean lucky = total <= heroLuck;
             
+            // Testing luck decreases LUCK by 1
+            controller.getHero().modifyLuckSilent(-1);
+            
             DiceAnimator.DiceGroup[] groups = {
                 new DiceAnimator.DiceGroup("", dice1, dice2)
             };

@@ -76,6 +76,11 @@ public class Hero {
         this.stamina = Math.max(0, Math.min(newValue, maxStamina));
     }
 
+    public void modifyLuckSilent(int delta) {
+        int newValue = this.luck + delta;
+        this.luck = Math.max(0, Math.min(newValue, maxLuck));
+    }
+
     public List<String> getLastModifications() {
         return new ArrayList<>(lastModifications);
     }
