@@ -13,6 +13,7 @@ com/adventure/Messages$Key.class
 com/adventure/actions/DisplayAction.class
 com/adventure/BattleDialog$1.class
 com/adventure/ui/BattleUI.class
+com/adventure/Enemy.class
 com/adventure/DiceAnimator$1.class
 com/adventure/actions/ModifyAction.class
 com/adventure/GameController.class

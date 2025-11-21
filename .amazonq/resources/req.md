@@ -59,20 +59,29 @@
           stamina: 20
       win: 1  # chapter to go to after victory
   ```
-- Battle mechanics:
+- Battle mechanics (single enemy):
   - Each turn: both hero and enemy roll 2d6 and add their SKILL value
   - Higher attack value wins the turn
   - Loser takes 2 STAMINA damage
   - Draw results in no damage
+- Battle mechanics (multiple enemies):
+  - Hero rolls 2d6 separately against EACH alive enemy
+  - Hero selects ONE enemy as target using radio buttons
+  - If hero's roll beats selected enemy: that enemy takes 2 STAMINA damage
+  - For each enemy that beats hero in their roll: hero takes 2 STAMINA damage
+  - Hero can take 0, 2, 4, 6... damage per turn (2 per enemy that wins)
+  - Battle ends when all enemies dead or hero dies
 - Battle UI:
-  - Fixed enemy stats panel at top showing enemy SKILL and STAMINA
+  - Enemy stats panel at top showing all enemies with SKILL and STAMINA
+  - Radio buttons to select target enemy (bold text shows selected)
+  - Dead enemies have disabled radio buttons
   - Hero stats continuously updated in side panel during battle
   - Animated dice panel with table.jpg background showing dice rolls
   - Scrollable battle log in center showing all turn results
   - "Next Turn" button to execute each turn
-  - Battle ends when either hero or enemy STAMINA reaches 0
 - Dice animation:
-  - 4 dice displayed (2 for hero, 2 for enemy) with labels
+  - Single enemy: 4 dice (2 for hero, 2 for enemy) with labels
+  - Multiple enemies: dice pairs for each alive enemy (hero vs enemy)
   - Dice spin independently at different speeds for 1 second
   - Unicode dice characters (⚀-⚅) with white backgrounds
   - Graphics2D rotation for smooth spinning effect

@@ -4,13 +4,15 @@ import com.adventure.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class BattleUI {
     private Battle currentBattle;
     private JPanel battleStatsPanel;
-    private JLabel enemyStatsLabel;
+    private List<JRadioButton> enemyRadioButtons;
+    private ButtonGroup enemyButtonGroup;
     private JPanel centerPanel;
     private JPanel dicePanel;
     private Map<String, Object> battleActionData;
@@ -31,14 +33,17 @@ public class BattleUI {
     public JPanel start(Map<String, Object> battleAction) {
         this.battleActionData = battleAction;
         Map<String, Object> battleData = (Map<String, Object>) battleAction.get("battle");
-        List<Map<String, Object>> enemies = (List<Map<String, Object>>) battleData.get("enemies");
-        Map<String, Object> enemyData = enemies.get(0);
+        List<Map<String, Object>> enemiesData = (List<Map<String, Object>>) battleData.get("enemies");
         
-        String enemyName = (String) enemyData.get("enemy");
-        int enemySkill = (Integer) enemyData.get("skill");
-        int enemyStamina = (Integer) enemyData.get("stamina");
+        List<Enemy> enemies = new ArrayList<>();
+        for (Map<String, Object> enemyData : enemiesData) {
+            String name = (String) enemyData.get("enemy");
+            int skill = (Integer) enemyData.get("skill");
+            int stamina = (Integer) enemyData.get("stamina");
+            enemies.add(new Enemy(name, skill, stamina));
+        }
         
-        currentBattle = new Battle(controller.getHero(), enemyName, enemySkill, enemyStamina);
+        currentBattle = new Battle(controller.getHero(), enemies);
         
         centerPanel = new JPanel(new BorderLayout());
         battleStatsPanel = new JPanel();
@@ -46,12 +51,26 @@ public class BattleUI {
         TitledBorder battleBorder = BorderFactory.createTitledBorder(Messages.get(Messages.Key.BATTLE_TITLE));
         battleBorder.setTitleFont(new Font("Arial", Font.BOLD, 24));
         battleStatsPanel.setBorder(battleBorder);
-        enemyStatsLabel = new JLabel();
-        enemyStatsLabel.setFont(new Font("Arial", Font.PLAIN, 24));
-        battleStatsPanel.add(enemyStatsLabel);
+        
+        enemyRadioButtons = new ArrayList<>();
+        enemyButtonGroup = new ButtonGroup();
+        
+        for (int i = 0; i < enemies.size(); i++) {
+            JRadioButton radioButton = new JRadioButton();
+            radioButton.setFont(new Font("Arial", Font.PLAIN, 20));
+            final int index = i;
+            radioButton.addActionListener(e -> currentBattle.setSelectedEnemy(index));
+            enemyRadioButtons.add(radioButton);
+            enemyButtonGroup.add(radioButton);
+            battleStatsPanel.add(radioButton);
+        }
+        
+        if (!enemies.isEmpty()) {
+            enemyRadioButtons.get(0).setSelected(true);
+        }
         
         dicePanel = DiceAnimator.createDicePanel("src/resources/table.jpg");
-        dicePanel.setPreferredSize(new Dimension(400, 150));
+        dicePanel.setPreferredSize(new Dimension(400, 200));
         
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(battleStatsPanel, BorderLayout.NORTH);
@@ -67,18 +86,40 @@ public class BattleUI {
     public void updateDisplay() {
         gameWindow.updateHeroStats();
         
-        int enemyStam = currentBattle.getEnemyStamina();
-        enemyStatsLabel.setText(String.format("%s %s: %d %s: %d", 
-            currentBattle.getEnemyName(), 
-            Messages.get(Messages.Key.SKILL), currentBattle.getEnemySkill(),
-            Messages.get(Messages.Key.STAMINA), enemyStam));
+        List<Enemy> enemies = currentBattle.getEnemies();
+        for (int i = 0; i < enemies.size(); i++) {
+            Enemy enemy = enemies.get(i);
+            JRadioButton radioButton = enemyRadioButtons.get(i);
+            
+            String text = String.format("%s %s: %d %s: %d", 
+                enemy.getName(),
+                Messages.get(Messages.Key.SKILL), enemy.getSkill(),
+                Messages.get(Messages.Key.STAMINA), enemy.getStamina());
+            
+            if (i == currentBattle.getSelectedEnemyIndex()) {
+                text = "<html><b>" + text + "</b></html>";
+            }
+            
+            radioButton.setText(text);
+            radioButton.setEnabled(enemy.isAlive());
+            
+            if (!enemy.isAlive() && radioButton.isSelected()) {
+                for (int j = 0; j < enemies.size(); j++) {
+                    if (enemies.get(j).isAlive()) {
+                        enemyRadioButtons.get(j).setSelected(true);
+                        currentBattle.setSelectedEnemy(j);
+                        break;
+                    }
+                }
+            }
+        }
         
         textArea.setText(currentBattle.getBattleLog());
         buttonPanel.removeAll();
         
         if (currentBattle.isOver()) {
             if (currentBattle.heroWon()) {
-                textArea.append("\n" + Messages.get(Messages.Key.BATTLE_VICTORY) + " " + currentBattle.getEnemyName() + "!");
+                textArea.append("\n" + Messages.get(Messages.Key.BATTLE_VICTORY_ALL));
                 Map<String, Object> battleData = (Map<String, Object>) battleActionData.get("battle");
                 int winChapter = (Integer) battleData.get("win");
                 
@@ -90,7 +131,7 @@ public class BattleUI {
                 });
                 buttonPanel.add(continueButton);
             } else {
-                textArea.append("\n" + String.format(Messages.get(Messages.Key.BATTLE_DEFEAT), currentBattle.getEnemyName()));
+                textArea.append("\n" + Messages.get(Messages.Key.BATTLE_DEFEAT_GENERAL));
                 currentBattle = null;
                 onComplete.run();
             }
@@ -100,12 +141,15 @@ public class BattleUI {
                 nextTurnButton.setEnabled(false);
                 currentBattle.executeTurn();
                 
-                DiceAnimator.DiceGroup[] groups = {
-                    new DiceAnimator.DiceGroup("Hero:", currentBattle.getLastHeroDice1(), currentBattle.getLastHeroDice2()),
-                    new DiceAnimator.DiceGroup(currentBattle.getEnemyName() + ":", currentBattle.getLastEnemyDice1(), currentBattle.getLastEnemyDice2())
-                };
+                List<DiceAnimator.DiceGroup> groups = new ArrayList<>();
+                List<Enemy> aliveEnemies = currentBattle.getAliveEnemies();
+                for (Enemy enemy : aliveEnemies) {
+                    groups.add(new DiceAnimator.DiceGroup("Hero vs " + enemy.getName() + ":", 
+                        enemy.getHeroDice1(), enemy.getHeroDice2(), 
+                        enemy.getEnemyDice1(), enemy.getEnemyDice2()));
+                }
                 
-                DiceAnimator.animateDice(dicePanel, groups, () -> {
+                DiceAnimator.animateDice(dicePanel, groups.toArray(new DiceAnimator.DiceGroup[0]), () -> {
                     updateDisplay();
                     nextTurnButton.setEnabled(true);
                 });

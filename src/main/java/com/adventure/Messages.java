@@ -20,6 +20,8 @@ public class Messages {
         BATTLE_HERO,
         BATTLE_VICTORY,
         BATTLE_DEFEAT,
+        BATTLE_VICTORY_ALL,
+        BATTLE_DEFEAT_GENERAL,
         LUCK_TEST_TITLE,
         LUCK_TEST_BUTTON,
         LUCK_LUCKY,
@@ -83,6 +85,14 @@ public class Messages {
         Map.entry(Key.BATTLE_DEFEAT, Map.of(
             "en", "Defeat! %s has defeated you!",
             "hu", "Vereség! %s legyőzött téged!"
+        )),
+        Map.entry(Key.BATTLE_VICTORY_ALL, Map.of(
+            "en", "Victory! You defeated all enemies!",
+            "hu", "Győzelem! Legyőztél minden ellenséget!"
+        )),
+        Map.entry(Key.BATTLE_DEFEAT_GENERAL, Map.of(
+            "en", "Defeat! You have been defeated!",
+            "hu", "Vereség! Legyőztek!"
         )),
         Map.entry(Key.LUCK_TEST_TITLE, Map.of(
             "en", "Test your luck",

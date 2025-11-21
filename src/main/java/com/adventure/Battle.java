@@ -1,16 +1,17 @@
 package com.adventure;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Battle {
     private Hero hero;
-    private String enemyName;
-    private int enemySkill;
-    private int enemyStamina;
+    private List<Enemy> enemies;
+    private int selectedEnemyIndex;
     private Random random;
     private String lastTurnResult;
     private StringBuilder battleLog;
-    private int lastHeroDice1, lastHeroDice2, lastEnemyDice1, lastEnemyDice2;
 
     public Battle(Hero hero, String enemyName, int enemySkill, int enemyStamina) {
         this(hero, enemyName, enemySkill, enemyStamina, new Random());
@@ -18,24 +19,53 @@ public class Battle {
 
     public Battle(Hero hero, String enemyName, int enemySkill, int enemyStamina, Random random) {
         this.hero = hero;
-        this.enemyName = enemyName;
-        this.enemySkill = enemySkill;
-        this.enemyStamina = enemyStamina;
+        this.enemies = new ArrayList<>();
+        this.enemies.add(new Enemy(enemyName, enemySkill, enemyStamina));
+        this.selectedEnemyIndex = 0;
+        this.random = random;
+        this.lastTurnResult = "";
+        this.battleLog = new StringBuilder();
+    }
+
+    public Battle(Hero hero, List<Enemy> enemies) {
+        this(hero, enemies, new Random());
+    }
+
+    public Battle(Hero hero, List<Enemy> enemies, Random random) {
+        this.hero = hero;
+        this.enemies = enemies;
+        this.selectedEnemyIndex = 0;
         this.random = random;
         this.lastTurnResult = "";
         this.battleLog = new StringBuilder();
     }
 
     public String getEnemyName() {
-        return enemyName;
+        return enemies.get(selectedEnemyIndex).getName();
     }
 
     public int getEnemySkill() {
-        return enemySkill;
+        return enemies.get(selectedEnemyIndex).getSkill();
     }
 
     public int getEnemyStamina() {
-        return enemyStamina;
+        return enemies.get(selectedEnemyIndex).getStamina();
+    }
+
+    public List<Enemy> getEnemies() {
+        return enemies;
+    }
+
+    public List<Enemy> getAliveEnemies() {
+        return enemies.stream().filter(Enemy::isAlive).collect(Collectors.toList());
+    }
+
+    public int getSelectedEnemyIndex() {
+        return selectedEnemyIndex;
+    }
+
+    public void setSelectedEnemy(int index) {
+        this.selectedEnemyIndex = index;
     }
 
     public Hero getHero() {
@@ -51,40 +81,73 @@ public class Battle {
     }
 
     public void executeTurn() {
-        lastHeroDice1 = random.nextInt(6) + 1;
-        lastHeroDice2 = random.nextInt(6) + 1;
-        int heroAttack = hero.getSkill() + lastHeroDice1 + lastHeroDice2;
+        StringBuilder turnResult = new StringBuilder();
+        int heroDamageTaken = 0;
 
-        lastEnemyDice1 = random.nextInt(6) + 1;
-        lastEnemyDice2 = random.nextInt(6) + 1;
-        int enemyAttack = enemySkill + lastEnemyDice1 + lastEnemyDice2;
+        for (int i = 0; i < enemies.size(); i++) {
+            Enemy enemy = enemies.get(i);
+            if (!enemy.isAlive()) continue;
 
-        lastTurnResult = String.format("Hero: %d vs %s: %d\n",
-            heroAttack, enemyName, enemyAttack);
+            int heroDice1 = random.nextInt(6) + 1;
+            int heroDice2 = random.nextInt(6) + 1;
+            int heroAttack = hero.getSkill() + heroDice1 + heroDice2;
 
-        if (heroAttack > enemyAttack) {
-            enemyStamina = Math.max(0, enemyStamina - 2);
-            lastTurnResult += enemyName + " loses 2 STAMINA";
-        } else if (enemyAttack > heroAttack) {
-            hero.modifyStaminaSilent(-2);
-            lastTurnResult += "Hero loses 2 STAMINA";
-        } else {
-            lastTurnResult += "Draw - no damage";
+            int enemyDice1 = random.nextInt(6) + 1;
+            int enemyDice2 = random.nextInt(6) + 1;
+            int enemyAttack = enemy.getSkill() + enemyDice1 + enemyDice2;
+
+            enemy.setHeroDice(heroDice1, heroDice2);
+            enemy.setEnemyDice(enemyDice1, enemyDice2);
+
+            turnResult.append(String.format("Hero: %d vs %s: %d - ",
+                heroAttack, enemy.getName(), enemyAttack));
+
+            if (heroAttack > enemyAttack) {
+                if (i == selectedEnemyIndex) {
+                    enemy.setStamina(enemy.getStamina() - 2);
+                    turnResult.append(enemy.getName()).append(" loses 2 STAMINA");
+                } else {
+                    turnResult.append("Hero wins but not targeting this enemy");
+                }
+            } else if (enemyAttack > heroAttack) {
+                heroDamageTaken += 2;
+                turnResult.append("Hero loses");
+            } else {
+                turnResult.append("Draw");
+            }
+            turnResult.append("\n");
         }
-        
-        battleLog.append(lastTurnResult).append("\n\n");
+
+        if (heroDamageTaken > 0) {
+            hero.modifyStaminaSilent(-heroDamageTaken);
+            turnResult.append(String.format("Hero takes %d STAMINA damage total\n", heroDamageTaken));
+        }
+
+        lastTurnResult = turnResult.toString();
+        battleLog.append(lastTurnResult).append("\n");
     }
 
     public boolean isOver() {
-        return hero.getStamina() == 0 || enemyStamina == 0;
+        return hero.getStamina() == 0 || getAliveEnemies().isEmpty();
     }
 
     public boolean heroWon() {
-        return enemyStamina == 0 && hero.getStamina() > 0;
+        return getAliveEnemies().isEmpty() && hero.getStamina() > 0;
     }
 
-    public int getLastHeroDice1() { return lastHeroDice1; }
-    public int getLastHeroDice2() { return lastHeroDice2; }
-    public int getLastEnemyDice1() { return lastEnemyDice1; }
-    public int getLastEnemyDice2() { return lastEnemyDice2; }
+    public int getLastHeroDice1() { 
+        return enemies.get(selectedEnemyIndex).getHeroDice1();
+    }
+    
+    public int getLastHeroDice2() { 
+        return enemies.get(selectedEnemyIndex).getHeroDice2();
+    }
+    
+    public int getLastEnemyDice1() { 
+        return enemies.get(selectedEnemyIndex).getEnemyDice1();
+    }
+    
+    public int getLastEnemyDice2() { 
+        return enemies.get(selectedEnemyIndex).getEnemyDice2();
+    }
 }

@@ -19,7 +19,7 @@ public class DiceAnimator {
     public static JPanel createDicePanel(String tableImagePath) {
         try {
             java.awt.image.BufferedImage tableImage = javax.imageio.ImageIO.read(new java.io.File(tableImagePath));
-            return new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 20)) {
+            return new JPanel() {
                 @Override
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
@@ -27,13 +27,13 @@ public class DiceAnimator {
                 }
             };
         } catch (Exception ex) {
-            return new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 20));
+            return new JPanel();
         }
     }
     
     public static void animateDice(JPanel dicePanel, DiceGroup[] groups, Runnable onComplete) {
         dicePanel.removeAll();
-        dicePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
+        dicePanel.setLayout(new BoxLayout(dicePanel, BoxLayout.Y_AXIS));
         
         JLabel[] labels = new JLabel[groups.length];
         JPanel[] displays = new JPanel[groups.length];
@@ -44,10 +44,13 @@ public class DiceAnimator {
             final int groupIndex = g;
             DiceGroup group = groups[g];
             
+            JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+            rowPanel.setOpaque(false);
+            
             if (group.label != null && !group.label.isEmpty()) {
                 labels[g] = new JLabel(group.label);
                 labels[g].setFont(new Font("Arial", Font.BOLD, 20));
-                dicePanel.add(labels[g]);
+                rowPanel.add(labels[g]);
             }
             
             diceValues[g] = new int[group.finalValues.length];
@@ -75,7 +78,9 @@ public class DiceAnimator {
             };
             displays[g].setPreferredSize(new Dimension(40 + group.finalValues.length * 80, 80));
             displays[g].setOpaque(false);
-            dicePanel.add(displays[g]);
+            rowPanel.add(displays[g]);
+            
+            dicePanel.add(rowPanel);
         }
         
         dicePanel.revalidate();
