@@ -17,6 +17,9 @@ public class GameWindow extends JFrame {
     private JLabel luckLabel;
     private GameController controller;
     private JWindow notificationWindow;
+    private Battle currentBattle;
+    private JPanel battleStatsPanel;
+    private JLabel enemyStatsLabel;
 
     public GameWindow(Adventure adventure) {
         this.controller = new GameController(adventure);
@@ -79,20 +82,104 @@ public class GameWindow extends JFrame {
         if (controller.isGameOver()) {
             textArea.setText(Messages.get(Messages.Key.GAME_OVER));
             buttonPanel.removeAll();
+            currentBattle = null;
+        } else if (currentBattle != null) {
+            updateBattleDisplay();
         } else {
             textArea.setText(controller.getDisplayText());
             buttonPanel.removeAll();
             
-            List<Map<String, Object>> choices = controller.getChoices();
-            for (int i = 0; i < choices.size(); i++) {
-                JButton btn = new JButton(choices.get(i).get("text").toString());
-                int choiceIndex = i;
-                btn.addActionListener(e -> {
-                    controller.selectChoice(choiceIndex);
+            Map<String, Object> battleAction = controller.getBattleAction();
+            if (battleAction != null) {
+                JButton battleButton = new JButton(Messages.get(Messages.Key.BATTLE_BEGIN));
+                battleButton.addActionListener(e -> startBattle(battleAction));
+                buttonPanel.add(battleButton);
+            } else {
+                List<Map<String, Object>> choices = controller.getChoices();
+                for (int i = 0; i < choices.size(); i++) {
+                    JButton btn = new JButton(choices.get(i).get("text").toString());
+                    int choiceIndex = i;
+                    btn.addActionListener(e -> {
+                        controller.selectChoice(choiceIndex);
+                        updateDisplay();
+                    });
+                    buttonPanel.add(btn);
+                }
+            }
+        }
+        
+        buttonPanel.revalidate();
+        buttonPanel.repaint();
+    }
+
+    private void startBattle(Map<String, Object> battleAction) {
+        Map<String, Object> battleData = (Map<String, Object>) battleAction.get("battle");
+        List<Map<String, Object>> enemies = (List<Map<String, Object>>) battleData.get("enemies");
+        Map<String, Object> enemyData = enemies.get(0);
+        
+        String enemyName = (String) enemyData.get("enemy");
+        int enemySkill = (Integer) enemyData.get("skill");
+        int enemyStamina = (Integer) enemyData.get("stamina");
+        
+        currentBattle = new Battle(controller.getHero(), enemyName, enemySkill, enemyStamina);
+        
+        battleStatsPanel = new JPanel();
+        battleStatsPanel.setLayout(new BoxLayout(battleStatsPanel, BoxLayout.Y_AXIS));
+        battleStatsPanel.setBorder(BorderFactory.createTitledBorder(Messages.get(Messages.Key.BATTLE_TITLE)));
+        enemyStatsLabel = new JLabel();
+        battleStatsPanel.add(enemyStatsLabel);
+        add(battleStatsPanel, BorderLayout.NORTH);
+        revalidate();
+        
+        updateBattleDisplay();
+    }
+
+    private void updateBattleDisplay() {
+        Hero hero = controller.getHero();
+        skillLabel.setText(Messages.get(Messages.Key.SKILL) + ": " + hero.getSkill());
+        staminaLabel.setText(Messages.get(Messages.Key.STAMINA) + ": " + hero.getStamina());
+        luckLabel.setText(Messages.get(Messages.Key.LUCK) + ": " + hero.getLuck());
+        
+        int enemyStam = currentBattle.getEnemyStamina();
+        System.out.println("Enemy stamina: " + enemyStam);
+        enemyStatsLabel.setText(String.format("%s %s: %d %s: %d", 
+            currentBattle.getEnemyName(), 
+            Messages.get(Messages.Key.SKILL), currentBattle.getEnemySkill(),
+            Messages.get(Messages.Key.STAMINA), enemyStam));
+        
+        textArea.setText(currentBattle.getBattleLog());
+        buttonPanel.removeAll();
+        
+        if (currentBattle.isOver()) {
+            if (currentBattle.heroWon()) {
+                textArea.append("\n" + Messages.get(Messages.Key.BATTLE_VICTORY) + " " + currentBattle.getEnemyName() + "!");
+                Map<String, Object> battleAction = controller.getBattleAction();
+                Map<String, Object> battleData = (Map<String, Object>) battleAction.get("battle");
+                int winChapter = (Integer) battleData.get("win");
+                
+                JButton continueButton = new JButton(Messages.get(Messages.Key.BATTLE_CLOSE));
+                continueButton.addActionListener(e -> {
+                    currentBattle = null;
+                    remove(battleStatsPanel);
+                    battleStatsPanel = null;
+                    controller.goToChapter(winChapter);
                     updateDisplay();
                 });
-                buttonPanel.add(btn);
+                buttonPanel.add(continueButton);
+            } else {
+                textArea.append("\n" + String.format(Messages.get(Messages.Key.BATTLE_DEFEAT), currentBattle.getEnemyName()));
+                currentBattle = null;
+                remove(battleStatsPanel);
+                battleStatsPanel = null;
+                updateDisplay();
             }
+        } else {
+            JButton nextTurnButton = new JButton(Messages.get(Messages.Key.BATTLE_NEXT_TURN));
+            nextTurnButton.addActionListener(e -> {
+                currentBattle.executeTurn();
+                updateBattleDisplay();
+            });
+            buttonPanel.add(nextTurnButton);
         }
         
         buttonPanel.revalidate();

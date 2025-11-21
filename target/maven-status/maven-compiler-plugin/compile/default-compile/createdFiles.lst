@@ -1,8 +1,11 @@
+com/adventure/BattleDialog$1.class
 com/adventure/Adventure$Chapter.class
 com/adventure/Messages.class
+com/adventure/Battle.class
 com/adventure/GameWindow$1.class
 com/adventure/GameWindow.class
 com/adventure/Main.class
+com/adventure/BattleDialog.class
 com/adventure/Adventure.class
 com/adventure/Hero.class
 com/adventure/GameController.class

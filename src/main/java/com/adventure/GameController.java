@@ -54,6 +54,20 @@ public class GameController {
         return hero.getStamina() == 0;
     }
 
+    public Map<String, Object> getBattleAction() {
+        for (Map<String, Object> action : currentChapter.actions) {
+            if (action.containsKey("battle")) {
+                return action;
+            }
+        }
+        return null;
+    }
+
+    public void goToChapter(int chapterIndex) {
+        currentChapter = getChapter(chapterIndex);
+        applyModifiers();
+    }
+
     private void applyModifiers() {
         for (Map<String, Object> action : currentChapter.actions) {
             if (action.containsKey("modify")) {

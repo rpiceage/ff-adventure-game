@@ -12,11 +12,13 @@
 ## Internationalization
 - Optional `language` field in YAML (defaults to "en")
 - Supported languages: "en" (English), "hu" (Hungarian)
+- All UI strings must be added to the Messages class with translations
 - All UI strings are translated including:
   - Game over message
   - Adventure sheet title
   - Attribute names (SKILL/ÜGYESSÉG, STAMINA/ÉLETERŐ, LUCK/SZERENCSE)
   - Notification messages
+  - Battle UI strings
 
 ## Hero Attributes
 - Hero has three attributes: SKILL, STAMINA, and LUCK

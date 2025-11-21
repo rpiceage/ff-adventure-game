@@ -68,6 +68,11 @@ public class Hero {
         }
     }
 
+    public void modifyStaminaSilent(int delta) {
+        int newValue = this.stamina + delta;
+        this.stamina = Math.max(0, Math.min(newValue, maxStamina));
+    }
+
     public List<String> getLastModifications() {
         return new ArrayList<>(lastModifications);
     }
