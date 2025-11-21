@@ -94,6 +94,17 @@ public class GameWindow extends JFrame {
             textArea.setText(Messages.get(Messages.Key.GAME_OVER));
             buttonPanel.removeAll();
             currentBattle = null;
+            
+            try {
+                BufferedImage skullImage = ImageIO.read(new File("src/resources/skull.jpg"));
+                JLabel skullLabel = new JLabel(new ImageIcon(skullImage));
+                remove(statsPanel);
+                add(skullLabel, BorderLayout.EAST);
+                revalidate();
+                repaint();
+            } catch (Exception ex) {
+                // Keep stats panel if image fails to load
+            }
         } else if (currentBattle != null) {
             updateBattleDisplay();
         } else {
