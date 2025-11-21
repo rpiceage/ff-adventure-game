@@ -10,6 +10,7 @@ public class Battle {
     private Random random;
     private String lastTurnResult;
     private StringBuilder battleLog;
+    private int lastHeroDice1, lastHeroDice2, lastEnemyDice1, lastEnemyDice2;
 
     public Battle(Hero hero, String enemyName, int enemySkill, int enemyStamina) {
         this(hero, enemyName, enemySkill, enemyStamina, new Random());
@@ -50,13 +51,13 @@ public class Battle {
     }
 
     public void executeTurn() {
-        int heroDice1 = random.nextInt(6) + 1;
-        int heroDice2 = random.nextInt(6) + 1;
-        int heroAttack = hero.getSkill() + heroDice1 + heroDice2;
+        lastHeroDice1 = random.nextInt(6) + 1;
+        lastHeroDice2 = random.nextInt(6) + 1;
+        int heroAttack = hero.getSkill() + lastHeroDice1 + lastHeroDice2;
 
-        int enemyDice1 = random.nextInt(6) + 1;
-        int enemyDice2 = random.nextInt(6) + 1;
-        int enemyAttack = enemySkill + enemyDice1 + enemyDice2;
+        lastEnemyDice1 = random.nextInt(6) + 1;
+        lastEnemyDice2 = random.nextInt(6) + 1;
+        int enemyAttack = enemySkill + lastEnemyDice1 + lastEnemyDice2;
 
         lastTurnResult = String.format("Hero: %d vs %s: %d\n",
             heroAttack, enemyName, enemyAttack);
@@ -81,4 +82,9 @@ public class Battle {
     public boolean heroWon() {
         return enemyStamina == 0 && hero.getStamina() > 0;
     }
+
+    public int getLastHeroDice1() { return lastHeroDice1; }
+    public int getLastHeroDice2() { return lastHeroDice2; }
+    public int getLastEnemyDice1() { return lastEnemyDice1; }
+    public int getLastEnemyDice2() { return lastEnemyDice2; }
 }

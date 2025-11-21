@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class GameWindow extends JFrame {
     private JTextArea textArea;
@@ -22,6 +23,7 @@ public class GameWindow extends JFrame {
     private JPanel battleStatsPanel;
     private JLabel enemyStatsLabel;
     private JPanel centerPanel;
+    private JPanel dicePanel;
 
     public GameWindow(Adventure adventure) {
         this.controller = new GameController(adventure);
@@ -154,7 +156,26 @@ public class GameWindow extends JFrame {
         enemyStatsLabel = new JLabel();
         enemyStatsLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         battleStatsPanel.add(enemyStatsLabel);
-        centerPanel.add(battleStatsPanel, BorderLayout.NORTH);
+        
+        try {
+            BufferedImage tableImage = ImageIO.read(new File("src/resources/table.jpg"));
+            dicePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20)) {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    g.drawImage(tableImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            };
+        } catch (Exception ex) {
+            dicePanel = new JPanel();
+        }
+        dicePanel.setPreferredSize(new Dimension(400, 150));
+        
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(battleStatsPanel, BorderLayout.NORTH);
+        topPanel.add(dicePanel, BorderLayout.CENTER);
+        
+        centerPanel.add(topPanel, BorderLayout.NORTH);
         centerPanel.add(new JScrollPane(textArea), BorderLayout.CENTER);
         
         getContentPane().remove(0); // Remove old scroll pane
@@ -217,8 +238,12 @@ public class GameWindow extends JFrame {
         } else {
             JButton nextTurnButton = new JButton(Messages.get(Messages.Key.BATTLE_NEXT_TURN));
             nextTurnButton.addActionListener(e -> {
-                currentBattle.executeTurn();
-                updateBattleDisplay();
+                nextTurnButton.setEnabled(false);
+                animateDice(() -> {
+                    currentBattle.executeTurn();
+                    updateBattleDisplay();
+                    nextTurnButton.setEnabled(true);
+                });
             });
             buttonPanel.add(nextTurnButton);
         }
@@ -260,5 +285,116 @@ public class GameWindow extends JFrame {
         });
         timer.setRepeats(false);
         timer.start();
+    }
+
+    private void animateDice(Runnable onComplete) {
+        dicePanel.removeAll();
+        dicePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
+        
+        final int[][] diceValues = {{1, 1}, {1, 1}}; // [hero/enemy][dice1/dice2]
+        final double[] rotation = {0, 0, 0, 0}; // separate rotation for each die
+        
+        JLabel heroLabel = new JLabel("Hero:");
+        heroLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        
+        JPanel heroDiceDisplay = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                drawRotatedDice(g2d, 40, 40, diceValues[0][0], rotation[0]);
+                drawRotatedDice(g2d, 120, 40, diceValues[0][1], rotation[1]);
+            }
+        };
+        heroDiceDisplay.setPreferredSize(new Dimension(160, 80));
+        heroDiceDisplay.setOpaque(false);
+        
+        JLabel enemyLabel = new JLabel(currentBattle.getEnemyName() + ":");
+        enemyLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        
+        JPanel enemyDiceDisplay = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                drawRotatedDice(g2d, 40, 40, diceValues[1][0], rotation[2]);
+                drawRotatedDice(g2d, 120, 40, diceValues[1][1], rotation[3]);
+            }
+        };
+        enemyDiceDisplay.setPreferredSize(new Dimension(160, 80));
+        enemyDiceDisplay.setOpaque(false);
+        
+        dicePanel.add(heroLabel);
+        dicePanel.add(heroDiceDisplay);
+        dicePanel.add(enemyLabel);
+        dicePanel.add(enemyDiceDisplay);
+        dicePanel.revalidate();
+        dicePanel.repaint();
+        
+        Random rand = new Random();
+        Timer animTimer = new Timer(50, null);
+        final int[] count = {0};
+        
+        animTimer.addActionListener(e -> {
+            if (count[0] < 20) {
+                rotation[0] += Math.PI / 4;
+                rotation[1] += Math.PI / 3;
+                rotation[2] += Math.PI / 5;
+                rotation[3] += Math.PI / 6;
+                diceValues[0][0] = rand.nextInt(6) + 1;
+                diceValues[0][1] = rand.nextInt(6) + 1;
+                diceValues[1][0] = rand.nextInt(6) + 1;
+                diceValues[1][1] = rand.nextInt(6) + 1;
+                heroDiceDisplay.repaint();
+                enemyDiceDisplay.repaint();
+                count[0]++;
+            } else {
+                animTimer.stop();
+                onComplete.run();
+                if (currentBattle != null) {
+                    rotation[0] = rotation[1] = rotation[2] = rotation[3] = 0;
+                    diceValues[0][0] = currentBattle.getLastHeroDice1();
+                    diceValues[0][1] = currentBattle.getLastHeroDice2();
+                    diceValues[1][0] = currentBattle.getLastEnemyDice1();
+                    diceValues[1][1] = currentBattle.getLastEnemyDice2();
+                    heroDiceDisplay.repaint();
+                    enemyDiceDisplay.repaint();
+                }
+            }
+        });
+        animTimer.start();
+    }
+
+    private String getDiceDots(int value) {
+        switch (value) {
+            case 1: return "⚀";
+            case 2: return "⚁";
+            case 3: return "⚂";
+            case 4: return "⚃";
+            case 5: return "⚄";
+            case 6: return "⚅";
+            default: return "?";
+        }
+    }
+
+    private void drawRotatedDice(Graphics2D g2d, int x, int y, int value, double angle) {
+        Graphics2D g2 = (Graphics2D) g2d.create();
+        g2.translate(x, y);
+        g2.rotate(angle);
+        
+        g2.setFont(new Font("Arial", Font.BOLD, 48));
+        String dice = getDiceDots(value);
+        FontMetrics fm = g2.getFontMetrics();
+        int w = fm.stringWidth(dice);
+        
+        // Draw white background
+        g2.setColor(Color.WHITE);
+        g2.fillRect(-w/2 + 3, -25, w - 6, 35);
+        
+        g2.setColor(Color.BLACK);
+        g2.drawString(dice, -w/2, 10);
+        g2.dispose();
     }
 }
