@@ -1,5 +1,5 @@
 title: Sample adventure with stats
-language: hu
+language: en
 chapters:
   - index: 0
     actions:

@@ -7,6 +7,16 @@
 - Handles navigation choices with buttons at the bottom
 - Shows hero statistics in a panel on the right side
 - Displays temporary notifications for attribute changes in the lower left corner
+- Supports internationalization (English and Hungarian)
+
+## Internationalization
+- Optional `language` field in YAML (defaults to "en")
+- Supported languages: "en" (English), "hu" (Hungarian)
+- All UI strings are translated including:
+  - Game over message
+  - Adventure sheet title
+  - Attribute names (SKILL/ÜGYESSÉG, STAMINA/ÉLETERŐ, LUCK/SZERENCSE)
+  - Notification messages
 
 ## Hero Attributes
 - Hero has three attributes: SKILL, STAMINA, and LUCK
