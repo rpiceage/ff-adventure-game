@@ -25,6 +25,9 @@ public class Hero {
     public int getSkill() { return skill; }
     public int getStamina() { return stamina; }
     public int getLuck() { return luck; }
+    public int getInitialSkill() { return maxSkill; }
+    public int getInitialStamina() { return maxStamina; }
+    public int getInitialLuck() { return maxLuck; }
 
     public void modifySkill(int delta) { 
         int oldValue = this.skill;

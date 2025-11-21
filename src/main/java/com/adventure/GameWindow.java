@@ -1,6 +1,7 @@
 package com.adventure;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -20,11 +21,12 @@ public class GameWindow extends JFrame {
     private Battle currentBattle;
     private JPanel battleStatsPanel;
     private JLabel enemyStatsLabel;
+    private JPanel centerPanel;
 
     public GameWindow(Adventure adventure) {
         this.controller = new GameController(adventure);
         setTitle(adventure.title);
-        setSize(700, 400);
+        setSize(1200, 800);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -45,16 +47,22 @@ public class GameWindow extends JFrame {
         textArea.setEditable(false);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.setFont(new Font("Arial", Font.BOLD, 16));
+        textArea.setFont(new Font("Arial", Font.BOLD, 24));
         textArea.setMargin(new Insets(10, 10, 10, 10));
         add(new JScrollPane(textArea), BorderLayout.CENTER);
 
         statsPanel = new JPanel();
         statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
-        statsPanel.setBorder(BorderFactory.createTitledBorder(Messages.get(Messages.Key.HERO_STATS_TITLE)));
+        TitledBorder border = BorderFactory.createTitledBorder(Messages.get(Messages.Key.HERO_STATS_TITLE));
+        border.setTitleFont(new Font("Arial", Font.BOLD, 24));
+        statsPanel.setBorder(border);
+        statsPanel.setPreferredSize(new Dimension(300, 0));
         skillLabel = new JLabel();
+        skillLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         staminaLabel = new JLabel();
+        staminaLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         luckLabel = new JLabel();
+        luckLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         statsPanel.add(skillLabel);
         statsPanel.add(staminaLabel);
         statsPanel.add(luckLabel);
@@ -69,9 +77,12 @@ public class GameWindow extends JFrame {
 
     private void updateDisplay() {
         Hero hero = controller.getHero();
-        skillLabel.setText(Messages.get(Messages.Key.SKILL) + ": " + hero.getSkill());
-        staminaLabel.setText(Messages.get(Messages.Key.STAMINA) + ": " + hero.getStamina());
-        luckLabel.setText(Messages.get(Messages.Key.LUCK) + ": " + hero.getLuck());
+        skillLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
+            Messages.get(Messages.Key.SKILL), hero.getSkill(), hero.getInitialSkill()));
+        staminaLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
+            Messages.get(Messages.Key.STAMINA), hero.getStamina(), hero.getInitialStamina()));
+        luckLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
+            Messages.get(Messages.Key.LUCK), hero.getLuck(), hero.getInitialLuck()));
         
         List<String> mods = hero.getLastModifications();
         if (!mods.isEmpty()) {
@@ -123,25 +134,36 @@ public class GameWindow extends JFrame {
         
         currentBattle = new Battle(controller.getHero(), enemyName, enemySkill, enemyStamina);
         
+        centerPanel = new JPanel(new BorderLayout());
         battleStatsPanel = new JPanel();
         battleStatsPanel.setLayout(new BoxLayout(battleStatsPanel, BoxLayout.Y_AXIS));
-        battleStatsPanel.setBorder(BorderFactory.createTitledBorder(Messages.get(Messages.Key.BATTLE_TITLE)));
+        TitledBorder battleBorder = BorderFactory.createTitledBorder(Messages.get(Messages.Key.BATTLE_TITLE));
+        battleBorder.setTitleFont(new Font("Arial", Font.BOLD, 24));
+        battleStatsPanel.setBorder(battleBorder);
         enemyStatsLabel = new JLabel();
+        enemyStatsLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         battleStatsPanel.add(enemyStatsLabel);
-        add(battleStatsPanel, BorderLayout.NORTH);
+        centerPanel.add(battleStatsPanel, BorderLayout.NORTH);
+        centerPanel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+        
+        getContentPane().remove(0); // Remove old scroll pane
+        add(centerPanel, BorderLayout.CENTER);
         revalidate();
+        repaint();
         
         updateBattleDisplay();
     }
 
     private void updateBattleDisplay() {
         Hero hero = controller.getHero();
-        skillLabel.setText(Messages.get(Messages.Key.SKILL) + ": " + hero.getSkill());
-        staminaLabel.setText(Messages.get(Messages.Key.STAMINA) + ": " + hero.getStamina());
-        luckLabel.setText(Messages.get(Messages.Key.LUCK) + ": " + hero.getLuck());
+        skillLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
+            Messages.get(Messages.Key.SKILL), hero.getSkill(), hero.getInitialSkill()));
+        staminaLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
+            Messages.get(Messages.Key.STAMINA), hero.getStamina(), hero.getInitialStamina()));
+        luckLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
+            Messages.get(Messages.Key.LUCK), hero.getLuck(), hero.getInitialLuck()));
         
         int enemyStam = currentBattle.getEnemyStamina();
-        System.out.println("Enemy stamina: " + enemyStam);
         enemyStatsLabel.setText(String.format("%s %s: %d %s: %d", 
             currentBattle.getEnemyName(), 
             Messages.get(Messages.Key.SKILL), currentBattle.getEnemySkill(),
@@ -160,8 +182,12 @@ public class GameWindow extends JFrame {
                 JButton continueButton = new JButton(Messages.get(Messages.Key.BATTLE_CLOSE));
                 continueButton.addActionListener(e -> {
                     currentBattle = null;
-                    remove(battleStatsPanel);
                     battleStatsPanel = null;
+                    remove(centerPanel);
+                    centerPanel = null;
+                    add(new JScrollPane(textArea), BorderLayout.CENTER);
+                    revalidate();
+                    repaint();
                     controller.goToChapter(winChapter);
                     updateDisplay();
                 });
@@ -169,8 +195,12 @@ public class GameWindow extends JFrame {
             } else {
                 textArea.append("\n" + String.format(Messages.get(Messages.Key.BATTLE_DEFEAT), currentBattle.getEnemyName()));
                 currentBattle = null;
-                remove(battleStatsPanel);
                 battleStatsPanel = null;
+                remove(centerPanel);
+                centerPanel = null;
+                add(new JScrollPane(textArea), BorderLayout.CENTER);
+                revalidate();
+                repaint();
                 updateDisplay();
             }
         } else {
