@@ -1,6 +1,7 @@
 package com.adventure;
 
-import java.lang.reflect.Method;
+import com.adventure.actions.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -8,11 +9,52 @@ public class GameController {
     private Adventure adventure;
     private Adventure.Chapter currentChapter;
     private Hero hero;
+    private List<Action> actions;
 
     public GameController(Adventure adventure) {
         this.adventure = adventure;
         this.currentChapter = getChapter(0);
         this.hero = new Hero(12, 24, 12);
+        this.actions = new ArrayList<>();
+        registerActions();
+    }
+
+    private void registerActions() {
+        actions.add(new DisplayAction());
+        actions.add(new ModifyAction());
+        actions.add(new BattleAction());
+        actions.add(new LuckAction());
+        actions.add(new GotoAction());
+    }
+
+    public Action getCurrentAction() {
+        for (Map<String, Object> actionData : currentChapter.actions) {
+            for (Action action : actions) {
+                if (action.canHandle(actionData)) {
+                    ActionType type = action.getActionType();
+                    // Return only interactive actions
+                    if (type == ActionType.SINGLE_BUTTON || type == ActionType.MULTIPLE_BUTTONS) {
+                        return action;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public Map<String, Object> getCurrentActionData() {
+        for (Map<String, Object> actionData : currentChapter.actions) {
+            for (Action action : actions) {
+                if (action.canHandle(actionData)) {
+                    ActionType type = action.getActionType();
+                    // Return only interactive actions
+                    if (type == ActionType.SINGLE_BUTTON || type == ActionType.MULTIPLE_BUTTONS) {
+                        return actionData;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public Adventure.Chapter getCurrentChapter() {
@@ -24,52 +66,30 @@ public class GameController {
     }
 
     public String getDisplayText() {
-        for (Map<String, Object> action : currentChapter.actions) {
-            if (action.containsKey("display")) {
-                return action.get("display").toString().trim();
+        for (Map<String, Object> actionData : currentChapter.actions) {
+            for (Action action : actions) {
+                if (action instanceof DisplayAction && action.canHandle(actionData)) {
+                    return ((DisplayAction) action).getDisplayText(actionData);
+                }
             }
         }
         return "";
     }
 
-    public List<Map<String, Object>> getChoices() {
-        for (Map<String, Object> action : currentChapter.actions) {
-            if (action.containsKey("goto")) {
-                return (List<Map<String, Object>>) action.get("goto");
-            }
-        }
-        return List.of();
-    }
-
     public void selectChoice(int choiceIndex) {
-        List<Map<String, Object>> choices = getChoices();
-        if (choiceIndex >= 0 && choiceIndex < choices.size()) {
-            int targetChapter = (Integer) choices.get(choiceIndex).get("chapter");
-            currentChapter = getChapter(targetChapter);
-            applyModifiers();
+        Action action = getCurrentAction();
+        if (action != null && action.getActionType() == ActionType.MULTIPLE_BUTTONS) {
+            List<Map<String, Object>> choices = action.getChoices(getCurrentActionData());
+            if (choiceIndex >= 0 && choiceIndex < choices.size()) {
+                int targetChapter = (Integer) choices.get(choiceIndex).get("chapter");
+                currentChapter = getChapter(targetChapter);
+                applyModifiers();
+            }
         }
     }
 
     public boolean isGameOver() {
         return hero.getStamina() == 0;
-    }
-
-    public Map<String, Object> getBattleAction() {
-        for (Map<String, Object> action : currentChapter.actions) {
-            if (action.containsKey("battle")) {
-                return action;
-            }
-        }
-        return null;
-    }
-
-    public Map<String, Object> getLuckAction() {
-        for (Map<String, Object> action : currentChapter.actions) {
-            if (action.containsKey("luck")) {
-                return action;
-            }
-        }
-        return null;
     }
 
     public void goToChapter(int chapterIndex) {
@@ -78,22 +98,10 @@ public class GameController {
     }
 
     private void applyModifiers() {
-        for (Map<String, Object> action : currentChapter.actions) {
-            if (action.containsKey("modify")) {
-                Map<String, Object> modify = (Map<String, Object>) action.get("modify");
-                if (modify.containsKey("values")) {
-                    List<Map<String, Object>> values = (List<Map<String, Object>>) modify.get("values");
-                    for (Map<String, Object> mod : values) {
-                        String field = (String) mod.get("field");
-                        int value = (Integer) mod.get("value");
-                        try {
-                            String methodName = "modify" + field.charAt(0) + field.substring(1).toLowerCase();
-                            Method method = Hero.class.getMethod(methodName, int.class);
-                            method.invoke(hero, value);
-                        } catch (Exception e) {
-                            // Ignore invalid field names
-                        }
-                    }
+        for (Map<String, Object> actionData : currentChapter.actions) {
+            for (Action action : actions) {
+                if (action.getActionType() == ActionType.PASSIVE && action.canHandle(actionData)) {
+                    action.execute(this, actionData);
                 }
             }
         }

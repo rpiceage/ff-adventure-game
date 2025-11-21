@@ -18,8 +18,8 @@ public class LuckTest {
         
         GameController controller = new GameController(adventure);
         
-        assertNotNull(controller.getLuckAction());
-        assertNull(controller.getBattleAction());
+        assertNotNull(controller.getCurrentAction());
+        assertTrue(controller.getCurrentAction() instanceof com.adventure.actions.LuckAction);
     }
 
     @Test
@@ -29,8 +29,8 @@ public class LuckTest {
         Adventure adventure = yaml.loadAs(input, Adventure.class);
         
         GameController controller = new GameController(adventure);
-        var luckAction = controller.getLuckAction();
-        var luckData = (java.util.Map<String, Object>) luckAction.get("luck");
+        var actionData = controller.getCurrentActionData();
+        var luckData = (java.util.Map<String, Object>) actionData.get("luck");
         
         assertEquals(1, luckData.get("lucky"));
         assertEquals(2, luckData.get("unlucky"));
@@ -104,6 +104,6 @@ public class LuckTest {
         // Go to chapter without luck action
         controller.goToChapter(1);
         
-        assertNull(controller.getLuckAction());
+        assertNull(controller.getCurrentAction());
     }
 }

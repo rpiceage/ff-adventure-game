@@ -25,6 +25,7 @@ public class GameWindow extends JFrame {
     private JPanel centerPanel;
     private JPanel dicePanel;
     private boolean luckTestInProgress;
+    private Map<String, Object> currentBattleActionData;
 
     public GameWindow(Adventure adventure) {
         this.controller = new GameController(adventure);
@@ -116,27 +117,25 @@ public class GameWindow extends JFrame {
             textArea.setText(controller.getDisplayText());
             buttonPanel.removeAll();
             
-            Map<String, Object> luckAction = controller.getLuckAction();
-            Map<String, Object> battleAction = controller.getBattleAction();
+            com.adventure.actions.Action action = controller.getCurrentAction();
+            Map<String, Object> actionData = controller.getCurrentActionData();
             
-            if (luckAction != null) {
-                JButton luckButton = new JButton(Messages.get(Messages.Key.LUCK_TEST_BUTTON));
-                luckButton.addActionListener(e -> startLuckTest(luckAction));
-                buttonPanel.add(luckButton);
-            } else if (battleAction != null) {
-                JButton battleButton = new JButton(Messages.get(Messages.Key.BATTLE_BEGIN));
-                battleButton.addActionListener(e -> startBattle(battleAction));
-                buttonPanel.add(battleButton);
-            } else {
-                List<Map<String, Object>> choices = controller.getChoices();
-                for (int i = 0; i < choices.size(); i++) {
-                    JButton btn = new JButton(choices.get(i).get("text").toString());
-                    int choiceIndex = i;
-                    btn.addActionListener(e -> {
-                        controller.selectChoice(choiceIndex);
-                        updateDisplay();
-                    });
-                    buttonPanel.add(btn);
+            if (action != null && actionData != null) {
+                if (action.getActionType() == com.adventure.actions.ActionType.MULTIPLE_BUTTONS) {
+                    List<Map<String, Object>> choices = action.getChoices(actionData);
+                    for (int i = 0; i < choices.size(); i++) {
+                        JButton btn = new JButton(choices.get(i).get("text").toString());
+                        int choiceIndex = i;
+                        btn.addActionListener(e -> {
+                            controller.selectChoice(choiceIndex);
+                            updateDisplay();
+                        });
+                        buttonPanel.add(btn);
+                    }
+                } else if (action.getActionType() == com.adventure.actions.ActionType.SINGLE_BUTTON) {
+                    JButton actionButton = new JButton(action.getButtonText());
+                    actionButton.addActionListener(e -> handleSingleButtonAction(action, actionData));
+                    buttonPanel.add(actionButton);
                 }
             }
         }
@@ -145,7 +144,16 @@ public class GameWindow extends JFrame {
         buttonPanel.repaint();
     }
 
+    private void handleSingleButtonAction(com.adventure.actions.Action action, Map<String, Object> actionData) {
+        if (actionData.containsKey("battle")) {
+            startBattle(actionData);
+        } else if (actionData.containsKey("luck")) {
+            startLuckTest(actionData);
+        }
+    }
+
     private void startBattle(Map<String, Object> battleAction) {
+        currentBattleActionData = battleAction;
         Map<String, Object> battleData = (Map<String, Object>) battleAction.get("battle");
         List<Map<String, Object>> enemies = (List<Map<String, Object>>) battleData.get("enemies");
         Map<String, Object> enemyData = enemies.get(0);
@@ -267,8 +275,7 @@ public class GameWindow extends JFrame {
         if (currentBattle.isOver()) {
             if (currentBattle.heroWon()) {
                 textArea.append("\n" + Messages.get(Messages.Key.BATTLE_VICTORY) + " " + currentBattle.getEnemyName() + "!");
-                Map<String, Object> battleAction = controller.getBattleAction();
-                Map<String, Object> battleData = (Map<String, Object>) battleAction.get("battle");
+                Map<String, Object> battleData = (Map<String, Object>) currentBattleActionData.get("battle");
                 int winChapter = (Integer) battleData.get("win");
                 
                 JButton continueButton = new JButton(Messages.get(Messages.Key.BATTLE_CLOSE));

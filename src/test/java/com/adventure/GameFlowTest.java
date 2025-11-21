@@ -70,7 +70,7 @@ public class GameFlowTest {
     public void testEndingHasNoChoices() {
         controller.selectChoice(0); // Left
         controller.selectChoice(0); // Fight
-        assertEquals(0, controller.getChoices().size());
+        assertNull(controller.getCurrentAction());
     }
 
     @Test
