@@ -13,6 +13,7 @@ public class GameWindow extends JFrame {
     private JLabel staminaLabel;
     private JLabel luckLabel;
     private GameController controller;
+    private JWindow notificationWindow;
 
     public GameWindow(Adventure adventure) {
         this.controller = new GameController(adventure);
@@ -57,8 +58,7 @@ public class GameWindow extends JFrame {
         
         List<String> mods = hero.getLastModifications();
         if (!mods.isEmpty()) {
-            String message = String.join("\n", mods);
-            JOptionPane.showMessageDialog(this, message, "Attribute Changes", JOptionPane.INFORMATION_MESSAGE);
+            showNotification(String.join("\n", mods));
             hero.clearModifications();
         }
         
@@ -77,5 +77,40 @@ public class GameWindow extends JFrame {
         
         buttonPanel.revalidate();
         buttonPanel.repaint();
+    }
+
+    private void showNotification(String message) {
+        if (notificationWindow != null) {
+            notificationWindow.dispose();
+        }
+        
+        notificationWindow = new JWindow(this);
+        JLabel label = new JLabel("<html>" + message.replace("\n", "<br>") + "</html>");
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.BLACK, 2),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        label.setBackground(new Color(255, 255, 200));
+        label.setOpaque(true);
+        notificationWindow.add(label);
+        notificationWindow.pack();
+        
+        Point location = getLocation();
+        Dimension size = getSize();
+        Dimension notifSize = notificationWindow.getSize();
+        notificationWindow.setLocation(
+            location.x + 10,
+            location.y + size.height - notifSize.height - 50
+        );
+        
+        notificationWindow.setVisible(true);
+        
+        Timer timer = new Timer(3000, e -> {
+            notificationWindow.dispose();
+            notificationWindow = null;
+        });
+        timer.setRepeats(false);
+        timer.start();
     }
 }
