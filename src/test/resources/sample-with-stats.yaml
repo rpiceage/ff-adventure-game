@@ -22,6 +22,8 @@ chapters:
             text: Fight
           - chapter: 4
             text: Run
+          - chapter: 6
+            text: Surrender
   - index: 2
     actions:
       - display: |
@@ -57,3 +59,11 @@ chapters:
     actions:
       - display: |
           Refreshed, you continue your journey.
+  - index: 6
+    actions:
+      - display: |
+          The dragon attacks you mercilessly.
+      - modify:
+          values:
+            - field: STAMINA
+              value: -30

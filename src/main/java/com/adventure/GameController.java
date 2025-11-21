@@ -50,6 +50,10 @@ public class GameController {
         }
     }
 
+    public boolean isGameOver() {
+        return hero.getStamina() == 0;
+    }
+
     private void applyModifiers() {
         for (Map<String, Object> action : currentChapter.actions) {
             if (action.containsKey("modify")) {

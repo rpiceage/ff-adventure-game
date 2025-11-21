@@ -72,4 +72,13 @@ public class GameFlowTest {
         controller.selectChoice(0); // Fight
         assertEquals(0, controller.getChoices().size());
     }
+
+    @Test
+    public void testGameOverWhenStaminaReachesZero() {
+        controller.selectChoice(0); // Left
+        controller.selectChoice(2); // Surrender
+        assertEquals(6, controller.getCurrentChapter().index);
+        assertEquals(0, controller.getHero().getStamina());
+        assertTrue(controller.isGameOver());
+    }
 }

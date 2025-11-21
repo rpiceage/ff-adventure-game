@@ -65,8 +65,6 @@ public class GameWindow extends JFrame {
     }
 
     private void updateDisplay() {
-        textArea.setText(controller.getDisplayText());
-        
         Hero hero = controller.getHero();
         skillLabel.setText("SKILL: " + hero.getSkill());
         staminaLabel.setText("STAMINA: " + hero.getStamina());
@@ -78,17 +76,23 @@ public class GameWindow extends JFrame {
             hero.clearModifications();
         }
         
-        buttonPanel.removeAll();
-        
-        List<Map<String, Object>> choices = controller.getChoices();
-        for (int i = 0; i < choices.size(); i++) {
-            JButton btn = new JButton(choices.get(i).get("text").toString());
-            int choiceIndex = i;
-            btn.addActionListener(e -> {
-                controller.selectChoice(choiceIndex);
-                updateDisplay();
-            });
-            buttonPanel.add(btn);
+        if (controller.isGameOver()) {
+            textArea.setText("Your adventure ends here.");
+            buttonPanel.removeAll();
+        } else {
+            textArea.setText(controller.getDisplayText());
+            buttonPanel.removeAll();
+            
+            List<Map<String, Object>> choices = controller.getChoices();
+            for (int i = 0; i < choices.size(); i++) {
+                JButton btn = new JButton(choices.get(i).get("text").toString());
+                int choiceIndex = i;
+                btn.addActionListener(e -> {
+                    controller.selectChoice(choiceIndex);
+                    updateDisplay();
+                });
+                buttonPanel.add(btn);
+            }
         }
         
         buttonPanel.revalidate();

@@ -28,7 +28,8 @@ public class Hero {
 
     public void modifySkill(int delta) { 
         int oldValue = this.skill;
-        this.skill = Math.min(this.skill + delta, maxSkill);
+        int newValue = this.skill + delta;
+        this.skill = Math.max(0, Math.min(newValue, maxSkill));
         int actualChange = this.skill - oldValue;
         if (actualChange == 0 && delta > 0) {
             lastModifications.add("SKILL would have been modified but initial value cannot be exceeded");
@@ -41,7 +42,8 @@ public class Hero {
     
     public void modifyStamina(int delta) { 
         int oldValue = this.stamina;
-        this.stamina = Math.min(this.stamina + delta, maxStamina);
+        int newValue = this.stamina + delta;
+        this.stamina = Math.max(0, Math.min(newValue, maxStamina));
         int actualChange = this.stamina - oldValue;
         if (actualChange == 0 && delta > 0) {
             lastModifications.add("STAMINA would have been modified but initial value cannot be exceeded");
@@ -54,7 +56,8 @@ public class Hero {
     
     public void modifyLuck(int delta) { 
         int oldValue = this.luck;
-        this.luck = Math.min(this.luck + delta, maxLuck);
+        int newValue = this.luck + delta;
+        this.luck = Math.max(0, Math.min(newValue, maxLuck));
         int actualChange = this.luck - oldValue;
         if (actualChange == 0 && delta > 0) {
             lastModifications.add("LUCK would have been modified but initial value cannot be exceeded");

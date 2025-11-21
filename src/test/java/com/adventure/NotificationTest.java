@@ -58,4 +58,11 @@ public class NotificationTest {
         List<String> mods = hero.getLastModifications();
         assertEquals(0, mods.size());
     }
+
+    @Test
+    public void testLowerBoundProtection() {
+        Hero hero = new Hero(12, 24, 12);
+        hero.modifyStamina(-30);
+        assertEquals(0, hero.getStamina());
+    }
 }
