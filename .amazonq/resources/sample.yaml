@@ -1,0 +1,37 @@
+title: Sample adventure
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          Welcome to the adventure. Left or right?
+      - goto:
+          - chapter: 1
+            text: Left
+          - chapter: 2
+            text: Right
+  - index: 1
+    actions:
+      - display: |
+          You went left. You see a dragon. What do you do?
+      - goto:
+          - chapter: 3
+            text: Fight
+          - chapter: 4
+            text: Run
+  - index: 2
+    actions:
+      - display: |
+          You went right. You see a dragon. What do you do?
+      - goto:
+          - chapter: 3
+            text: Fight
+          - chapter: 4
+            text: Run
+  - index: 3
+    actions:
+      - display: |
+          You fight the dragon. You win.
+  - index: 4
+    actions:
+      - display: |
+          You run away. You lose.

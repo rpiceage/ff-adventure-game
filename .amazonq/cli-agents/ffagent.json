@@ -1,0 +1,20 @@
+{
+    "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json",
+    "name": "ffagent",
+    "description": "Developer CLI Agent for the new ff application",
+    "prompt": "ffagent",
+    "mcpServers": {},
+    "tools": [
+      "*"
+    ],
+    "toolAliases": {},
+    "allowedTools": [],
+    "resources": [
+      "file://.amazonq/resources/req.md",
+      "file://.amazonq/resources/sample.yaml"
+    ],
+    "hooks": {},
+    "toolsSettings": {},
+    "useLegacyMcpJson": false,
+    "model": null
+  }
