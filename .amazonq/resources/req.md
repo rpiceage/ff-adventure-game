@@ -14,7 +14,8 @@
 - Attributes displayed in a stats panel on the right side of the window
 - Attributes can be modified through YAML chapter actions using the `modify` action
 - Attribute values cannot exceed their initial values (capped at max)
-- Negative modifications are allowed (attributes can go below initial values)
+- Attribute values cannot go below 0 (capped at min)
+- Game ends immediately when STAMINA reaches 0, displaying "Your adventure ends here."
 
 ## Attribute Modifications
 - YAML format for modifications:
