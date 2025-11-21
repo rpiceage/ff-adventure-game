@@ -121,3 +121,12 @@
 - GameWindow handles UI based on ActionType generically
 - No instanceof checks - uses ActionType for behavior
 - Easy to add new action types without modifying existing code
+
+## UI Architecture
+- Separation of concerns between main window and feature-specific UI
+- GameWindow - main window, stats panel, navigation
+- BattleUI - self-contained battle UI logic
+- LuckUI - self-contained luck test UI logic
+- Feature UIs are independently testable and maintainable
+- GameWindow provides updateHeroStats() for real-time stat updates
+- Proper component lifecycle management with panel tracking

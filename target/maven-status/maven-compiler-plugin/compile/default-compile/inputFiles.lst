@@ -1,4 +1,5 @@
 /home/eplrego/ff/src/main/java/com/adventure/actions/DisplayAction.java
+/home/eplrego/ff/src/main/java/com/adventure/ui/BattleUI.java
 /home/eplrego/ff/src/main/java/com/adventure/Battle.java
 /home/eplrego/ff/src/main/java/com/adventure/actions/BattleAction.java
 /home/eplrego/ff/src/main/java/com/adventure/GameController.java
@@ -10,6 +11,7 @@
 /home/eplrego/ff/src/main/java/com/adventure/DiceAnimator.java
 /home/eplrego/ff/src/main/java/com/adventure/Main.java
 /home/eplrego/ff/src/main/java/com/adventure/Adventure.java
+/home/eplrego/ff/src/main/java/com/adventure/ui/LuckUI.java
 /home/eplrego/ff/src/main/java/com/adventure/Hero.java
 /home/eplrego/ff/src/main/java/com/adventure/actions/LuckAction.java
 /home/eplrego/ff/src/main/java/com/adventure/actions/ModifyAction.java
