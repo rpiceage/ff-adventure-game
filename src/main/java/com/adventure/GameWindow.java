@@ -55,6 +55,13 @@ public class GameWindow extends JFrame {
         staminaLabel.setText("STAMINA: " + hero.getStamina());
         luckLabel.setText("LUCK: " + hero.getLuck());
         
+        List<String> mods = hero.getLastModifications();
+        if (!mods.isEmpty()) {
+            String message = String.join("\n", mods);
+            JOptionPane.showMessageDialog(this, message, "Attribute Changes", JOptionPane.INFORMATION_MESSAGE);
+            hero.clearModifications();
+        }
+        
         buttonPanel.removeAll();
         
         List<Map<String, Object>> choices = controller.getChoices();
