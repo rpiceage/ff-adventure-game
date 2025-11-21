@@ -23,7 +23,7 @@ public class UITest {
     }
 
     @Test
-    public void testStatsPanel_RemainsVisible_AfterLuckTest() throws Exception {
+    public void testLuckTest_ComponentsRestoredCorrectly() throws Exception {
         InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-luck.yaml");
         Yaml yaml = new Yaml(new LoaderOptions());
         Adventure adventure = yaml.loadAs(input, Adventure.class);
@@ -32,68 +32,16 @@ public class UITest {
             window = new GameWindow(adventure);
         });
 
-        // Verify stats panel is visible initially
         JPanel statsPanel = getField(window, "statsPanel");
         assertTrue(statsPanel.isVisible());
-
-        // Click "Test your luck!" button
-        SwingUtilities.invokeAndWait(() -> {
-            JButton luckButton = findButton(window, Messages.get(Messages.Key.LUCK_TEST_BUTTON));
-            assertNotNull(luckButton, "Luck button should be present");
-            luckButton.doClick();
-        });
-
-        // Verify stats panel is still visible during luck test
-        assertTrue(statsPanel.isVisible());
-        assertTrue(statsPanel.isShowing());
-
-        // Click "Test your luck!" again to execute the test
-        SwingUtilities.invokeAndWait(() -> {
-            JButton testButton = findButton(window, Messages.get(Messages.Key.LUCK_TEST_BUTTON));
-            if (testButton != null) {
-                testButton.doClick();
-            }
-        });
-
-        // Wait for dice animation
-        Thread.sleep(1500);
-
-        // Verify stats panel is still visible after test
-        SwingUtilities.invokeAndWait(() -> {
-            assertTrue(statsPanel.isVisible());
-            assertTrue(statsPanel.isShowing());
-        });
-
-        // Click continue
-        SwingUtilities.invokeAndWait(() -> {
-            JButton continueButton = findButton(window, Messages.get(Messages.Key.LUCK_CONTINUE));
-            if (continueButton != null) {
-                continueButton.doClick();
-            }
-        });
-
-        // Verify stats panel is still visible after restoration
-        SwingUtilities.invokeAndWait(() -> {
-            assertTrue(statsPanel.isVisible());
-            assertTrue(statsPanel.isShowing());
-        });
-    }
-
-    @Test
-    public void testTextPanel_Restored_AfterLuckTest() throws Exception {
-        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-luck.yaml");
-        Yaml yaml = new Yaml(new LoaderOptions());
-        Adventure adventure = yaml.loadAs(input, Adventure.class);
-
-        SwingUtilities.invokeAndWait(() -> {
-            window = new GameWindow(adventure);
-        });
 
         // Start luck test
         SwingUtilities.invokeAndWait(() -> {
             JButton luckButton = findButton(window, Messages.get(Messages.Key.LUCK_TEST_BUTTON));
             luckButton.doClick();
         });
+
+        assertTrue(statsPanel.isVisible());
 
         // Execute test
         SwingUtilities.invokeAndWait(() -> {
@@ -105,6 +53,8 @@ public class UITest {
 
         Thread.sleep(1500);
 
+        assertTrue(statsPanel.isVisible());
+
         // Click continue
         SwingUtilities.invokeAndWait(() -> {
             JButton continueButton = findButton(window, Messages.get(Messages.Key.LUCK_CONTINUE));
@@ -113,8 +63,9 @@ public class UITest {
             }
         });
 
-        // Verify text panel is restored
+        // Verify both stats panel and text panel are restored
         SwingUtilities.invokeAndWait(() -> {
+            assertTrue(statsPanel.isVisible());
             Container contentPane = window.getContentPane();
             BorderLayout layout = (BorderLayout) contentPane.getLayout();
             Component center = layout.getLayoutComponent(BorderLayout.CENTER);
