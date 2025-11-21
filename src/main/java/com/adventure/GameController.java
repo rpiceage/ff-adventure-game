@@ -12,7 +12,7 @@ public class GameController {
     public GameController(Adventure adventure) {
         this.adventure = adventure;
         this.currentChapter = getChapter(0);
-        this.hero = new Hero(10, 20, 10);
+        this.hero = new Hero(12, 24, 12);
     }
 
     public Adventure.Chapter getCurrentChapter() {
