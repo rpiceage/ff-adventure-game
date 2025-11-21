@@ -67,9 +67,17 @@
 - Battle UI:
   - Fixed enemy stats panel at top showing enemy SKILL and STAMINA
   - Hero stats continuously updated in side panel during battle
+  - Animated dice panel with table.jpg background showing dice rolls
   - Scrollable battle log in center showing all turn results
   - "Next Turn" button to execute each turn
   - Battle ends when either hero or enemy STAMINA reaches 0
+- Dice animation:
+  - 4 dice displayed (2 for hero, 2 for enemy) with labels
+  - Dice spin independently at different speeds for 1 second
+  - Unicode dice characters (⚀-⚅) with white backgrounds
+  - Graphics2D rotation for smooth spinning effect
+  - After animation, dice show actual rolled values
+  - Next Turn button disabled during animation
 - Victory: displays victory message and "Continue" button to proceed to win chapter
 - Defeat: hero STAMINA reaches 0, triggers game over
 - Battle damage is applied silently (no notification popups during combat)
