@@ -48,7 +48,7 @@ public class GameWindow extends JFrame {
 
         statsPanel = new JPanel();
         statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
-        statsPanel.setBorder(BorderFactory.createTitledBorder("Hero Stats"));
+        statsPanel.setBorder(BorderFactory.createTitledBorder(Messages.get(Messages.Key.HERO_STATS_TITLE)));
         skillLabel = new JLabel();
         staminaLabel = new JLabel();
         luckLabel = new JLabel();
@@ -66,9 +66,9 @@ public class GameWindow extends JFrame {
 
     private void updateDisplay() {
         Hero hero = controller.getHero();
-        skillLabel.setText("SKILL: " + hero.getSkill());
-        staminaLabel.setText("STAMINA: " + hero.getStamina());
-        luckLabel.setText("LUCK: " + hero.getLuck());
+        skillLabel.setText(Messages.get(Messages.Key.SKILL) + ": " + hero.getSkill());
+        staminaLabel.setText(Messages.get(Messages.Key.STAMINA) + ": " + hero.getStamina());
+        luckLabel.setText(Messages.get(Messages.Key.LUCK) + ": " + hero.getLuck());
         
         List<String> mods = hero.getLastModifications();
         if (!mods.isEmpty()) {
@@ -77,7 +77,7 @@ public class GameWindow extends JFrame {
         }
         
         if (controller.isGameOver()) {
-            textArea.setText("Your adventure ends here.");
+            textArea.setText(Messages.get(Messages.Key.GAME_OVER));
             buttonPanel.removeAll();
         } else {
             textArea.setText(controller.getDisplayText());

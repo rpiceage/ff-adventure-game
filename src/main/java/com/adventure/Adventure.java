@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class Adventure {
     public String title;
+    public String language;
     public List<Chapter> chapters;
 
     public static class Chapter {

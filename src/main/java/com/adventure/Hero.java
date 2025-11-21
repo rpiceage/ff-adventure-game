@@ -32,11 +32,11 @@ public class Hero {
         this.skill = Math.max(0, Math.min(newValue, maxSkill));
         int actualChange = this.skill - oldValue;
         if (actualChange == 0 && delta > 0) {
-            lastModifications.add("SKILL would have been modified but initial value cannot be exceeded");
+            lastModifications.add(Messages.get(Messages.Key.SKILL) + " " + Messages.get(Messages.Key.ATTRIBUTE_BLOCKED));
         } else if (actualChange != delta && delta > 0) {
-            lastModifications.add("SKILL +" + actualChange + " (capped at " + maxSkill + ")");
+            lastModifications.add(Messages.get(Messages.Key.SKILL) + " +" + actualChange + " (" + Messages.get(Messages.Key.ATTRIBUTE_CAPPED) + " " + maxSkill + ")");
         } else {
-            lastModifications.add("SKILL " + (delta > 0 ? "+" : "") + delta);
+            lastModifications.add(Messages.get(Messages.Key.SKILL) + " " + (delta > 0 ? "+" : "") + delta);
         }
     }
     
@@ -46,11 +46,11 @@ public class Hero {
         this.stamina = Math.max(0, Math.min(newValue, maxStamina));
         int actualChange = this.stamina - oldValue;
         if (actualChange == 0 && delta > 0) {
-            lastModifications.add("STAMINA would have been modified but initial value cannot be exceeded");
+            lastModifications.add(Messages.get(Messages.Key.STAMINA) + " " + Messages.get(Messages.Key.ATTRIBUTE_BLOCKED));
         } else if (actualChange != delta && delta > 0) {
-            lastModifications.add("STAMINA +" + actualChange + " (capped at " + maxStamina + ")");
+            lastModifications.add(Messages.get(Messages.Key.STAMINA) + " +" + actualChange + " (" + Messages.get(Messages.Key.ATTRIBUTE_CAPPED) + " " + maxStamina + ")");
         } else {
-            lastModifications.add("STAMINA " + (delta > 0 ? "+" : "") + delta);
+            lastModifications.add(Messages.get(Messages.Key.STAMINA) + " " + (delta > 0 ? "+" : "") + delta);
         }
     }
     
@@ -60,11 +60,11 @@ public class Hero {
         this.luck = Math.max(0, Math.min(newValue, maxLuck));
         int actualChange = this.luck - oldValue;
         if (actualChange == 0 && delta > 0) {
-            lastModifications.add("LUCK would have been modified but initial value cannot be exceeded");
+            lastModifications.add(Messages.get(Messages.Key.LUCK) + " " + Messages.get(Messages.Key.ATTRIBUTE_BLOCKED));
         } else if (actualChange != delta && delta > 0) {
-            lastModifications.add("LUCK +" + actualChange + " (capped at " + maxLuck + ")");
+            lastModifications.add(Messages.get(Messages.Key.LUCK) + " +" + actualChange + " (" + Messages.get(Messages.Key.ATTRIBUTE_CAPPED) + " " + maxLuck + ")");
         } else {
-            lastModifications.add("LUCK " + (delta > 0 ? "+" : "") + delta);
+            lastModifications.add(Messages.get(Messages.Key.LUCK) + " " + (delta > 0 ? "+" : "") + delta);
         }
     }
 
