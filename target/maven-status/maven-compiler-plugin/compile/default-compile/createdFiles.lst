@@ -2,3 +2,5 @@ com/adventure/GameWindow.class
 com/adventure/Main.class
 com/adventure/Adventure$Chapter.class
 com/adventure/Adventure.class
+com/adventure/Hero.class
+com/adventure/GameController.class

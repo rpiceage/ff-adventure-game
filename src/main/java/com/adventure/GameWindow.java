@@ -8,12 +8,16 @@ import java.util.Map;
 public class GameWindow extends JFrame {
     private JTextArea textArea;
     private JPanel buttonPanel;
+    private JPanel statsPanel;
+    private JLabel skillLabel;
+    private JLabel staminaLabel;
+    private JLabel luckLabel;
     private GameController controller;
 
     public GameWindow(Adventure adventure) {
         this.controller = new GameController(adventure);
         setTitle(adventure.title);
-        setSize(600, 400);
+        setSize(700, 400);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -25,6 +29,17 @@ public class GameWindow extends JFrame {
         textArea.setMargin(new Insets(10, 10, 10, 10));
         add(new JScrollPane(textArea), BorderLayout.CENTER);
 
+        statsPanel = new JPanel();
+        statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
+        statsPanel.setBorder(BorderFactory.createTitledBorder("Hero Stats"));
+        skillLabel = new JLabel();
+        staminaLabel = new JLabel();
+        luckLabel = new JLabel();
+        statsPanel.add(skillLabel);
+        statsPanel.add(staminaLabel);
+        statsPanel.add(luckLabel);
+        add(statsPanel, BorderLayout.EAST);
+
         buttonPanel = new JPanel();
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -34,6 +49,12 @@ public class GameWindow extends JFrame {
 
     private void updateDisplay() {
         textArea.setText(controller.getDisplayText());
+        
+        Hero hero = controller.getHero();
+        skillLabel.setText("SKILL: " + hero.getSkill());
+        staminaLabel.setText("STAMINA: " + hero.getStamina());
+        luckLabel.setText("LUCK: " + hero.getLuck());
+        
         buttonPanel.removeAll();
         
         List<Map<String, Object>> choices = controller.getChoices();
