@@ -63,6 +63,15 @@ public class GameController {
         return null;
     }
 
+    public Map<String, Object> getLuckAction() {
+        for (Map<String, Object> action : currentChapter.actions) {
+            if (action.containsKey("luck")) {
+                return action;
+            }
+        }
+        return null;
+    }
+
     public void goToChapter(int chapterIndex) {
         currentChapter = getChapter(chapterIndex);
         applyModifiers();

@@ -19,7 +19,12 @@ public class Messages {
         BATTLE_CLOSE,
         BATTLE_HERO,
         BATTLE_VICTORY,
-        BATTLE_DEFEAT
+        BATTLE_DEFEAT,
+        LUCK_TEST_TITLE,
+        LUCK_TEST_BUTTON,
+        LUCK_LUCKY,
+        LUCK_UNLUCKY,
+        LUCK_CONTINUE
     }
     
     private static final Map<Key, Map<String, String>> translations = Map.ofEntries(
@@ -78,6 +83,26 @@ public class Messages {
         Map.entry(Key.BATTLE_DEFEAT, Map.of(
             "en", "Defeat! %s has defeated you!",
             "hu", "Vereség! %s legyőzött téged!"
+        )),
+        Map.entry(Key.LUCK_TEST_TITLE, Map.of(
+            "en", "Test your luck",
+            "hu", "Tedd próbára szerencséd"
+        )),
+        Map.entry(Key.LUCK_TEST_BUTTON, Map.of(
+            "en", "Test your luck!",
+            "hu", "Tedd próbára szerencséd!"
+        )),
+        Map.entry(Key.LUCK_LUCKY, Map.of(
+            "en", "You were lucky!",
+            "hu", "Szerencséd volt!"
+        )),
+        Map.entry(Key.LUCK_UNLUCKY, Map.of(
+            "en", "You were unlucky!",
+            "hu", "Nem volt szerencséd!"
+        )),
+        Map.entry(Key.LUCK_CONTINUE, Map.of(
+            "en", "Continue",
+            "hu", "Tovább"
         ))
     );
     
