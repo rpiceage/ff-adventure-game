@@ -46,3 +46,30 @@
   - Normal: "SKILL +1" or "STAMINA -5"
   - Capped: "STAMINA +3 (capped at 24)"
   - Blocked: "LUCK would have been modified but initial value cannot be exceeded"
+
+
+## Battle System
+- Turn-based combat system triggered by `battle` action in YAML
+- YAML format for battles:
+  ```yaml
+  - battle:
+      enemies:
+        - enemy: Cave Man
+          skill: 12
+          stamina: 20
+      win: 1  # chapter to go to after victory
+  ```
+- Battle mechanics:
+  - Each turn: both hero and enemy roll 2d6 and add their SKILL value
+  - Higher attack value wins the turn
+  - Loser takes 2 STAMINA damage
+  - Draw results in no damage
+- Battle UI:
+  - Fixed enemy stats panel at top showing enemy SKILL and STAMINA
+  - Hero stats continuously updated in side panel during battle
+  - Scrollable battle log in center showing all turn results
+  - "Next Turn" button to execute each turn
+  - Battle ends when either hero or enemy STAMINA reaches 0
+- Victory: displays victory message and "Continue" button to proceed to win chapter
+- Defeat: hero STAMINA reaches 0, triggers game over
+- Battle damage is applied silently (no notification popups during combat)
