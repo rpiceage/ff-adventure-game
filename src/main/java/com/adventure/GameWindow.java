@@ -1,7 +1,10 @@
 package com.adventure;
 
 import javax.swing.*;
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -22,11 +25,24 @@ public class GameWindow extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        textArea = new JTextArea();
+        try {
+            BufferedImage bgImage = ImageIO.read(new File("src/resources/pergament.jpg"));
+            textArea = new JTextArea() {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+                    super.paintComponent(g);
+                }
+            };
+            textArea.setOpaque(false);
+        } catch (Exception e) {
+            textArea = new JTextArea();
+        }
+        
         textArea.setEditable(false);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.setFont(new Font("Arial", Font.PLAIN, 16));
+        textArea.setFont(new Font("Arial", Font.BOLD, 16));
         textArea.setMargin(new Insets(10, 10, 10, 10));
         add(new JScrollPane(textArea), BorderLayout.CENTER);
 
