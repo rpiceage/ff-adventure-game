@@ -81,3 +81,43 @@
 - Victory: displays victory message and "Continue" button to proceed to win chapter
 - Defeat: hero STAMINA reaches 0, triggers game over
 - Battle damage is applied silently (no notification popups during combat)
+
+## Luck Test System
+- Test your luck action triggered by `luck` action in YAML
+- YAML format for luck tests:
+  ```yaml
+  - luck:
+      lucky: 1    # chapter to go to if lucky
+      unlucky: 2  # chapter to go to if unlucky
+  ```
+- Luck test mechanics:
+  - Roll 2d6 and compare to hero's LUCK attribute
+  - If roll ≤ LUCK: "You were lucky!" → go to lucky chapter
+  - If roll > LUCK: "You were unlucky!" → go to unlucky chapter
+- Luck test UI:
+  - "Test your luck!" button appears when luck action is present
+  - Animated dice panel with table.jpg background (2 dice)
+  - Result message displayed in text area with parchment background
+  - "Continue" button to proceed to appropriate chapter
+- Dice animation same as battle system (spinning, white backgrounds)
+
+## Architecture
+- Action-based system for extensibility
+- All action types implement `Action` interface:
+  - `canHandle(actionData)` - checks if action can handle the data
+  - `getActionType()` - returns ActionType enum
+  - `execute(controller, actionData)` - performs the action
+  - `getButtonText()` - for SINGLE_BUTTON actions
+  - `getChoices(actionData)` - for MULTIPLE_BUTTONS actions
+- ActionType enum: SINGLE_BUTTON, MULTIPLE_BUTTONS, PASSIVE, DISPLAY
+- Implemented actions:
+  - `DisplayAction` (DISPLAY) - shows chapter text
+  - `ModifyAction` (PASSIVE) - auto-applies attribute modifications
+  - `BattleAction` (SINGLE_BUTTON) - triggers battle encounters
+  - `LuckAction` (SINGLE_BUTTON) - triggers luck tests
+  - `GotoAction` (MULTIPLE_BUTTONS) - provides navigation choices
+- DiceAnimator class handles all dice animations (battle and luck)
+- GameController manages action registry and execution
+- GameWindow handles UI based on ActionType generically
+- No instanceof checks - uses ActionType for behavior
+- Easy to add new action types without modifying existing code
