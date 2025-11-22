@@ -203,7 +203,8 @@ public class GameWindow extends JFrame {
                     remove(currentCenterPanel);
                     currentCenterPanel = null;
                 }
-                add(new JScrollPane(textArea), BorderLayout.CENTER);
+                textScrollPane = new JScrollPane(textArea);
+                add(textScrollPane, BorderLayout.CENTER);
                 revalidate();
                 repaint();
                 updateDisplay();
@@ -221,7 +222,8 @@ public class GameWindow extends JFrame {
                     remove(currentCenterPanel);
                     currentCenterPanel = null;
                 }
-                add(new JScrollPane(textArea), BorderLayout.CENTER);
+                textScrollPane = new JScrollPane(textArea);
+                add(textScrollPane, BorderLayout.CENTER);
                 revalidate();
                 repaint();
                 updateDisplay();
