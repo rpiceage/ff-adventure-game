@@ -140,11 +140,12 @@ public class BattleUI {
             JButton nextTurnButton = new JButton(Messages.get(Messages.Key.BATTLE_NEXT_TURN));
             nextTurnButton.addActionListener(e -> {
                 nextTurnButton.setEnabled(false);
+                
+                List<Enemy> aliveBeforeTurn = new ArrayList<>(currentBattle.getAliveEnemies());
                 currentBattle.executeTurn();
                 
                 List<DiceAnimator.DiceGroup> groups = new ArrayList<>();
-                List<Enemy> aliveEnemies = currentBattle.getAliveEnemies();
-                for (Enemy enemy : aliveEnemies) {
+                for (Enemy enemy : aliveBeforeTurn) {
                     groups.add(new DiceAnimator.DiceGroup("Hero vs " + enemy.getName() + ":", 
                         enemy.getHeroDice1(), enemy.getHeroDice2(), 
                         enemy.getEnemyDice1(), enemy.getEnemyDice2()));

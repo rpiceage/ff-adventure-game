@@ -237,13 +237,13 @@ public class GameWindow extends JFrame {
 
     public void updateHeroStats() {
         Hero hero = controller.getHero();
-        skillLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b>%d</b> <font size='5'>(%d)</font></div></html>", 
+        skillLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></div></html>", 
             Messages.get(Messages.Key.SKILL), hero.getSkill(), hero.getInitialSkill()));
-        staminaLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b>%d</b> <font size='5'>(%d)</font></div></html>", 
+        staminaLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></div></html>", 
             Messages.get(Messages.Key.STAMINA), hero.getStamina(), hero.getInitialStamina()));
-        luckLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b>%d</b> <font size='5'>(%d)</font></div></html>", 
+        luckLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></div></html>", 
             Messages.get(Messages.Key.LUCK), hero.getLuck(), hero.getInitialLuck()));
-        goldLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b>%d</b></div></html>", 
+        goldLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b><font color='red'>%d</font></b></div></html>", 
             Messages.get(Messages.Key.GOLD), hero.getGold()));
     }
 
