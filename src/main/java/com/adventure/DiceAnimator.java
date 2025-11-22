@@ -18,7 +18,8 @@ public class DiceAnimator {
     
     public static JPanel createDicePanel(String tableImagePath) {
         try {
-            java.awt.image.BufferedImage tableImage = javax.imageio.ImageIO.read(new java.io.File(tableImagePath));
+            java.io.InputStream imgStream = DiceAnimator.class.getClassLoader().getResourceAsStream("table.jpg");
+            java.awt.image.BufferedImage tableImage = javax.imageio.ImageIO.read(imgStream);
             return new JPanel() {
                 @Override
                 protected void paintComponent(Graphics g) {

@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -34,7 +35,8 @@ public class GameWindow extends JFrame {
         setLayout(new BorderLayout());
 
         try {
-            BufferedImage bgImage = ImageIO.read(new File("src/resources/pergament.jpg"));
+            InputStream bgStream = getClass().getClassLoader().getResourceAsStream("pergament.jpg");
+            BufferedImage bgImage = ImageIO.read(bgStream);
             textArea = new JTextArea() {
                 @Override
                 protected void paintComponent(Graphics g) {
