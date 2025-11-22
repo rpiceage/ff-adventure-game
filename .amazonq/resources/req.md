@@ -127,6 +127,31 @@
   - "Continue" button to proceed to appropriate chapter
 - Dice animation same as battle system (spinning, white backgrounds)
 
+## Item System
+- Hero has inventory to collect items
+- Items displayed as buttons in stats panel
+- YAML format for adding items:
+  ```yaml
+  - addItem:
+      items:
+        - name: Aranygyűrű
+        - name: Sword
+        - name: Potion
+  ```
+- Item mechanics:
+  - Each item in addItem action creates a "Take [ItemName]" button
+  - Clicking "Take" button adds item to hero's inventory
+  - Button becomes disabled after taking item (prevents duplicates)
+  - Items persist across chapters
+  - Duplicate items allowed (can take same item from different chapters)
+- Item UI:
+  - Items section in stats panel below attributes
+  - Each collected item shown as a button
+  - Clicking item button shows popup: "This item can't be used right now"
+  - Items displayed in order collected
+- Items are stored as strings (item names)
+- No item removal or usage logic yet (placeholder for future features)
+
 ## Architecture
 - Action-based system for extensibility
 - All action types implement `Action` interface:
@@ -134,25 +159,29 @@
   - `getActionType()` - returns ActionType enum
   - `execute(controller, actionData)` - performs the action
   - `getButtonText()` - for SINGLE_BUTTON actions
-  - `getChoices(actionData)` - for MULTIPLE_BUTTONS actions
+  - `getChoices(actionData)` - for MULTIPLE_BUTTONS actions (returns Choice objects)
+- Choice class: type-safe wrapper for button choices (index, text)
 - ActionType enum: SINGLE_BUTTON, MULTIPLE_BUTTONS, PASSIVE, DISPLAY
 - Implemented actions:
   - `DisplayAction` (DISPLAY) - shows chapter text
   - `ModifyAction` (PASSIVE) - auto-applies attribute modifications
   - `BattleAction` (SINGLE_BUTTON) - triggers battle encounters
   - `LuckAction` (SINGLE_BUTTON) - triggers luck tests
+  - `AddItemAction` (MULTIPLE_BUTTONS) - provides item pickup choices
   - `GotoAction` (MULTIPLE_BUTTONS) - provides navigation choices
 - DiceAnimator class handles all dice animations (battle and luck)
 - GameController manages action registry and execution
 - GameWindow handles UI based on ActionType generically
+- GameWindow shows buttons for ALL actions in chapter (not just first one)
 - No instanceof checks - uses ActionType for behavior
 - Easy to add new action types without modifying existing code
 
 ## UI Architecture
 - Separation of concerns between main window and feature-specific UI
-- GameWindow - main window, stats panel, navigation
+- GameWindow - main window, stats panel, navigation, items panel
 - BattleUI - self-contained battle UI logic
 - LuckUI - self-contained luck test UI logic
 - Feature UIs are independently testable and maintainable
 - GameWindow provides updateHeroStats() for real-time stat updates
+- GameWindow provides updateItemButtons() for inventory display updates
 - Proper component lifecycle management with panel tracking
