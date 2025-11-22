@@ -1,0 +1,113 @@
+title: Complete Adventure Demo
+language: en
+init:
+  gold: 10
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          Welcome, brave adventurer! You start your journey with 10 gold coins.
+          
+          You stand at the entrance of a dark cave. A merchant nearby offers you items.
+      - addItem:
+          items:
+            - name: Torch
+            - name: Rope
+            - name: Health Potion
+      - goto:
+          - chapter: 1
+            text: Enter the cave
+          - chapter: 2
+            text: Talk to merchant first
+  
+  - index: 1
+    actions:
+      - display: |
+          You enter the dark cave. Suddenly, a goblin jumps out!
+      - battle:
+          enemies:
+            - enemy: Cave Goblin
+              skill: 7
+              stamina: 6
+          win: 3
+  
+  - index: 2
+    actions:
+      - display: |
+          The merchant offers you a magic sword for 5 gold.
+      - modify:
+          values:
+            - field: GOLD
+              value: -5
+      - addItem:
+          items:
+            - name: Magic Sword
+      - goto:
+          - chapter: 1
+            text: Now enter the cave
+  
+  - index: 3
+    actions:
+      - display: |
+          You defeated the goblin! You find 3 gold coins on its body.
+          
+          Ahead, you see two paths. Do you test your luck to find the treasure?
+      - modify:
+          values:
+            - field: GOLD
+              value: 3
+      - luck:
+          lucky: 4
+          unlucky: 5
+  
+  - index: 4
+    actions:
+      - display: |
+          You were lucky! You found a hidden treasure room with 20 gold!
+      - modify:
+          values:
+            - field: GOLD
+              value: 20
+      - goto:
+          - chapter: 6
+            text: Continue deeper
+  
+  - index: 5
+    actions:
+      - display: |
+          You were unlucky! You triggered a trap and lost 3 stamina.
+      - modify:
+          values:
+            - field: STAMINA
+              value: -3
+      - goto:
+          - chapter: 6
+            text: Continue carefully
+  
+  - index: 6
+    actions:
+      - display: |
+          You reach a large chamber. Two trolls block your path!
+      - battle:
+          enemies:
+            - enemy: Hill Troll 1
+              skill: 9
+              stamina: 10
+            - enemy: Hill Troll 2
+              skill: 9
+              stamina: 9
+          win: 7
+  
+  - index: 7
+    actions:
+      - display: |
+          Victory! You defeated both trolls!
+          
+          You find the exit and emerge victorious with your treasures.
+          
+          Final Stats:
+          - Gold collected
+          - Items acquired
+          - Battles won: 2
+          
+          Congratulations, brave adventurer!
