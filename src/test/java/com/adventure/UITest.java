@@ -164,6 +164,68 @@ public class UITest {
         });
     }
 
+    @Test
+    public void testItemButtons_DisabledAfterUse() throws Exception {
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-items.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+
+        SwingUtilities.invokeAndWait(() -> {
+            window = new GameWindow(adventure);
+        });
+
+        GameController controller = getField(window, "controller");
+        Hero hero = controller.getHero();
+
+        // Initially no items
+        assertEquals(0, hero.getInventory().size());
+
+        // Find "Take Aranygyűrű" button and verify it's enabled
+        SwingUtilities.invokeAndWait(() -> {
+            JButton takeButton = findButton(window, Messages.get(Messages.Key.ADD_ITEM) + " Aranygyűrű");
+            assertNotNull(takeButton, "Take Aranygyűrű button should be present");
+            assertTrue(takeButton.isEnabled(), "Button should be enabled initially");
+            takeButton.doClick();
+        });
+
+        // Verify item was added and button is disabled
+        SwingUtilities.invokeAndWait(() -> {
+            assertEquals(1, hero.getInventory().size());
+            assertTrue(hero.hasItem("Aranygyűrű"));
+            
+            JButton takeButton = findButton(window, Messages.get(Messages.Key.ADD_ITEM) + " Aranygyűrű");
+            assertNotNull(takeButton, "Button should still exist");
+            assertFalse(takeButton.isEnabled(), "Button should be disabled after taking item");
+        });
+
+        // Find "Take Sword" button and verify it's still enabled
+        SwingUtilities.invokeAndWait(() -> {
+            JButton takeButton = findButton(window, Messages.get(Messages.Key.ADD_ITEM) + " Sword");
+            assertNotNull(takeButton, "Take Sword button should be present");
+            assertTrue(takeButton.isEnabled(), "Sword button should still be enabled");
+            takeButton.doClick();
+        });
+
+        // Verify second item was added and its button is disabled
+        SwingUtilities.invokeAndWait(() -> {
+            assertEquals(2, hero.getInventory().size());
+            assertTrue(hero.hasItem("Sword"));
+            
+            JButton takeButton = findButton(window, Messages.get(Messages.Key.ADD_ITEM) + " Sword");
+            assertFalse(takeButton.isEnabled(), "Sword button should be disabled after taking");
+        });
+
+        // Verify item buttons appear in stats panel
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                JPanel itemsPanel = getField(window, "itemsPanel");
+                assertEquals(2, itemsPanel.getComponentCount(), "Should have 2 item buttons in stats panel");
+            } catch (Exception e) {
+                fail("Failed to get itemsPanel: " + e.getMessage());
+            }
+        });
+    }
+
     // Helper methods
     private JButton findButton(Container container, String text) {
         for (Component c : container.getComponents()) {

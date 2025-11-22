@@ -51,4 +51,45 @@ public class HeroTest {
         assertTrue(mods.get(0).contains("GOLD"));
         assertTrue(mods.get(0).contains("-5"));
     }
+
+    @Test
+    public void testAddItem() {
+        Hero hero = new Hero(10, 20, 10);
+        hero.addItem("Sword");
+        
+        assertEquals(1, hero.getInventory().size());
+        assertEquals("Sword", hero.getInventory().get(0));
+        assertTrue(hero.hasItem("Sword"));
+    }
+
+    @Test
+    public void testAddMultipleItems() {
+        Hero hero = new Hero(10, 20, 10);
+        hero.addItem("Sword");
+        hero.addItem("Shield");
+        hero.addItem("Potion");
+        
+        assertEquals(3, hero.getInventory().size());
+        assertTrue(hero.hasItem("Sword"));
+        assertTrue(hero.hasItem("Shield"));
+        assertTrue(hero.hasItem("Potion"));
+        assertFalse(hero.hasItem("Helmet"));
+    }
+
+    @Test
+    public void testInventoryStartsEmpty() {
+        Hero hero = new Hero(10, 20, 10);
+        assertEquals(0, hero.getInventory().size());
+        assertFalse(hero.hasItem("Anything"));
+    }
+
+    @Test
+    public void testDuplicateItemsAllowed() {
+        Hero hero = new Hero(10, 20, 10);
+        hero.addItem("Potion");
+        hero.addItem("Potion");
+        
+        assertEquals(2, hero.getInventory().size());
+        assertTrue(hero.hasItem("Potion"));
+    }
 }

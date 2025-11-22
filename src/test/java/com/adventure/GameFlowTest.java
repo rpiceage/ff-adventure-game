@@ -105,4 +105,43 @@ public class GameFlowTest {
         assertTrue(mods.get(0).contains("GOLD") && mods.get(0).contains("+10"));
         assertTrue(mods.get(1).contains("GOLD") && mods.get(1).contains("-5"));
     }
+
+    @Test
+    public void testItemCollectionFlow() {
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-items.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+        
+        GameController controller = new GameController(adventure);
+        Hero hero = controller.getHero();
+        
+        // Initially no items
+        assertEquals(0, hero.getInventory().size());
+        
+        // Get AddItemAction and add items
+        var actionData = controller.getCurrentChapter().actions.stream()
+            .filter(a -> a.containsKey("addItem"))
+            .findFirst()
+            .orElse(null);
+        
+        assertNotNull(actionData);
+        
+        com.adventure.actions.AddItemAction addItemAction = new com.adventure.actions.AddItemAction();
+        
+        // Add first item (Aranygyűrű)
+        addItemAction.addItem(controller, actionData, 0);
+        assertEquals(1, hero.getInventory().size());
+        assertTrue(hero.hasItem("Aranygyűrű"));
+        
+        // Add second item (Sword)
+        addItemAction.addItem(controller, actionData, 1);
+        assertEquals(2, hero.getInventory().size());
+        assertTrue(hero.hasItem("Sword"));
+        
+        // Items persist across chapters
+        controller.goToChapter(1);
+        assertEquals(2, hero.getInventory().size());
+        assertTrue(hero.hasItem("Aranygyűrű"));
+        assertTrue(hero.hasItem("Sword"));
+    }
 }
