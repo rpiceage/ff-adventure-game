@@ -327,6 +327,8 @@ public class GameWindow extends JFrame {
     private void updateItemButtons() {
         itemsPanel.removeAll();
         
+        Map<String, Integer> useItemMap = getUseItemMap();
+        
         for (String item : controller.getHero().getInventory()) {
             JButton itemButton = new JButton(item);
             itemButton.setFont(new Font("Arial", Font.BOLD, 16));
@@ -334,12 +336,37 @@ public class GameWindow extends JFrame {
             itemButton.setBackground(new Color(0, 0, 0, 100));
             itemButton.setOpaque(false);
             itemButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-            itemButton.addActionListener(e -> showItemCantUsePopup());
+            
+            if (useItemMap.containsKey(item)) {
+                int targetChapter = useItemMap.get(item);
+                itemButton.addActionListener(e -> {
+                    controller.goToChapter(targetChapter);
+                    updateDisplay();
+                });
+            } else {
+                itemButton.addActionListener(e -> showItemCantUsePopup());
+            }
+            
             itemsPanel.add(itemButton);
         }
         
         itemsPanel.revalidate();
         itemsPanel.repaint();
+    }
+    
+    private Map<String, Integer> getUseItemMap() {
+        Map<String, Integer> map = new java.util.HashMap<>();
+        for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
+            if (actionData.containsKey("useItem")) {
+                List<Map<String, Object>> items = (List<Map<String, Object>>) actionData.get("useItem");
+                for (Map<String, Object> itemData : items) {
+                    String itemName = (String) itemData.get("item");
+                    int chapter = (Integer) itemData.get("chapter");
+                    map.put(itemName, chapter);
+                }
+            }
+        }
+        return map;
     }
 
     private void showItemCantUsePopup() {

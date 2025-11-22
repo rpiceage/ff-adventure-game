@@ -18,6 +18,7 @@ com/adventure/actions/DisplayAction.class
 com/adventure/BattleDialog$1.class
 com/adventure/GameWindow$5.class
 com/adventure/ui/BattleUI.class
+com/adventure/ui/BattleUI$AnimatedDicePanel.class
 com/adventure/actions/Action$Choice.class
 com/adventure/Enemy.class
 com/adventure/DiceAnimator$1.class
@@ -26,6 +27,7 @@ com/adventure/GameController.class
 com/adventure/GameWindow$2.class
 com/adventure/Adventure$Chapter.class
 com/adventure/ui/LuckUI.class
+com/adventure/actions/UseItemAction.class
 com/adventure/DiceAnimator$2.class
 com/adventure/GameWindow.class
 com/adventure/actions/ActionType.class

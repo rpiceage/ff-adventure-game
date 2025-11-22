@@ -1,0 +1,44 @@
+title: Use Item Test
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You find a dagger on the ground.
+      - addItem:
+          items:
+            - name: Dagger
+      - goto:
+          - chapter: 1
+            text: Continue
+  - index: 1
+    actions:
+      - display: |
+          A locked door blocks your path. You need a key to open it.
+      - useItem:
+          - item: Dagger
+            chapter: 2
+      - goto:
+          - chapter: 3
+            text: Try to break the door
+  - index: 2
+    actions:
+      - display: |
+          You use the dagger to pick the lock. The door opens!
+      - goto:
+          - chapter: 4
+            text: Enter
+  - index: 3
+    actions:
+      - display: |
+          You hurt yourself trying to break the door.
+      - modify:
+          values:
+            - field: STAMINA
+              value: -2
+      - goto:
+          - chapter: 1
+            text: Try again
+  - index: 4
+    actions:
+      - display: |
+          You enter the room and find treasure! You win!

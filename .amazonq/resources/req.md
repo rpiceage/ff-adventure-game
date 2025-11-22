@@ -150,7 +150,28 @@
   - Clicking item button shows popup: "This item can't be used right now"
   - Items displayed in order collected
 - Items are stored as strings (item names)
-- No item removal or usage logic yet (placeholder for future features)
+
+## Use Item System
+- Items can be used in specific chapters to navigate to different chapters
+- YAML format for using items:
+  ```yaml
+  - useItem:
+      - item: Dagger
+        chapter: 234
+      - item: Key
+        chapter: 100
+  ```
+- Use item mechanics:
+  - When a chapter contains a useItem action, item buttons become active for specified items
+  - Clicking an active item button navigates to the specified chapter
+  - Items only usable in chapters that have useItem action for them
+  - In other chapters, item buttons show "This item can't be used right now" popup
+  - Multiple items can be made usable in the same chapter
+- Use item UI:
+  - Item buttons in stats panel change behavior based on current chapter
+  - Active items navigate when clicked
+  - Inactive items show popup message
+  - No visual distinction between active/inactive (discovered through interaction)
 
 ## Architecture
 - Action-based system for extensibility
@@ -168,6 +189,7 @@
   - `BattleAction` (SINGLE_BUTTON) - triggers battle encounters
   - `LuckAction` (SINGLE_BUTTON) - triggers luck tests
   - `AddItemAction` (MULTIPLE_BUTTONS) - provides item pickup choices
+  - `UseItemAction` (DISPLAY) - enables item buttons for navigation
   - `GotoAction` (MULTIPLE_BUTTONS) - provides navigation choices
 - DiceAnimator class handles all dice animations (battle and luck)
 - GameController manages action registry and execution

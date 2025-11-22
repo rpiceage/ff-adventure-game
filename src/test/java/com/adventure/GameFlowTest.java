@@ -144,4 +144,48 @@ public class GameFlowTest {
         assertTrue(hero.hasItem("Aranygyűrű"));
         assertTrue(hero.hasItem("Sword"));
     }
+    
+    @Test
+    public void testUseItemFlow() {
+        Yaml yaml = new Yaml();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("sample-with-use-item.yaml");
+        Adventure adventure = yaml.loadAs(inputStream, Adventure.class);
+        GameController controller = new GameController(adventure);
+        
+        // Pick up dagger
+        controller.getHero().addItem("Dagger");
+        
+        // Go to locked door
+        controller.goToChapter(1);
+        assertEquals(1, controller.getCurrentChapter().index);
+        
+        // Use dagger to pick lock
+        controller.goToChapter(2);
+        assertEquals(2, controller.getCurrentChapter().index);
+        assertEquals("You use the dagger to pick the lock. The door opens!", 
+            controller.getCurrentChapter().actions.get(0).get("display").toString().trim());
+        
+        // Enter and win
+        controller.selectChoice(0);
+        assertEquals(4, controller.getCurrentChapter().index);
+    }
+    
+    @Test
+    public void testUseItemFlowWithoutItem() {
+        Yaml yaml = new Yaml();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("sample-with-use-item.yaml");
+        Adventure adventure = yaml.loadAs(inputStream, Adventure.class);
+        GameController controller = new GameController(adventure);
+        
+        // Go to locked door without dagger
+        controller.goToChapter(1);
+        assertEquals(1, controller.getCurrentChapter().index);
+        
+        // Try to break door
+        controller.selectChoice(0);
+        assertEquals(3, controller.getCurrentChapter().index);
+        
+        // Lost stamina
+        assertEquals(22, controller.getHero().getStamina());
+    }
 }
