@@ -57,33 +57,64 @@ public class GameWindow extends JFrame {
         textScrollPane = new JScrollPane(textArea);
         add(textScrollPane, BorderLayout.CENTER);
 
-        statsPanel = new JPanel();
+        try {
+            java.io.InputStream imgStream = getClass().getClassLoader().getResourceAsStream("wall.jpg");
+            java.awt.image.BufferedImage wallImage = javax.imageio.ImageIO.read(imgStream);
+            statsPanel = new JPanel() {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    g.drawImage(wallImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            };
+        } catch (Exception ex) {
+            statsPanel = new JPanel();
+        }
         statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
         TitledBorder border = BorderFactory.createTitledBorder(Messages.get(Messages.Key.HERO_STATS_TITLE));
         border.setTitleFont(new Font("Arial", Font.BOLD, 24));
+        border.setTitleColor(Color.WHITE);
         statsPanel.setBorder(border);
         statsPanel.setPreferredSize(new Dimension(300, 0));
-        skillLabel = new JLabel();
-        skillLabel.setFont(new Font("Arial", Font.PLAIN, 24));
-        staminaLabel = new JLabel();
-        staminaLabel.setFont(new Font("Arial", Font.PLAIN, 24));
-        luckLabel = new JLabel();
-        luckLabel.setFont(new Font("Arial", Font.PLAIN, 24));
-        goldLabel = new JLabel();
-        goldLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+        
+        skillLabel = createStyledLabel();
+        staminaLabel = createStyledLabel();
+        luckLabel = createStyledLabel();
+        goldLabel = createStyledLabel();
         statsPanel.add(skillLabel);
         statsPanel.add(staminaLabel);
         statsPanel.add(luckLabel);
         statsPanel.add(goldLabel);
         
         // Items section
-        JLabel itemsTitle = new JLabel(Messages.get(Messages.Key.ITEMS_TITLE) + ":");
+        JLabel itemsTitle = new JLabel(Messages.get(Messages.Key.ITEMS_TITLE) + ":") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(new Color(0, 0, 0, 100));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                super.paintComponent(g);
+            }
+        };
         itemsTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        itemsTitle.setForeground(Color.WHITE);
+        itemsTitle.setOpaque(false);
         statsPanel.add(Box.createVerticalStrut(20));
         statsPanel.add(itemsTitle);
         
-        itemsPanel = new JPanel();
+        itemsPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(new Color(0, 0, 0, 100));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                super.paintComponent(g);
+            }
+        };
         itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
+        itemsPanel.setOpaque(false);
         statsPanel.add(itemsPanel);
         
         add(statsPanel, BorderLayout.EAST);
@@ -185,15 +216,34 @@ public class GameWindow extends JFrame {
         buttonPanel.repaint();
     }
 
+    private JLabel createStyledLabel() {
+        JLabel label = new JLabel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                g2d.setColor(new Color(0, 0, 0, 100));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                
+                super.paintComponent(g);
+            }
+        };
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        label.setForeground(Color.WHITE);
+        label.setOpaque(false);
+        return label;
+    }
+
     public void updateHeroStats() {
         Hero hero = controller.getHero();
-        skillLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
+        skillLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b>%d</b> <font size='5'>(%d)</font></div></html>", 
             Messages.get(Messages.Key.SKILL), hero.getSkill(), hero.getInitialSkill()));
-        staminaLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
+        staminaLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b>%d</b> <font size='5'>(%d)</font></div></html>", 
             Messages.get(Messages.Key.STAMINA), hero.getStamina(), hero.getInitialStamina()));
-        luckLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
+        luckLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b>%d</b> <font size='5'>(%d)</font></div></html>", 
             Messages.get(Messages.Key.LUCK), hero.getLuck(), hero.getInitialLuck()));
-        goldLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b></html>", 
+        goldLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b>%d</b></div></html>", 
             Messages.get(Messages.Key.GOLD), hero.getGold()));
     }
 
@@ -279,7 +329,10 @@ public class GameWindow extends JFrame {
         
         for (String item : controller.getHero().getInventory()) {
             JButton itemButton = new JButton(item);
-            itemButton.setFont(new Font("Arial", Font.PLAIN, 16));
+            itemButton.setFont(new Font("Arial", Font.BOLD, 16));
+            itemButton.setForeground(Color.WHITE);
+            itemButton.setBackground(new Color(0, 0, 0, 100));
+            itemButton.setOpaque(false);
             itemButton.setAlignmentX(Component.LEFT_ALIGNMENT);
             itemButton.addActionListener(e -> showItemCantUsePopup());
             itemsPanel.add(itemButton);
