@@ -70,7 +70,8 @@ public class BattleUI {
         }
         
         dicePanel = DiceAnimator.createDicePanel("src/resources/table.jpg");
-        dicePanel.setPreferredSize(new Dimension(400, 200));
+        int dicePanelHeight = enemies.size() * 100; // 100px per enemy
+        dicePanel.setPreferredSize(new Dimension(400, dicePanelHeight));
         
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(battleStatsPanel, BorderLayout.NORTH);

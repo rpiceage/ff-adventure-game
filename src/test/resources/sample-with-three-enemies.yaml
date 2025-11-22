@@ -1,0 +1,23 @@
+title: Three Enemies Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You encounter three goblins!
+      - battle:
+          enemies:
+            - enemy: Goblin Warrior
+              skill: 8
+              stamina: 8
+            - enemy: Goblin Archer
+              skill: 7
+              stamina: 6
+            - enemy: Goblin Shaman
+              skill: 6
+              stamina: 5
+          win: 1
+  - index: 1
+    actions:
+      - display: |
+          You defeated all three goblins! Victory!
