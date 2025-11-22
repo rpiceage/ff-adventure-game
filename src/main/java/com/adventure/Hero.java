@@ -12,6 +12,7 @@ public class Hero {
     private final int maxStamina;
     private final int maxLuck;
     private List<String> lastModifications;
+    private List<String> inventory;
 
     public Hero(int skill, int stamina, int luck) {
         this(skill, stamina, luck, 0);
@@ -26,6 +27,7 @@ public class Hero {
         this.maxStamina = stamina;
         this.maxLuck = luck;
         this.lastModifications = new ArrayList<>();
+        this.inventory = new ArrayList<>();
     }
 
     public int getSkill() { return skill; }
@@ -100,5 +102,17 @@ public class Hero {
 
     public void clearModifications() {
         lastModifications.clear();
+    }
+
+    public void addItem(String itemName) {
+        inventory.add(itemName);
+    }
+
+    public List<String> getInventory() {
+        return new ArrayList<>(inventory);
+    }
+
+    public boolean hasItem(String itemName) {
+        return inventory.contains(itemName);
     }
 }

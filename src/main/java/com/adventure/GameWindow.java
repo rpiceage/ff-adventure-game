@@ -14,6 +14,7 @@ public class GameWindow extends JFrame {
     private JTextArea textArea;
     private JPanel buttonPanel;
     private JPanel statsPanel;
+    private JPanel itemsPanel;
     private JLabel skillLabel;
     private JLabel staminaLabel;
     private JLabel luckLabel;
@@ -72,6 +73,17 @@ public class GameWindow extends JFrame {
         statsPanel.add(staminaLabel);
         statsPanel.add(luckLabel);
         statsPanel.add(goldLabel);
+        
+        // Items section
+        JLabel itemsTitle = new JLabel(Messages.get(Messages.Key.ITEMS_TITLE) + ":");
+        itemsTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        statsPanel.add(Box.createVerticalStrut(20));
+        statsPanel.add(itemsTitle);
+        
+        itemsPanel = new JPanel();
+        itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
+        statsPanel.add(itemsPanel);
+        
         add(statsPanel, BorderLayout.EAST);
 
         buttonPanel = new JPanel();
@@ -91,6 +103,8 @@ public class GameWindow extends JFrame {
             Messages.get(Messages.Key.LUCK), hero.getLuck(), hero.getInitialLuck()));
         goldLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b></html>", 
             Messages.get(Messages.Key.GOLD), hero.getGold()));
+        
+        updateItemButtons();
         
         List<String> mods = hero.getLastModifications();
         if (!mods.isEmpty()) {
@@ -122,25 +136,45 @@ public class GameWindow extends JFrame {
             textArea.setText(controller.getDisplayText());
             buttonPanel.removeAll();
             
-            com.adventure.actions.Action action = controller.getCurrentAction();
-            Map<String, Object> actionData = controller.getCurrentActionData();
-            
-            if (action != null && actionData != null) {
-                if (action.getActionType() == com.adventure.actions.ActionType.MULTIPLE_BUTTONS) {
-                    List<Map<String, Object>> choices = action.getChoices(actionData);
-                    for (int i = 0; i < choices.size(); i++) {
-                        JButton btn = new JButton(choices.get(i).get("text").toString());
-                        int choiceIndex = i;
-                        btn.addActionListener(e -> {
-                            controller.selectChoice(choiceIndex);
-                            updateDisplay();
-                        });
-                        buttonPanel.add(btn);
+            // Show buttons for all actions in the chapter
+            for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
+                com.adventure.actions.Action action = controller.getActionForData(actionData);
+                
+                if (action != null) {
+                    if (action.getActionType() == com.adventure.actions.ActionType.MULTIPLE_BUTTONS) {
+                        if (action instanceof com.adventure.actions.AddItemAction) {
+                            // Handle AddItemAction
+                            com.adventure.actions.AddItemAction addItemAction = (com.adventure.actions.AddItemAction) action;
+                            List<com.adventure.actions.Action.Choice> choices = action.getChoices(actionData);
+                            for (int i = 0; i < choices.size(); i++) {
+                                JButton btn = new JButton(choices.get(i).text);
+                                int itemIndex = i;
+                                btn.addActionListener(e -> {
+                                    addItemAction.addItem(controller, actionData, itemIndex);
+                                    btn.setEnabled(false);
+                                    updateItemButtons(); // Only update items panel, not full display
+                                });
+                                buttonPanel.add(btn);
+                            }
+                        } else {
+                            // Handle GotoAction
+                            List<com.adventure.actions.Action.Choice> choices = action.getChoices(actionData);
+                            for (int i = 0; i < choices.size(); i++) {
+                                JButton btn = new JButton(choices.get(i).text);
+                                int choiceIndex = i;
+                                Map<String, Object> gotoActionData = actionData;
+                                btn.addActionListener(e -> {
+                                    controller.selectChoice(choiceIndex, gotoActionData);
+                                    updateDisplay();
+                                });
+                                buttonPanel.add(btn);
+                            }
+                        }
+                    } else if (action.getActionType() == com.adventure.actions.ActionType.SINGLE_BUTTON) {
+                        JButton actionButton = new JButton(action.getButtonText());
+                        actionButton.addActionListener(e -> handleSingleButtonAction(action, actionData));
+                        buttonPanel.add(actionButton);
                     }
-                } else if (action.getActionType() == com.adventure.actions.ActionType.SINGLE_BUTTON) {
-                    JButton actionButton = new JButton(action.getButtonText());
-                    actionButton.addActionListener(e -> handleSingleButtonAction(action, actionData));
-                    buttonPanel.add(actionButton);
                 }
             }
         }
@@ -234,6 +268,28 @@ public class GameWindow extends JFrame {
         });
         timer.setRepeats(false);
         timer.start();
+    }
+
+    private void updateItemButtons() {
+        itemsPanel.removeAll();
+        
+        for (String item : controller.getHero().getInventory()) {
+            JButton itemButton = new JButton(item);
+            itemButton.setFont(new Font("Arial", Font.PLAIN, 16));
+            itemButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+            itemButton.addActionListener(e -> showItemCantUsePopup());
+            itemsPanel.add(itemButton);
+        }
+        
+        itemsPanel.revalidate();
+        itemsPanel.repaint();
+    }
+
+    private void showItemCantUsePopup() {
+        JOptionPane.showMessageDialog(this, 
+            Messages.get(Messages.Key.ITEM_CANT_USE), 
+            Messages.get(Messages.Key.ITEMS_TITLE), 
+            JOptionPane.INFORMATION_MESSAGE);
     }
 }
 

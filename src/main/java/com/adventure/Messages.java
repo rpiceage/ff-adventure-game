@@ -27,7 +27,10 @@ public class Messages {
         LUCK_TEST_BUTTON,
         LUCK_LUCKY,
         LUCK_UNLUCKY,
-        LUCK_CONTINUE
+        LUCK_CONTINUE,
+        ITEMS_TITLE,
+        ITEM_CANT_USE,
+        ADD_ITEM
     }
     
     private static final Map<Key, Map<String, String>> translations = Map.ofEntries(
@@ -118,6 +121,18 @@ public class Messages {
         Map.entry(Key.LUCK_CONTINUE, Map.of(
             "en", "Continue",
             "hu", "Tovább"
+        )),
+        Map.entry(Key.ITEMS_TITLE, Map.of(
+            "en", "Items",
+            "hu", "Tárgyak"
+        )),
+        Map.entry(Key.ITEM_CANT_USE, Map.of(
+            "en", "This item can't be used right now",
+            "hu", "Ez a tárgy most nem használható"
+        )),
+        Map.entry(Key.ADD_ITEM, Map.of(
+            "en", "Take",
+            "hu", "Felvesz"
         ))
     );
     

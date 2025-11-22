@@ -26,6 +26,7 @@ public class GameController {
         actions.add(new ModifyAction());
         actions.add(new BattleAction());
         actions.add(new LuckAction());
+        actions.add(new AddItemAction());
         actions.add(new GotoAction());
     }
 
@@ -39,6 +40,15 @@ public class GameController {
                         return action;
                     }
                 }
+            }
+        }
+        return null;
+    }
+
+    public Action getActionForData(Map<String, Object> actionData) {
+        for (Action action : actions) {
+            if (action.canHandle(actionData)) {
+                return action;
             }
         }
         return null;
@@ -79,14 +89,16 @@ public class GameController {
     }
 
     public void selectChoice(int choiceIndex) {
-        Action action = getCurrentAction();
-        if (action != null && action.getActionType() == ActionType.MULTIPLE_BUTTONS) {
-            List<Map<String, Object>> choices = action.getChoices(getCurrentActionData());
-            if (choiceIndex >= 0 && choiceIndex < choices.size()) {
-                int targetChapter = (Integer) choices.get(choiceIndex).get("chapter");
-                currentChapter = getChapter(targetChapter);
-                applyModifiers();
-            }
+        selectChoice(choiceIndex, getCurrentActionData());
+    }
+
+    public void selectChoice(int choiceIndex, Map<String, Object> actionData) {
+        // Only GotoAction uses selectChoice
+        List<Map<String, Object>> gotoData = (List<Map<String, Object>>) actionData.get("goto");
+        if (gotoData != null && choiceIndex >= 0 && choiceIndex < gotoData.size()) {
+            int targetChapter = (Integer) gotoData.get(choiceIndex).get("chapter");
+            currentChapter = getChapter(targetChapter);
+            applyModifiers();
         }
     }
 
