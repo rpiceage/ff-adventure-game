@@ -92,11 +92,7 @@ public class GameFlowTest {
         GameController controller = new GameController(adventure);
         Hero hero = controller.getHero();
         
-        // Initial gold should be 0
-        assertEquals(0, hero.getGold());
-        
-        // Chapter 0: Find treasure chest (+10 gold)
-        controller.goToChapter(0);
+        // Chapter 0 starts with +10 gold modification
         assertEquals(10, hero.getGold());
         
         // Chapter 1: Pay merchant (-5 gold)

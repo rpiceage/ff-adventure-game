@@ -17,6 +17,7 @@ public class GameController {
         this.hero = new Hero(12, 24, 12);
         this.actions = new ArrayList<>();
         registerActions();
+        applyModifiers(); // Apply modifiers for initial chapter
     }
 
     private void registerActions() {

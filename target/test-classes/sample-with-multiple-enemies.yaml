@@ -1,0 +1,20 @@
+title: Multiple Enemies Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You encounter two trolls!
+      - battle:
+          enemies:
+            - enemy: First Hill Troll
+              skill: 9
+              stamina: 10
+            - enemy: Second Hill Troll
+              skill: 9
+              stamina: 9
+          win: 1
+  - index: 1
+    actions:
+      - display: |
+          You defeated both trolls! Victory!
