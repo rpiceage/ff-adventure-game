@@ -117,33 +117,46 @@ public class DiceAnimator {
         animTimer.start();
     }
     
-    private static String getDiceDots(int value) {
-        switch (value) {
-            case 1: return "⚀";
-            case 2: return "⚁";
-            case 3: return "⚂";
-            case 4: return "⚃";
-            case 5: return "⚄";
-            case 6: return "⚅";
-            default: return "?";
-        }
-    }
-    
     private static void drawRotatedDice(Graphics2D g2d, int x, int y, int value, double angle) {
         Graphics2D g2 = (Graphics2D) g2d.create();
         g2.translate(x, y);
         g2.rotate(angle);
         
-        g2.setFont(new Font("Arial", Font.BOLD, 48));
-        String dice = getDiceDots(value);
-        FontMetrics fm = g2.getFontMetrics();
-        int w = fm.stringWidth(dice);
-        
         g2.setColor(Color.WHITE);
-        g2.fillRect(-w/2 + 3, -25, w - 6, 35);
+        g2.fillRoundRect(-25, -25, 50, 50, 10, 10);
+        g2.setColor(Color.BLACK);
+        g2.drawRoundRect(-25, -25, 50, 50, 10, 10);
         
         g2.setColor(Color.BLACK);
-        g2.drawString(dice, -w/2, 10);
+        int d = 8;
+        if (value == 1) {
+            g2.fillOval(-d/2, -d/2, d, d);
+        } else if (value == 2) {
+            g2.fillOval(-15, -15, d, d);
+            g2.fillOval(7, 7, d, d);
+        } else if (value == 3) {
+            g2.fillOval(-15, -15, d, d);
+            g2.fillOval(-d/2, -d/2, d, d);
+            g2.fillOval(7, 7, d, d);
+        } else if (value == 4) {
+            g2.fillOval(-15, -15, d, d);
+            g2.fillOval(7, -15, d, d);
+            g2.fillOval(-15, 7, d, d);
+            g2.fillOval(7, 7, d, d);
+        } else if (value == 5) {
+            g2.fillOval(-15, -15, d, d);
+            g2.fillOval(7, -15, d, d);
+            g2.fillOval(-d/2, -d/2, d, d);
+            g2.fillOval(-15, 7, d, d);
+            g2.fillOval(7, 7, d, d);
+        } else if (value == 6) {
+            g2.fillOval(-15, -15, d, d);
+            g2.fillOval(7, -15, d, d);
+            g2.fillOval(-15, -d/2, d, d);
+            g2.fillOval(7, -d/2, d, d);
+            g2.fillOval(-15, 7, d, d);
+            g2.fillOval(7, 7, d, d);
+        }
         g2.dispose();
     }
 }
