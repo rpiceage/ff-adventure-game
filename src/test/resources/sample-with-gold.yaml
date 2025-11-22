@@ -1,10 +1,12 @@
 title: Gold Test
 language: en
+init:
+  gold: 10
 chapters:
   - index: 0
     actions:
       - display: |
-          You find a treasure chest!
+          You start with 10 gold and find a treasure chest!
       - modify:
           values:
             - field: GOLD
@@ -26,4 +28,4 @@ chapters:
   - index: 2
     actions:
       - display: |
-          You now have 5 gold.
+          You now have 15 gold.

@@ -1,5 +1,6 @@
 com/adventure/DiceAnimator.class
 com/adventure/Battle.class
+com/adventure/Adventure$Init.class
 com/adventure/Main.class
 com/adventure/actions/GotoAction.class
 com/adventure/BattleDialog.class

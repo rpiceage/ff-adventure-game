@@ -92,12 +92,12 @@ public class GameFlowTest {
         GameController controller = new GameController(adventure);
         Hero hero = controller.getHero();
         
-        // Chapter 0 starts with +10 gold modification
-        assertEquals(10, hero.getGold());
+        // Chapter 0 starts with initial 10 gold + 10 from treasure = 20
+        assertEquals(20, hero.getGold());
         
         // Chapter 1: Pay merchant (-5 gold)
         controller.goToChapter(1);
-        assertEquals(5, hero.getGold());
+        assertEquals(15, hero.getGold());
         
         // Verify both modifications were tracked
         List<String> mods = hero.getLastModifications();
