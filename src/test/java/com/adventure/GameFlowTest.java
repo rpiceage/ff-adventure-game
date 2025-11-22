@@ -6,6 +6,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.LoaderOptions;
 import java.io.InputStream;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameFlowTest {
@@ -80,5 +81,32 @@ public class GameFlowTest {
         assertEquals(6, controller.getCurrentChapter().index);
         assertEquals(0, controller.getHero().getStamina());
         assertTrue(controller.isGameOver());
+    }
+
+    @Test
+    public void testGoldModificationFlow() {
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-gold.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+        
+        GameController controller = new GameController(adventure);
+        Hero hero = controller.getHero();
+        
+        // Initial gold should be 0
+        assertEquals(0, hero.getGold());
+        
+        // Chapter 0: Find treasure chest (+10 gold)
+        controller.goToChapter(0);
+        assertEquals(10, hero.getGold());
+        
+        // Chapter 1: Pay merchant (-5 gold)
+        controller.goToChapter(1);
+        assertEquals(5, hero.getGold());
+        
+        // Verify both modifications were tracked
+        List<String> mods = hero.getLastModifications();
+        assertEquals(2, mods.size());
+        assertTrue(mods.get(0).contains("GOLD") && mods.get(0).contains("+10"));
+        assertTrue(mods.get(1).contains("GOLD") && mods.get(1).contains("-5"));
     }
 }

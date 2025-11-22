@@ -11,6 +11,7 @@ public class Messages {
         SKILL,
         STAMINA,
         LUCK,
+        GOLD,
         ATTRIBUTE_CAPPED,
         ATTRIBUTE_BLOCKED,
         BATTLE_TITLE,
@@ -49,6 +50,10 @@ public class Messages {
         Map.entry(Key.LUCK, Map.of(
             "en", "LUCK",
             "hu", "SZERENCSE"
+        )),
+        Map.entry(Key.GOLD, Map.of(
+            "en", "GOLD",
+            "hu", "ARANY"
         )),
         Map.entry(Key.ATTRIBUTE_CAPPED, Map.of(
             "en", "capped at",

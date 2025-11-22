@@ -7,15 +7,21 @@ public class Hero {
     private int skill;
     private int stamina;
     private int luck;
+    private int gold;
     private final int maxSkill;
     private final int maxStamina;
     private final int maxLuck;
     private List<String> lastModifications;
 
     public Hero(int skill, int stamina, int luck) {
+        this(skill, stamina, luck, 0);
+    }
+
+    public Hero(int skill, int stamina, int luck, int gold) {
         this.skill = skill;
         this.stamina = stamina;
         this.luck = luck;
+        this.gold = gold;
         this.maxSkill = skill;
         this.maxStamina = stamina;
         this.maxLuck = luck;
@@ -25,6 +31,7 @@ public class Hero {
     public int getSkill() { return skill; }
     public int getStamina() { return stamina; }
     public int getLuck() { return luck; }
+    public int getGold() { return gold; }
     public int getInitialSkill() { return maxSkill; }
     public int getInitialStamina() { return maxStamina; }
     public int getInitialLuck() { return maxLuck; }
@@ -69,6 +76,12 @@ public class Hero {
         } else {
             lastModifications.add(Messages.get(Messages.Key.LUCK) + " " + (delta > 0 ? "+" : "") + delta);
         }
+    }
+
+    public void modifyGold(int delta) {
+        int newValue = this.gold + delta;
+        this.gold = Math.max(0, newValue);
+        lastModifications.add(Messages.get(Messages.Key.GOLD) + " " + (delta > 0 ? "+" : "") + delta);
     }
 
     public void modifyStaminaSilent(int delta) {

@@ -1,6 +1,7 @@
 com/adventure/UITest.class
-com/adventure/GameFlowTest.class
 com/adventure/BattleTest.class
 com/adventure/BattleTest$FixedRandom.class
 com/adventure/NotificationTest.class
+com/adventure/HeroTest.class
 com/adventure/LuckTest.class
+com/adventure/GameFlowTest.class

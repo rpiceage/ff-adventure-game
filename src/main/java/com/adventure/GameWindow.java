@@ -17,6 +17,7 @@ public class GameWindow extends JFrame {
     private JLabel skillLabel;
     private JLabel staminaLabel;
     private JLabel luckLabel;
+    private JLabel goldLabel;
     private GameController controller;
     private JWindow notificationWindow;
     private com.adventure.ui.BattleUI battleUI;
@@ -65,9 +66,12 @@ public class GameWindow extends JFrame {
         staminaLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         luckLabel = new JLabel();
         luckLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+        goldLabel = new JLabel();
+        goldLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         statsPanel.add(skillLabel);
         statsPanel.add(staminaLabel);
         statsPanel.add(luckLabel);
+        statsPanel.add(goldLabel);
         add(statsPanel, BorderLayout.EAST);
 
         buttonPanel = new JPanel();
@@ -85,6 +89,8 @@ public class GameWindow extends JFrame {
             Messages.get(Messages.Key.STAMINA), hero.getStamina(), hero.getInitialStamina()));
         luckLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
             Messages.get(Messages.Key.LUCK), hero.getLuck(), hero.getInitialLuck()));
+        goldLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b></html>", 
+            Messages.get(Messages.Key.GOLD), hero.getGold()));
         
         List<String> mods = hero.getLastModifications();
         if (!mods.isEmpty()) {
@@ -151,6 +157,8 @@ public class GameWindow extends JFrame {
             Messages.get(Messages.Key.STAMINA), hero.getStamina(), hero.getInitialStamina()));
         luckLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
             Messages.get(Messages.Key.LUCK), hero.getLuck(), hero.getInitialLuck()));
+        goldLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b></html>", 
+            Messages.get(Messages.Key.GOLD), hero.getGold()));
     }
 
     private void handleSingleButtonAction(com.adventure.actions.Action action, Map<String, Object> actionData) {

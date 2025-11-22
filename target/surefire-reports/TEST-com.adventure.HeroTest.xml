@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="com.adventure.GameFlowTest" time="0.051" tests="8" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="com.adventure.HeroTest" time="0.002" tests="5" errors="0" skipped="0" failures="0">
   <properties>
     <property name="sun.desktop" value="gnome"/>
     <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
@@ -58,12 +58,9 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="55.0"/>
   </properties>
-  <testcase name="testStartsAtChapter0" classname="com.adventure.GameFlowTest" time="0.006"/>
-  <testcase name="testLeftThenFight" classname="com.adventure.GameFlowTest" time="0.007"/>
-  <testcase name="testGoldModificationFlow" classname="com.adventure.GameFlowTest" time="0.006"/>
-  <testcase name="testEndingHasNoChoices" classname="com.adventure.GameFlowTest" time="0.004"/>
-  <testcase name="testLeftPathReducesStamina" classname="com.adventure.GameFlowTest" time="0.014"/>
-  <testcase name="testGameOverWhenStaminaReachesZero" classname="com.adventure.GameFlowTest" time="0.005"/>
-  <testcase name="testLeftThenRun" classname="com.adventure.GameFlowTest" time="0.005"/>
-  <testcase name="testRightPathIncreasesStats" classname="com.adventure.GameFlowTest" time="0.003"/>
+  <testcase name="testGoldNegativeModification" classname="com.adventure.HeroTest" time="0"/>
+  <testcase name="testGoldModification" classname="com.adventure.HeroTest" time="0"/>
+  <testcase name="testGoldDefaultsToZero" classname="com.adventure.HeroTest" time="0"/>
+  <testcase name="testGoldCannotGoNegative" classname="com.adventure.HeroTest" time="0"/>
+  <testcase name="testGoldCanExceedInitial" classname="com.adventure.HeroTest" time="0.001"/>
 </testsuite>
