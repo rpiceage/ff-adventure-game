@@ -21,12 +21,16 @@
   - Battle UI strings
 
 ## Hero Attributes
-- Hero has three attributes: SKILL, STAMINA, and LUCK
-- Default initial values: SKILL: 12, STAMINA: 24, LUCK: 12
+- Hero has four attributes: SKILL, STAMINA, LUCK, and GOLD
+- Default initial values: SKILL: 12, STAMINA: 24, LUCK: 12, GOLD: 0
+- Initial GOLD can be set in YAML with `init: gold: 10`
 - Attributes displayed in a stats panel on the right side of the window
+- SKILL, STAMINA, LUCK show current value and initial value in parentheses
+- GOLD shows only current value (no initial value displayed)
 - Attributes can be modified through YAML chapter actions using the `modify` action
-- Attribute values cannot exceed their initial values (capped at max)
-- Attribute values cannot go below 0 (capped at min)
+- SKILL, STAMINA, LUCK values cannot exceed their initial values (capped at max)
+- SKILL, STAMINA, LUCK, GOLD values cannot go below 0 (capped at min)
+- GOLD can exceed initial value (no upper cap)
 - Game ends immediately when STAMINA reaches 0, displaying "Your adventure ends here."
 
 ## Attribute Modifications
@@ -38,14 +42,24 @@
           value: -3
         - field: LUCK
           value: 2
+        - field: GOLD
+          value: 10
   ```
-- Modifications are applied when entering a chapter
+- Modifications are applied when entering a chapter (including chapter 0)
 - A notification popup appears in the lower left corner showing all attribute changes
 - Notification auto-dismisses after 3 seconds
 - Notification messages:
-  - Normal: "SKILL +1" or "STAMINA -5"
+  - Normal: "SKILL +1" or "STAMINA -5" or "GOLD +10"
   - Capped: "STAMINA +3 (capped at 24)"
   - Blocked: "LUCK would have been modified but initial value cannot be exceeded"
+
+## Initial Values
+- Optional `init` section in YAML to set initial attribute values:
+  ```yaml
+  init:
+    gold: 10
+  ```
+- If not specified, GOLD defaults to 0
 
 
 ## Battle System
@@ -80,8 +94,10 @@
   - Scrollable battle log in center showing all turn results
   - "Next Turn" button to execute each turn
 - Dice animation:
-  - Single enemy: 4 dice (2 for hero, 2 for enemy) with labels
-  - Multiple enemies: dice pairs for each alive enemy (hero vs enemy)
+  - Single enemy: 4 dice (2 for hero, 2 for enemy) in one row
+  - Multiple enemies: 4 dice per enemy (2 hero + 2 enemy) in separate rows
+  - Dice panel height scales dynamically: 100px per enemy
+  - Dice arranged in stable vertical layout using BoxLayout
   - Dice spin independently at different speeds for 1 second
   - Unicode dice characters (⚀-⚅) with white backgrounds
   - Graphics2D rotation for smooth spinning effect
