@@ -55,8 +55,8 @@ public class LuckUI {
             };
             
             DiceAnimator.animateDice(dicePanel, groups, () -> {
-                // Testing luck decreases LUCK by 1 after animation
-                controller.getHero().modifyLuck(-1);
+                // Testing luck decreases LUCK by 1 after animation (silently, no notification)
+                controller.getHero().modifyLuckSilent(-1);
                 gameWindow.updateHeroStats();
                 textArea.setText(lucky ? Messages.get(Messages.Key.LUCK_LUCKY) : Messages.get(Messages.Key.LUCK_UNLUCKY));
                 
