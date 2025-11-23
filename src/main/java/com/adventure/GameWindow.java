@@ -89,11 +89,21 @@ public class GameWindow extends JFrame {
         statsPanel.add(goldLabel);
         
         // Provisions button
-        JButton provisionsButton = new JButton();
-        provisionsButton.setFont(new Font("Arial", Font.BOLD, 16));
+        JButton provisionsButton = new JButton() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(new Color(0, 0, 0, 100));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                super.paintComponent(g);
+            }
+        };
+        provisionsButton.setFont(new Font("Arial", Font.BOLD, 18));
         provisionsButton.setForeground(Color.WHITE);
-        provisionsButton.setBackground(new Color(0, 0, 0, 100));
         provisionsButton.setOpaque(false);
+        provisionsButton.setContentAreaFilled(false);
+        provisionsButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         provisionsButton.addActionListener(e -> consumeProvision());
         statsPanel.add(Box.createVerticalStrut(10));
         statsPanel.add(provisionsButton);
@@ -411,6 +421,7 @@ public class GameWindow extends JFrame {
             itemButton.setForeground(Color.WHITE);
             itemButton.setBackground(new Color(0, 0, 0, 100));
             itemButton.setOpaque(false);
+            itemButton.setContentAreaFilled(false);
             itemButton.setAlignmentX(Component.LEFT_ALIGNMENT);
             
             if (useItemMap.containsKey(item)) {
