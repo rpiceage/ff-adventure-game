@@ -20,6 +20,7 @@ public class GameWindow extends JFrame {
     private JLabel staminaLabel;
     private JLabel luckLabel;
     private JLabel goldLabel;
+    private JButton provisionsButton;
     private GameController controller;
     private JWindow notificationWindow;
     private com.adventure.ui.BattleUI battleUI;
@@ -86,6 +87,19 @@ public class GameWindow extends JFrame {
         statsPanel.add(luckLabel);
         statsPanel.add(goldLabel);
         
+        // Provisions button
+        JButton provisionsButton = new JButton();
+        provisionsButton.setFont(new Font("Arial", Font.BOLD, 16));
+        provisionsButton.setForeground(Color.WHITE);
+        provisionsButton.setBackground(new Color(0, 0, 0, 100));
+        provisionsButton.setOpaque(false);
+        provisionsButton.addActionListener(e -> consumeProvision());
+        statsPanel.add(Box.createVerticalStrut(10));
+        statsPanel.add(provisionsButton);
+        
+        // Store reference for updates
+        this.provisionsButton = provisionsButton;
+        
         // Items section
         JLabel itemsTitle = new JLabel(Messages.get(Messages.Key.ITEMS_TITLE) + ":") {
             @Override
@@ -127,16 +141,9 @@ public class GameWindow extends JFrame {
     }
 
     private void updateDisplay() {
-        Hero hero = controller.getHero();
-        skillLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
-            Messages.get(Messages.Key.SKILL), hero.getSkill(), hero.getInitialSkill()));
-        staminaLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
-            Messages.get(Messages.Key.STAMINA), hero.getStamina(), hero.getInitialStamina()));
-        luckLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></html>", 
-            Messages.get(Messages.Key.LUCK), hero.getLuck(), hero.getInitialLuck()));
-        goldLabel.setText(String.format("<html>%s: <b><font color='red'>%d</font></b></html>", 
-            Messages.get(Messages.Key.GOLD), hero.getGold()));
+        updateHeroStats();
         
+        Hero hero = controller.getHero();
         updateItemButtons();
         
         List<String> mods = hero.getLastModifications();
@@ -267,6 +274,10 @@ public class GameWindow extends JFrame {
             Messages.get(Messages.Key.LUCK), hero.getLuck(), hero.getInitialLuck()));
         goldLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b><font color='red'>%d</font></b></div></html>", 
             Messages.get(Messages.Key.GOLD), hero.getGold()));
+        
+        // Update provisions button
+        provisionsButton.setText("Provisions: " + hero.getProvisions());
+        provisionsButton.setEnabled(hero.getProvisions() > 0 && battleUI == null);
     }
 
     private void handleSingleButtonAction(com.adventure.actions.Action action, Map<String, Object> actionData) {
@@ -396,6 +407,23 @@ public class GameWindow extends JFrame {
             Messages.get(Messages.Key.ITEM_CANT_USE), 
             Messages.get(Messages.Key.ITEMS_TITLE), 
             JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private void consumeProvision() {
+        Hero hero = controller.getHero();
+        
+        if (hero.getStamina() >= hero.getInitialStamina()) {
+            JOptionPane.showMessageDialog(this, 
+                "You are not hungry right now :)", 
+                "Provisions", 
+                JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        
+        if (hero.consumeProvision()) {
+            updateHeroStats();
+            updateDisplay();
+        }
     }
 }
 

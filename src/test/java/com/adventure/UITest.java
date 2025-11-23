@@ -226,6 +226,106 @@ public class UITest {
         });
     }
 
+    @Test
+    public void testProvisionsButton_DisplaysCorrectly() throws Exception {
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-provisions.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+
+        SwingUtilities.invokeAndWait(() -> {
+            window = new GameWindow(adventure);
+            window.setVisible(true);
+        });
+
+        Thread.sleep(200);
+
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                JButton provisionsButton = getField(window, "provisionsButton");
+                assertNotNull(provisionsButton, "Provisions button should exist");
+                assertEquals("Provisions: 3", provisionsButton.getText());
+                assertTrue(provisionsButton.isEnabled(), "Button should be enabled when provisions > 0");
+            } catch (Exception e) {
+                fail("Failed to get provisionsButton: " + e.getMessage());
+            }
+        });
+    }
+
+    @Test
+    public void testProvisionsButton_ConsumesProvision() throws Exception {
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-provisions.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+
+        SwingUtilities.invokeAndWait(() -> {
+            window = new GameWindow(adventure);
+            window.setVisible(true);
+        });
+
+        Thread.sleep(100);
+
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                GameController controller = getField(window, "controller");
+                Hero hero = controller.getHero();
+                
+                // Lose stamina first
+                hero.modifyStaminaSilent(-5);
+                assertEquals(19, hero.getStamina());
+                
+                // Click provisions button
+                JButton provisionsButton = getField(window, "provisionsButton");
+                provisionsButton.doClick();
+                
+                // Check stamina restored and provisions decreased
+                assertEquals(23, hero.getStamina());
+                assertEquals(2, hero.getProvisions());
+                assertEquals("Provisions: 2", provisionsButton.getText());
+            } catch (Exception e) {
+                fail("Failed to consume provision: " + e.getMessage());
+            }
+        });
+    }
+
+    @Test
+    public void testProvisionsButton_DisabledWhenEmpty() throws Exception {
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-provisions.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+
+        SwingUtilities.invokeAndWait(() -> {
+            window = new GameWindow(adventure);
+            window.setVisible(true);
+        });
+
+        Thread.sleep(100);
+
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                GameController controller = getField(window, "controller");
+                Hero hero = controller.getHero();
+                JButton provisionsButton = getField(window, "provisionsButton");
+                
+                // Consume all provisions
+                hero.modifyStaminaSilent(-12);
+                hero.consumeProvision();
+                hero.consumeProvision();
+                hero.consumeProvision();
+                
+                assertEquals(0, hero.getProvisions());
+                
+                // Update UI
+                window.updateHeroStats();
+                
+                // Button should be disabled
+                assertFalse(provisionsButton.isEnabled(), "Button should be disabled when provisions = 0");
+                assertEquals("Provisions: 0", provisionsButton.getText());
+            } catch (Exception e) {
+                fail("Failed to test empty provisions: " + e.getMessage());
+            }
+        });
+    }
+
     // Helper methods
     private JButton findButton(Container container, String text) {
         for (Component c : container.getComponents()) {

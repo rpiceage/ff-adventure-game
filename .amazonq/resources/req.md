@@ -33,6 +33,27 @@
 - GOLD can exceed initial value (no upper cap)
 - Game ends immediately when STAMINA reaches 0, displaying "Your adventure ends here."
 
+## Provisions System
+- Hero can carry provisions to restore stamina
+- Provisions count set in YAML init section (defaults to 0)
+- YAML format for initial provisions:
+  ```yaml
+  init:
+    provisions: 3
+  ```
+- Provisions mechanics:
+  - Each provision restores 4 STAMINA when consumed
+  - STAMINA restoration is capped at maximum value
+  - Cannot consume when STAMINA is at maximum (shows "You are not hungry right now :)" popup)
+  - Cannot consume when no provisions left
+  - Provisions can be consumed at any time except during battle
+- Provisions UI:
+  - "Provisions: X" button displayed in character sheet
+  - Button shows current provisions count
+  - Button disabled during battle
+  - Button disabled when provisions = 0
+  - Clicking button consumes one provision and restores 4 STAMINA
+
 ## Attribute Modifications
 - YAML format for modifications:
   ```yaml

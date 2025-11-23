@@ -11,6 +11,7 @@ public class Adventure {
 
     public static class Init {
         public int gold;
+        public int provisions;
     }
 
     public static class Chapter {

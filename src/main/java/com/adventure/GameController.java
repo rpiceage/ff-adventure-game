@@ -15,7 +15,8 @@ public class GameController {
         this.adventure = adventure;
         this.currentChapter = getChapter(0);
         int initialGold = (adventure.init != null) ? adventure.init.gold : 0;
-        this.hero = new Hero(12, 24, 12, initialGold);
+        int initialProvisions = (adventure.init != null) ? adventure.init.provisions : 0;
+        this.hero = new Hero(12, 24, 12, initialGold, initialProvisions);
         this.actions = new ArrayList<>();
         registerActions();
         applyModifiers(); // Apply modifiers for initial chapter

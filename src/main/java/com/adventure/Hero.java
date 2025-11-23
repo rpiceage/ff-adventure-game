@@ -8,6 +8,7 @@ public class Hero {
     private int stamina;
     private int luck;
     private int gold;
+    private int provisions;
     private final int maxSkill;
     private final int maxStamina;
     private final int maxLuck;
@@ -16,14 +17,19 @@ public class Hero {
     private List<String> events;
 
     public Hero(int skill, int stamina, int luck) {
-        this(skill, stamina, luck, 0);
+        this(skill, stamina, luck, 0, 0);
     }
 
     public Hero(int skill, int stamina, int luck, int gold) {
+        this(skill, stamina, luck, gold, 0);
+    }
+
+    public Hero(int skill, int stamina, int luck, int gold, int provisions) {
         this.skill = skill;
         this.stamina = stamina;
         this.luck = luck;
         this.gold = gold;
+        this.provisions = provisions;
         this.maxSkill = skill;
         this.maxStamina = stamina;
         this.maxLuck = luck;
@@ -128,5 +134,21 @@ public class Hero {
 
     public List<String> getEvents() {
         return new ArrayList<>(events);
+    }
+
+    public int getProvisions() {
+        return provisions;
+    }
+
+    public boolean consumeProvision() {
+        if (provisions <= 0) {
+            return false;
+        }
+        if (stamina >= maxStamina) {
+            return false;
+        }
+        provisions--;
+        modifyStaminaSilent(4);
+        return true;
     }
 }
