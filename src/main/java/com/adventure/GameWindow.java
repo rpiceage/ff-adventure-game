@@ -28,6 +28,7 @@ public class GameWindow extends JFrame {
     private com.adventure.ui.AttributeTestUI attributeTestUI;
     private JScrollPane textScrollPane;
     private JPanel currentCenterPanel;
+    private int prevSkill, prevStamina, prevLuck, prevGold, prevProvisions;
 
     public GameWindow(Adventure adventure) {
         this.controller = new GameController(adventure);
@@ -150,6 +151,14 @@ public class GameWindow extends JFrame {
         buttonScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         buttonScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(buttonScrollPane, BorderLayout.SOUTH);
+
+        // Initialize previous values
+        Hero hero = controller.getHero();
+        prevSkill = hero.getSkill();
+        prevStamina = hero.getStamina();
+        prevLuck = hero.getLuck();
+        prevGold = hero.getGold();
+        prevProvisions = hero.getProvisions();
 
         updateDisplay();
         setVisible(true);
@@ -300,6 +309,29 @@ public class GameWindow extends JFrame {
 
     public void updateHeroStats() {
         Hero hero = controller.getHero();
+        
+        // Check for changes and animate
+        if (hero.getSkill() != prevSkill) {
+            animateLabel(skillLabel);
+            prevSkill = hero.getSkill();
+        }
+        if (hero.getStamina() != prevStamina) {
+            animateLabel(staminaLabel);
+            prevStamina = hero.getStamina();
+        }
+        if (hero.getLuck() != prevLuck) {
+            animateLabel(luckLabel);
+            prevLuck = hero.getLuck();
+        }
+        if (hero.getGold() != prevGold) {
+            animateLabel(goldLabel);
+            prevGold = hero.getGold();
+        }
+        if (hero.getProvisions() != prevProvisions) {
+            animateButton(provisionsButton);
+            prevProvisions = hero.getProvisions();
+        }
+        
         skillLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></div></html>", 
             Messages.get(Messages.Key.SKILL), hero.getSkill(), hero.getInitialSkill()));
         staminaLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></div></html>", 
@@ -312,6 +344,38 @@ public class GameWindow extends JFrame {
         // Update provisions button
         provisionsButton.setText(Messages.get(Messages.Key.PROVISIONS) + ": " + hero.getProvisions());
         provisionsButton.setEnabled(hero.getProvisions() > 0 && battleUI == null);
+    }
+    
+    private void animateLabel(JLabel label) {
+        Timer timer = new Timer(50, null);
+        final int[] step = {0};
+        final float[] sizes = {24f, 25f, 26f, 27f, 26f, 25f, 24f};
+        timer.addActionListener(e -> {
+            if (step[0] < sizes.length) {
+                label.setFont(label.getFont().deriveFont(sizes[step[0]]));
+                step[0]++;
+            } else {
+                label.setFont(label.getFont().deriveFont(24f));
+                timer.stop();
+            }
+        });
+        timer.start();
+    }
+    
+    private void animateButton(JButton button) {
+        Timer timer = new Timer(50, null);
+        final int[] step = {0};
+        final float[] sizes = {18f, 19f, 20f, 21f, 20f, 19f, 18f};
+        timer.addActionListener(e -> {
+            if (step[0] < sizes.length) {
+                button.setFont(button.getFont().deriveFont(sizes[step[0]]));
+                step[0]++;
+            } else {
+                button.setFont(button.getFont().deriveFont(18f));
+                timer.stop();
+            }
+        });
+        timer.start();
     }
 
     private void handleSingleButtonAction(com.adventure.actions.Action action, Map<String, Object> actionData) {
@@ -382,7 +446,8 @@ public class GameWindow extends JFrame {
         
         notificationWindow = new JWindow(this);
         JLabel label = new JLabel("<html>" + message.replace("\n", "<br>") + "</html>");
-        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setFont(new Font("Arial", Font.BOLD, 18));
+        label.setForeground(Color.BLACK);
         label.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.BLACK, 2),
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
