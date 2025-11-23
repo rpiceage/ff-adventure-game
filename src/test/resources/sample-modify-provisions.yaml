@@ -1,0 +1,26 @@
+title: Modify Provisions Test
+init:
+  provisions: 2
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You start with 2 provisions.
+      - goto:
+          - chapter: 1
+            text: Continue
+  - index: 1
+    actions:
+      - display: |
+          You find more provisions!
+      - modify:
+          values:
+            - field: PROVISIONS
+              value: 3
+      - goto:
+          - chapter: 2
+            text: Continue
+  - index: 2
+    actions:
+      - display: |
+          You now have 5 provisions total.

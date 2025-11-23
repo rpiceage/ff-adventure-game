@@ -327,6 +327,45 @@ public class UITest {
     }
 
     @Test
+    public void testProvisionsModification_UpdatesButton() throws Exception {
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-modify-provisions.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+
+        SwingUtilities.invokeAndWait(() -> {
+            window = new GameWindow(adventure);
+            window.setVisible(true);
+        });
+
+        Thread.sleep(200);
+
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                JButton provisionsButton = getField(window, "provisionsButton");
+                assertEquals(Messages.get(Messages.Key.PROVISIONS) + ": 2", provisionsButton.getText());
+                
+                // Click continue to go to chapter with modification
+                JPanel buttonPanel = getField(window, "buttonPanel");
+                JButton continueButton = findButton(buttonPanel, "Continue");
+                continueButton.doClick();
+            } catch (Exception e) {
+                fail("Failed to click button: " + e.getMessage());
+            }
+        });
+
+        Thread.sleep(200);
+
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                JButton provisionsButton = getField(window, "provisionsButton");
+                assertEquals(Messages.get(Messages.Key.PROVISIONS) + ": 5", provisionsButton.getText());
+            } catch (Exception e) {
+                fail("Failed to verify provisions: " + e.getMessage());
+            }
+        });
+    }
+
+    @Test
     public void testDeathAction_ShowsSkull() throws Exception {
         InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-death.yaml");
         Yaml yaml = new Yaml(new LoaderOptions());
