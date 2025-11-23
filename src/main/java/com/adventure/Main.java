@@ -8,25 +8,20 @@ import java.io.InputStream;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Adventure adventure;
-        Yaml yaml = new Yaml(new Constructor(Adventure.class, new LoaderOptions()));
-        
         if (args.length > 0) {
             // Load from file path argument
+            Adventure adventure;
+            Yaml yaml = new Yaml(new Constructor(Adventure.class, new LoaderOptions()));
             adventure = yaml.load(new FileInputStream(args[0]));
-        } else {
-            // Load default from classpath
-            InputStream input = Main.class.getClassLoader().getResourceAsStream("sample-complete.yaml");
-            if (input == null) {
-                throw new RuntimeException("Default adventure file not found");
+            
+            if (adventure.language != null) {
+                Messages.setLanguage(adventure.language);
             }
-            adventure = yaml.load(input);
+            
+            new GameWindow(adventure);
+        } else {
+            // Show welcome menu
+            new WelcomeWindow();
         }
-        
-        if (adventure.language != null) {
-            Messages.setLanguage(adventure.language);
-        }
-        
-        new GameWindow(adventure);
     }
 }
