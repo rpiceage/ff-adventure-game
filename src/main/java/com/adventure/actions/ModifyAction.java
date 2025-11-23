@@ -33,8 +33,11 @@ public class ModifyAction implements Action {
                     String methodName = "modify" + field.charAt(0) + field.substring(1).toLowerCase();
                     Method method = Hero.class.getMethod(methodName, int.class);
                     method.invoke(hero, value);
+                } catch (NoSuchMethodException e) {
+                    throw new IllegalArgumentException("Unknown attribute in modify action: " + field + 
+                        ". Valid attributes are: SKILL, STAMINA, LUCK, GOLD, PROVISIONS");
                 } catch (Exception e) {
-                    // Ignore invalid field names
+                    throw new RuntimeException("Error modifying attribute " + field, e);
                 }
             }
         }

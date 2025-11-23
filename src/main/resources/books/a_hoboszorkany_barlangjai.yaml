@@ -3153,7 +3153,7 @@ chapters:
             A jégkunyhó belsejében kissé átmelegszel, mégis Élelmiszerkészletedből két adaggal kell elfogyasztanod ahhoz, hogy visszanyerd az erődet a fárasztó gyaloglás és a kunyhóépítés után (így ÉLETERŐ pontjaid száma nem növekszik). Egy óra múlva, amikor a kunyhóból kimászol, látod, hogy a hóvihar elült. Folytatod az utadat.
         - modify:
             values:
-                - field: PROVISION
+                - field: PROVISIONS
                   value: -2
         - goto:
             - chapter: 169
@@ -3198,7 +3198,7 @@ chapters:
             Szépen megosztozol barátaiddal.
         - modify:
             values:
-                - field: PROVISION
+                - field: PROVISIONS
                   value: -2
         - goto:
             - chapter: 1085

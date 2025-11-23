@@ -2,6 +2,7 @@ package com.adventure;
 
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class HeroTest {
@@ -91,5 +92,28 @@ public class HeroTest {
         
         assertEquals(2, hero.getInventory().size());
         assertTrue(hero.hasItem("Potion"));
+    }
+    
+    @Test
+    public void testModifyUnknownAttribute() {
+        Hero hero = new Hero(12, 24, 12);
+        com.adventure.actions.ModifyAction action = new com.adventure.actions.ModifyAction();
+        
+        Map<String, Object> actionData = new java.util.HashMap<>();
+        Map<String, Object> modify = new java.util.HashMap<>();
+        List<Map<String, Object>> values = new java.util.ArrayList<>();
+        Map<String, Object> mod = new java.util.HashMap<>();
+        mod.put("field", "INVALID");
+        mod.put("value", 5);
+        values.add(mod);
+        modify.put("values", values);
+        actionData.put("modify", modify);
+        
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            action.applyModifications(hero, actionData);
+        });
+        
+        assertTrue(exception.getMessage().contains("Unknown attribute"));
+        assertTrue(exception.getMessage().contains("INVALID"));
     }
 }
