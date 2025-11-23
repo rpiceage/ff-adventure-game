@@ -276,7 +276,7 @@ public class GameWindow extends JFrame {
             Messages.get(Messages.Key.GOLD), hero.getGold()));
         
         // Update provisions button
-        provisionsButton.setText("Provisions: " + hero.getProvisions());
+        provisionsButton.setText(Messages.get(Messages.Key.PROVISIONS) + ": " + hero.getProvisions());
         provisionsButton.setEnabled(hero.getProvisions() > 0 && battleUI == null);
     }
 
@@ -414,8 +414,8 @@ public class GameWindow extends JFrame {
         
         if (hero.getStamina() >= hero.getInitialStamina()) {
             JOptionPane.showMessageDialog(this, 
-                "You are not hungry right now :)", 
-                "Provisions", 
+                Messages.get(Messages.Key.PROVISIONS_NOT_HUNGRY), 
+                Messages.get(Messages.Key.PROVISIONS), 
                 JOptionPane.INFORMATION_MESSAGE);
             return;
         }

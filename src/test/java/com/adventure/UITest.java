@@ -243,7 +243,7 @@ public class UITest {
             try {
                 JButton provisionsButton = getField(window, "provisionsButton");
                 assertNotNull(provisionsButton, "Provisions button should exist");
-                assertEquals("Provisions: 3", provisionsButton.getText());
+                assertEquals(Messages.get(Messages.Key.PROVISIONS) + ": 3", provisionsButton.getText());
                 assertTrue(provisionsButton.isEnabled(), "Button should be enabled when provisions > 0");
             } catch (Exception e) {
                 fail("Failed to get provisionsButton: " + e.getMessage());
@@ -280,7 +280,7 @@ public class UITest {
                 // Check stamina restored and provisions decreased
                 assertEquals(23, hero.getStamina());
                 assertEquals(2, hero.getProvisions());
-                assertEquals("Provisions: 2", provisionsButton.getText());
+                assertEquals(Messages.get(Messages.Key.PROVISIONS) + ": 2", provisionsButton.getText());
             } catch (Exception e) {
                 fail("Failed to consume provision: " + e.getMessage());
             }
@@ -319,7 +319,7 @@ public class UITest {
                 
                 // Button should be disabled
                 assertFalse(provisionsButton.isEnabled(), "Button should be disabled when provisions = 0");
-                assertEquals("Provisions: 0", provisionsButton.getText());
+                assertEquals(Messages.get(Messages.Key.PROVISIONS) + ": 0", provisionsButton.getText());
             } catch (Exception e) {
                 fail("Failed to test empty provisions: " + e.getMessage());
             }

@@ -99,28 +99,29 @@ public class Battle {
             enemy.setHeroDice(heroDice1, heroDice2);
             enemy.setEnemyDice(enemyDice1, enemyDice2);
 
-            turnResult.append(String.format("Hero: %d vs %s: %d - ",
-                heroAttack, enemy.getName(), enemyAttack));
+            turnResult.append(String.format("%s: %d %s %s: %d - ",
+                Messages.get(Messages.Key.BATTLE_HERO), heroAttack, 
+                Messages.get(Messages.Key.BATTLE_VS), enemy.getName(), enemyAttack));
 
             if (heroAttack > enemyAttack) {
                 if (i == selectedEnemyIndex) {
                     enemy.setStamina(enemy.getStamina() - 2);
-                    turnResult.append(enemy.getName()).append(" loses 2 STAMINA");
+                    turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
                 } else {
-                    turnResult.append("Hero wins but not targeting this enemy");
+                    turnResult.append(Messages.get(Messages.Key.BATTLE_WINS_NOT_TARGETING));
                 }
             } else if (enemyAttack > heroAttack) {
                 heroDamageTaken += 2;
-                turnResult.append("Hero loses");
+                turnResult.append(Messages.get(Messages.Key.BATTLE_HERO_LOSES));
             } else {
-                turnResult.append("Draw");
+                turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
             }
             turnResult.append("\n");
         }
 
         if (heroDamageTaken > 0) {
             hero.modifyStaminaSilent(-heroDamageTaken);
-            turnResult.append(String.format("Hero takes %d STAMINA damage total\n", heroDamageTaken));
+            turnResult.append(String.format(Messages.get(Messages.Key.BATTLE_HERO_TAKES_DAMAGE), heroDamageTaken)).append("\n");
         }
 
         lastTurnResult = turnResult.toString();

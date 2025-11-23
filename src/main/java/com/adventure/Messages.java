@@ -30,7 +30,15 @@ public class Messages {
         LUCK_CONTINUE,
         ITEMS_TITLE,
         ITEM_CANT_USE,
-        ADD_ITEM
+        ADD_ITEM,
+        PROVISIONS,
+        PROVISIONS_NOT_HUNGRY,
+        BATTLE_VS,
+        BATTLE_LOSES_STAMINA,
+        BATTLE_WINS_NOT_TARGETING,
+        BATTLE_HERO_LOSES,
+        BATTLE_DRAW,
+        BATTLE_HERO_TAKES_DAMAGE
     }
     
     private static final Map<Key, Map<String, String>> translations = Map.ofEntries(
@@ -133,6 +141,38 @@ public class Messages {
         Map.entry(Key.ADD_ITEM, Map.of(
             "en", "Take",
             "hu", "Felvesz"
+        )),
+        Map.entry(Key.PROVISIONS, Map.of(
+            "en", "Provisions",
+            "hu", "Élelem"
+        )),
+        Map.entry(Key.PROVISIONS_NOT_HUNGRY, Map.of(
+            "en", "You are not hungry right now :)",
+            "hu", "Most nem vagy éhes :)"
+        )),
+        Map.entry(Key.BATTLE_VS, Map.of(
+            "en", "vs",
+            "hu", "vs"
+        )),
+        Map.entry(Key.BATTLE_LOSES_STAMINA, Map.of(
+            "en", "loses 2 STAMINA",
+            "hu", "veszít 2 ÉLETERŐT"
+        )),
+        Map.entry(Key.BATTLE_WINS_NOT_TARGETING, Map.of(
+            "en", "Hero wins but not targeting this enemy",
+            "hu", "Hős nyer, de nem ezt az ellenséget célozza"
+        )),
+        Map.entry(Key.BATTLE_HERO_LOSES, Map.of(
+            "en", "Hero loses",
+            "hu", "Hős veszít"
+        )),
+        Map.entry(Key.BATTLE_DRAW, Map.of(
+            "en", "Draw",
+            "hu", "Döntetlen"
+        )),
+        Map.entry(Key.BATTLE_HERO_TAKES_DAMAGE, Map.of(
+            "en", "Hero takes %d STAMINA damage total",
+            "hu", "Hős összesen %d ÉLETERŐ sebzést kap"
         ))
     );
     
