@@ -1,0 +1,21 @@
+title: Attribute Test Demo
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You encounter a narrow ledge. Test your SKILL to cross safely.
+      - attributeTest:
+          dice: 2
+          modifier: 2
+          attribute:
+            - SKILL
+          success: 1
+          fail: 2
+  - index: 1
+    actions:
+      - display: |
+          Success! You crossed the ledge safely.
+  - index: 2
+    actions:
+      - display: |
+          You failed and fell. Game over.

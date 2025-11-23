@@ -1,7 +1,9 @@
 com/adventure/Battle.class
 com/adventure/actions/NewEventAction.class
 com/adventure/actions/GotoAction.class
+com/adventure/ui/AttributeTestUI.class
 com/adventure/GameWindow$4.class
+com/adventure/actions/AttributeTestAction.class
 com/adventure/actions/LuckAction.class
 com/adventure/GameWindow$1.class
 com/adventure/DiceAnimator$DiceGroup.class

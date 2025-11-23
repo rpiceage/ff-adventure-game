@@ -188,4 +188,42 @@ public class GameFlowTest {
         // Lost stamina
         assertEquals(22, controller.getHero().getStamina());
     }
+    
+    @Test
+    public void testAttributeTestFlowSuccess() {
+        Yaml yaml = new Yaml();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("sample-with-attribute-test.yaml");
+        Adventure adventure = yaml.loadAs(inputStream, Adventure.class);
+        GameController controller = new GameController(adventure);
+        
+        // Chapter 0 has attributeTest action
+        assertEquals(0, controller.getCurrentChapter().index);
+        assertTrue(controller.getCurrentChapter().actions.get(1).containsKey("attributeTest"));
+        
+        // Simulate success: roll 3+4=7, modifier +2 = 9, SKILL 12 -> success
+        Hero hero = controller.getHero();
+        assertEquals(12, hero.getSkill());
+        
+        // With dice 3+4+modifier 2 = 9 <= 12, should navigate to success chapter
+        controller.goToChapter(1);
+        assertEquals(1, controller.getCurrentChapter().index);
+        assertTrue(controller.getDisplayText().contains("Success"));
+    }
+    
+    @Test
+    public void testAttributeTestFlowFail() {
+        Yaml yaml = new Yaml();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("sample-with-attribute-test.yaml");
+        Adventure adventure = yaml.loadAs(inputStream, Adventure.class);
+        GameController controller = new GameController(adventure);
+        
+        // Simulate fail: roll 6+6=12, modifier +2 = 14, SKILL 12 -> fail
+        Hero hero = controller.getHero();
+        assertEquals(12, hero.getSkill());
+        
+        // With dice 6+6+modifier 2 = 14 > 12, should navigate to fail chapter
+        controller.goToChapter(2);
+        assertEquals(2, controller.getCurrentChapter().index);
+        assertTrue(controller.getDisplayText().contains("failed"));
+    }
 }

@@ -107,6 +107,7 @@
 - YAML format for battles:
   ```yaml
   - battle:
+      mode: 0  # optional: 0=simultaneous (default), 1=sequential
       enemies:
         - enemy: Cave Man
           skill: 12
@@ -118,16 +119,23 @@
   - Higher attack value wins the turn
   - Loser takes 2 STAMINA damage
   - Draw results in no damage
-- Battle mechanics (multiple enemies):
+- Battle mechanics (multiple enemies - simultaneous mode, mode: 0):
   - Hero rolls 2d6 separately against EACH alive enemy
   - Hero selects ONE enemy as target using radio buttons
   - If hero's roll beats selected enemy: that enemy takes 2 STAMINA damage
   - For each enemy that beats hero in their roll: hero takes 2 STAMINA damage
   - Hero can take 0, 2, 4, 6... damage per turn (2 per enemy that wins)
   - Battle ends when all enemies dead or hero dies
+- Battle mechanics (multiple enemies - sequential mode, mode: 1):
+  - Hero fights enemies one at a time
+  - Only the first alive enemy attacks each turn
+  - Hero takes 0 or 2 damage per turn (from current enemy only)
+  - When an enemy dies, next enemy becomes active
+  - Battle ends when all enemies dead or hero dies
 - Battle UI:
   - Enemy stats panel at top showing all enemies with SKILL and STAMINA
-  - Radio buttons to select target enemy (bold text shows selected)
+  - Simultaneous mode: Radio buttons to select target enemy (bold text shows selected)
+  - Sequential mode: Labels only (no target selection), current enemy is bolded
   - Dead enemies have disabled radio buttons
   - Hero stats continuously updated in side panel during battle
   - Animated dice panel with table.jpg background showing dice rolls

@@ -38,7 +38,11 @@ public class Messages {
         BATTLE_WINS_NOT_TARGETING,
         BATTLE_HERO_LOSES,
         BATTLE_DRAW,
-        BATTLE_HERO_TAKES_DAMAGE
+        BATTLE_HERO_TAKES_DAMAGE,
+        ATTRIBUTE_TEST_TITLE,
+        ATTRIBUTE_TEST_BUTTON,
+        ATTRIBUTE_TEST_SUCCESS,
+        ATTRIBUTE_TEST_FAIL
     }
     
     private static final Map<Key, Map<String, String>> translations = Map.ofEntries(
@@ -173,6 +177,22 @@ public class Messages {
         Map.entry(Key.BATTLE_HERO_TAKES_DAMAGE, Map.of(
             "en", "Hero takes %d STAMINA damage total",
             "hu", "Hős összesen %d ÉLETERŐ sebzést kap"
+        )),
+        Map.entry(Key.ATTRIBUTE_TEST_TITLE, Map.of(
+            "en", "Test your attribute",
+            "hu", "Tedd próbára képességed"
+        )),
+        Map.entry(Key.ATTRIBUTE_TEST_BUTTON, Map.of(
+            "en", "Test attribute!",
+            "hu", "Tedd próbára képességed!"
+        )),
+        Map.entry(Key.ATTRIBUTE_TEST_SUCCESS, Map.of(
+            "en", "Success!",
+            "hu", "Sikeres!"
+        )),
+        Map.entry(Key.ATTRIBUTE_TEST_FAIL, Map.of(
+            "en", "Failed!",
+            "hu", "Sikertelen!"
         ))
     );
     

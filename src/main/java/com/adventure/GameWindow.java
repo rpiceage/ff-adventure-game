@@ -25,6 +25,7 @@ public class GameWindow extends JFrame {
     private JWindow notificationWindow;
     private com.adventure.ui.BattleUI battleUI;
     private com.adventure.ui.LuckUI luckUI;
+    private com.adventure.ui.AttributeTestUI attributeTestUI;
     private JScrollPane textScrollPane;
     private JPanel currentCenterPanel;
 
@@ -176,6 +177,7 @@ public class GameWindow extends JFrame {
             buttonPanel.removeAll();
             battleUI = null;
             luckUI = null;
+            attributeTestUI = null;
             
             try {
                 BufferedImage skullImage = ImageIO.read(new File("src/resources/skull.jpg"));
@@ -191,6 +193,8 @@ public class GameWindow extends JFrame {
             battleUI.updateDisplay();
         } else if (luckUI != null) {
             // Luck test UI is already shown
+        } else if (attributeTestUI != null) {
+            // Attribute test UI is already shown
         } else {
             textArea.setText(controller.getDisplayText());
             textArea.setCaretPosition(0);
@@ -337,6 +341,25 @@ public class GameWindow extends JFrame {
             remove(textScrollPane);
             add(luckPanel, BorderLayout.CENTER);
             currentCenterPanel = luckPanel;
+            revalidate();
+            repaint();
+        } else if (actionData.containsKey("attributeTest")) {
+            attributeTestUI = new com.adventure.ui.AttributeTestUI(textArea, buttonPanel, controller, () -> {
+                attributeTestUI = null;
+                if (currentCenterPanel != null) {
+                    remove(currentCenterPanel);
+                    currentCenterPanel = null;
+                }
+                textScrollPane = new JScrollPane(textArea);
+                add(textScrollPane, BorderLayout.CENTER);
+                revalidate();
+                repaint();
+                updateDisplay();
+            });
+            JPanel testPanel = attributeTestUI.start(actionData);
+            remove(textScrollPane);
+            add(testPanel, BorderLayout.CENTER);
+            currentCenterPanel = testPanel;
             revalidate();
             repaint();
         }
