@@ -361,6 +361,14 @@ public class UITest {
                 assertTrue(controller.isGameOver());
                 assertEquals(0, controller.getHero().getStamina());
                 
+                // Should show custom death text, not default game over message
+                JTextArea textArea = getField(window, "textArea");
+                String displayedText = textArea.getText();
+                assertTrue(displayedText.contains("You choose wrongly"), 
+                    "Should show custom death text");
+                assertTrue(displayedText.contains("Your adventure ends here"), 
+                    "Should show custom death text");
+                
                 // Stats panel should be removed (replaced by skull)
                 JPanel statsPanel = getField(window, "statsPanel");
                 assertFalse(statsPanel.isShowing(), "Stats panel should not be showing after death");

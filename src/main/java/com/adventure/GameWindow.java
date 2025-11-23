@@ -153,7 +153,21 @@ public class GameWindow extends JFrame {
         }
         
         if (controller.isGameOver()) {
-            textArea.setText(Messages.get(Messages.Key.GAME_OVER));
+            // Check if there's a death action with custom text
+            String deathText = null;
+            for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
+                if (actionData.containsKey("death")) {
+                    deathText = (String) actionData.get("death");
+                    break;
+                }
+            }
+            
+            if (deathText != null) {
+                textArea.setText(deathText);
+            } else {
+                textArea.setText(Messages.get(Messages.Key.GAME_OVER));
+            }
+            
             buttonPanel.removeAll();
             battleUI = null;
             luckUI = null;
