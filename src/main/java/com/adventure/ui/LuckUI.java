@@ -12,12 +12,14 @@ public class LuckUI {
     private JTextArea textArea;
     private JPanel buttonPanel;
     private GameController controller;
+    private GameWindow gameWindow;
     private Runnable onComplete;
 
-    public LuckUI(JTextArea textArea, JPanel buttonPanel, GameController controller, Runnable onComplete) {
+    public LuckUI(JTextArea textArea, JPanel buttonPanel, GameController controller, GameWindow gameWindow, Runnable onComplete) {
         this.textArea = textArea;
         this.buttonPanel = buttonPanel;
         this.controller = controller;
+        this.gameWindow = gameWindow;
         this.onComplete = onComplete;
     }
 
@@ -48,14 +50,14 @@ public class LuckUI {
             int heroLuck = controller.getHero().getLuck();
             boolean lucky = total <= heroLuck;
             
-            // Testing luck decreases LUCK by 1
-            controller.getHero().modifyLuckSilent(-1);
-            
             DiceAnimator.DiceGroup[] groups = {
                 new DiceAnimator.DiceGroup("", dice1, dice2)
             };
             
             DiceAnimator.animateDice(dicePanel, groups, () -> {
+                // Testing luck decreases LUCK by 1 after animation
+                controller.getHero().modifyLuck(-1);
+                gameWindow.updateHeroStats();
                 textArea.setText(lucky ? Messages.get(Messages.Key.LUCK_LUCKY) : Messages.get(Messages.Key.LUCK_UNLUCKY));
                 
                 buttonPanel.removeAll();

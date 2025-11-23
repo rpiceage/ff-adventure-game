@@ -399,7 +399,7 @@ public class GameWindow extends JFrame {
             revalidate();
             repaint();
         } else if (actionData.containsKey("luck")) {
-            luckUI = new com.adventure.ui.LuckUI(textArea, buttonPanel, controller, () -> {
+            luckUI = new com.adventure.ui.LuckUI(textArea, buttonPanel, controller, this, () -> {
                 luckUI = null;
                 if (currentCenterPanel != null) {
                     remove(currentCenterPanel);
