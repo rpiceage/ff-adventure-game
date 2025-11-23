@@ -44,7 +44,8 @@ public class BattleUI {
             enemies.add(new Enemy(name, skill, stamina));
         }
         
-        currentBattle = new Battle(controller.getHero(), enemies);
+        int mode = battleData.containsKey("mode") ? (Integer) battleData.get("mode") : 0;
+        currentBattle = new Battle(controller.getHero(), enemies, new java.util.Random(), mode);
         
         centerPanel = new JPanel(new BorderLayout());
         battleStatsPanel = new JPanel();
@@ -56,22 +57,37 @@ public class BattleUI {
         enemyRadioButtons = new ArrayList<>();
         enemyButtonGroup = new ButtonGroup();
         
-        for (int i = 0; i < enemies.size(); i++) {
-            JRadioButton radioButton = new JRadioButton();
-            radioButton.setFont(new Font("Arial", Font.PLAIN, 20));
-            final int index = i;
-            radioButton.addActionListener(e -> currentBattle.setSelectedEnemy(index));
-            enemyRadioButtons.add(radioButton);
-            enemyButtonGroup.add(radioButton);
-            battleStatsPanel.add(radioButton);
-        }
-        
-        if (!enemies.isEmpty()) {
-            enemyRadioButtons.get(0).setSelected(true);
+        if (mode == 1) {
+            // Sequential mode: just show labels, no radio buttons
+            for (int i = 0; i < enemies.size(); i++) {
+                JLabel label = new JLabel();
+                label.setFont(new Font("Arial", Font.PLAIN, 20));
+                battleStatsPanel.add(label);
+                // Create dummy radio button for compatibility with updateDisplay
+                JRadioButton dummyButton = new JRadioButton();
+                dummyButton.setVisible(false);
+                enemyRadioButtons.add(dummyButton);
+            }
+        } else {
+            // Simultaneous mode: show radio buttons for target selection
+            for (int i = 0; i < enemies.size(); i++) {
+                JRadioButton radioButton = new JRadioButton();
+                radioButton.setFont(new Font("Arial", Font.PLAIN, 20));
+                final int index = i;
+                radioButton.addActionListener(e -> currentBattle.setSelectedEnemy(index));
+                enemyRadioButtons.add(radioButton);
+                enemyButtonGroup.add(radioButton);
+                battleStatsPanel.add(radioButton);
+            }
+            
+            if (!enemies.isEmpty()) {
+                enemyRadioButtons.get(0).setSelected(true);
+            }
         }
         
         dicePanel = DiceAnimator.createDicePanel("src/resources/table.jpg");
-        int dicePanelHeight = enemies.size() * 100; // 100px per enemy
+        // In sequential mode, only show one enemy at a time
+        int dicePanelHeight = (mode == 1 ? 1 : enemies.size()) * 100; // 100px per enemy
         dicePanel.setPreferredSize(new Dimension(400, dicePanelHeight));
         
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -89,28 +105,50 @@ public class BattleUI {
         gameWindow.updateHeroStats();
         
         List<Enemy> enemies = currentBattle.getEnemies();
-        for (int i = 0; i < enemies.size(); i++) {
-            Enemy enemy = enemies.get(i);
-            JRadioButton radioButton = enemyRadioButtons.get(i);
-            
-            String text = String.format("%s %s: %d %s: %d", 
-                enemy.getName(),
-                Messages.get(Messages.Key.SKILL), enemy.getSkill(),
-                Messages.get(Messages.Key.STAMINA), enemy.getStamina());
-            
-            if (i == currentBattle.getSelectedEnemyIndex()) {
-                text = "<html><b>" + text + "</b></html>";
+        
+        if (currentBattle.getMode() == 1) {
+            // Sequential mode: update labels
+            for (int i = 0; i < enemies.size(); i++) {
+                Enemy enemy = enemies.get(i);
+                JLabel label = (JLabel) battleStatsPanel.getComponent(i);
+                
+                String text = String.format("%s %s: %d %s: %d", 
+                    enemy.getName(),
+                    Messages.get(Messages.Key.SKILL), enemy.getSkill(),
+                    Messages.get(Messages.Key.STAMINA), enemy.getStamina());
+                
+                // Bold the first alive enemy (current target)
+                if (enemy.isAlive() && currentBattle.getAliveEnemies().get(0) == enemy) {
+                    text = "<html><b>" + text + "</b></html>";
+                }
+                
+                label.setText(text);
             }
-            
-            radioButton.setText(text);
-            radioButton.setEnabled(enemy.isAlive());
-            
-            if (!enemy.isAlive() && radioButton.isSelected()) {
-                for (int j = 0; j < enemies.size(); j++) {
-                    if (enemies.get(j).isAlive()) {
-                        enemyRadioButtons.get(j).setSelected(true);
-                        currentBattle.setSelectedEnemy(j);
-                        break;
+        } else {
+            // Simultaneous mode: update radio buttons
+            for (int i = 0; i < enemies.size(); i++) {
+                Enemy enemy = enemies.get(i);
+                JRadioButton radioButton = enemyRadioButtons.get(i);
+                
+                String text = String.format("%s %s: %d %s: %d", 
+                    enemy.getName(),
+                    Messages.get(Messages.Key.SKILL), enemy.getSkill(),
+                    Messages.get(Messages.Key.STAMINA), enemy.getStamina());
+                
+                if (i == currentBattle.getSelectedEnemyIndex()) {
+                    text = "<html><b>" + text + "</b></html>";
+                }
+                
+                radioButton.setText(text);
+                radioButton.setEnabled(enemy.isAlive());
+                
+                if (!enemy.isAlive() && radioButton.isSelected()) {
+                    for (int j = 0; j < enemies.size(); j++) {
+                        if (enemies.get(j).isAlive()) {
+                            enemyRadioButtons.get(j).setSelected(true);
+                            currentBattle.setSelectedEnemy(j);
+                            break;
+                        }
                     }
                 }
             }
@@ -150,7 +188,12 @@ public class BattleUI {
                 
                 List<AnimatedDicePanel> animatedPanels = new ArrayList<>();
                 
-                for (Enemy enemy : aliveBeforeTurn) {
+                // In sequential mode, only show dice for the first alive enemy
+                List<Enemy> enemiesToShow = currentBattle.getMode() == 1 
+                    ? aliveBeforeTurn.subList(0, 1) 
+                    : aliveBeforeTurn;
+                
+                for (Enemy enemy : enemiesToShow) {
                     JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
                     rowPanel.setOpaque(false);
                     

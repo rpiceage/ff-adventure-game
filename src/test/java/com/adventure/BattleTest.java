@@ -1,6 +1,8 @@
 package com.adventure;
 
 import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -263,5 +265,38 @@ public class BattleTest {
         assertTrue(battle.isOver());
         assertTrue(battle.heroWon());
         assertEquals(0, battle.getAliveEnemies().size());
+    }
+    
+    @Test
+    public void testMultipleEnemiesBattle_SequentialMode() {
+        Hero hero = new Hero(12, 24, 12);
+        List<Enemy> enemies = new ArrayList<>();
+        enemies.add(new Enemy("Goblin 1", 5, 4));
+        enemies.add(new Enemy("Goblin 2", 6, 5));
+        enemies.add(new Enemy("Goblin 3", 5, 4));
+        
+        FixedRandom random = new FixedRandom(new int[]{5, 5, 2, 2}); // Hero wins first turn
+        Battle battle = new Battle(hero, enemies, random, 1); // mode 1 = sequential
+        
+        // First turn - only fight Goblin 1
+        battle.executeTurn();
+        assertEquals(2, enemies.get(0).getStamina()); // Goblin 1 takes damage
+        assertEquals(24, hero.getStamina()); // Hero takes no damage
+        assertEquals(5, enemies.get(1).getStamina()); // Goblin 2 untouched
+        assertEquals(4, enemies.get(2).getStamina()); // Goblin 3 untouched
+        
+        // Second turn - still fighting Goblin 1
+        random = new FixedRandom(new int[]{5, 5, 2, 2});
+        battle = new Battle(hero, enemies, random, 1);
+        battle.executeTurn();
+        assertEquals(0, enemies.get(0).getStamina()); // Goblin 1 dead
+        assertFalse(battle.isOver()); // Battle continues
+        
+        // Third turn - now fighting Goblin 2
+        random = new FixedRandom(new int[]{5, 5, 2, 2});
+        battle = new Battle(hero, enemies, random, 1);
+        battle.executeTurn();
+        assertEquals(3, enemies.get(1).getStamina()); // Goblin 2 takes damage
+        assertEquals(4, enemies.get(2).getStamina()); // Goblin 3 still untouched
     }
 }

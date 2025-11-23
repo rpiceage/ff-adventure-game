@@ -1,0 +1,23 @@
+title: Sequential Battle Test
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You encounter three goblins, but they attack one at a time!
+      - battle:
+          mode: 1
+          enemies:
+            - enemy: Goblin 1
+              skill: 5
+              stamina: 4
+            - enemy: Goblin 2
+              skill: 6
+              stamina: 5
+            - enemy: Goblin 3
+              skill: 5
+              stamina: 4
+          win: 1
+  - index: 1
+    actions:
+      - display: |
+          You defeated all the goblins! Victory!

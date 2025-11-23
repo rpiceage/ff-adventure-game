@@ -12,6 +12,7 @@ public class Battle {
     private Random random;
     private String lastTurnResult;
     private StringBuilder battleLog;
+    private int mode; // 0 = simultaneous (default), 1 = sequential
 
     public Battle(Hero hero, String enemyName, int enemySkill, int enemyStamina) {
         this(hero, enemyName, enemySkill, enemyStamina, new Random());
@@ -25,19 +26,25 @@ public class Battle {
         this.random = random;
         this.lastTurnResult = "";
         this.battleLog = new StringBuilder();
+        this.mode = 0;
     }
 
     public Battle(Hero hero, List<Enemy> enemies) {
-        this(hero, enemies, new Random());
+        this(hero, enemies, new Random(), 0);
     }
 
     public Battle(Hero hero, List<Enemy> enemies, Random random) {
+        this(hero, enemies, random, 0);
+    }
+
+    public Battle(Hero hero, List<Enemy> enemies, Random random, int mode) {
         this.hero = hero;
         this.enemies = enemies;
         this.selectedEnemyIndex = 0;
         this.random = random;
         this.lastTurnResult = "";
         this.battleLog = new StringBuilder();
+        this.mode = mode;
     }
 
     public String getEnemyName() {
@@ -54,6 +61,10 @@ public class Battle {
 
     public List<Enemy> getEnemies() {
         return enemies;
+    }
+
+    public int getMode() {
+        return mode;
     }
 
     public List<Enemy> getAliveEnemies() {
@@ -84,10 +95,11 @@ public class Battle {
         StringBuilder turnResult = new StringBuilder();
         int heroDamageTaken = 0;
 
-        for (int i = 0; i < enemies.size(); i++) {
-            Enemy enemy = enemies.get(i);
-            if (!enemy.isAlive()) continue;
-
+        if (mode == 1) {
+            // Sequential mode: only fight the first alive enemy
+            Enemy enemy = getAliveEnemies().get(0);
+            int i = enemies.indexOf(enemy);
+            
             int heroDice1 = random.nextInt(6) + 1;
             int heroDice2 = random.nextInt(6) + 1;
             int heroAttack = hero.getSkill() + heroDice1 + heroDice2;
@@ -104,19 +116,51 @@ public class Battle {
                 Messages.get(Messages.Key.BATTLE_VS), enemy.getName(), enemyAttack));
 
             if (heroAttack > enemyAttack) {
-                if (i == selectedEnemyIndex) {
-                    enemy.setStamina(enemy.getStamina() - 2);
-                    turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
-                } else {
-                    turnResult.append(Messages.get(Messages.Key.BATTLE_WINS_NOT_TARGETING));
-                }
+                enemy.setStamina(enemy.getStamina() - 2);
+                turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
             } else if (enemyAttack > heroAttack) {
-                heroDamageTaken += 2;
+                heroDamageTaken = 2;
                 turnResult.append(Messages.get(Messages.Key.BATTLE_HERO_LOSES));
             } else {
                 turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
             }
             turnResult.append("\n");
+        } else {
+            // Simultaneous mode: fight all alive enemies
+            for (int i = 0; i < enemies.size(); i++) {
+                Enemy enemy = enemies.get(i);
+                if (!enemy.isAlive()) continue;
+
+                int heroDice1 = random.nextInt(6) + 1;
+                int heroDice2 = random.nextInt(6) + 1;
+                int heroAttack = hero.getSkill() + heroDice1 + heroDice2;
+
+                int enemyDice1 = random.nextInt(6) + 1;
+                int enemyDice2 = random.nextInt(6) + 1;
+                int enemyAttack = enemy.getSkill() + enemyDice1 + enemyDice2;
+
+                enemy.setHeroDice(heroDice1, heroDice2);
+                enemy.setEnemyDice(enemyDice1, enemyDice2);
+
+                turnResult.append(String.format("%s: %d %s %s: %d - ",
+                    Messages.get(Messages.Key.BATTLE_HERO), heroAttack, 
+                    Messages.get(Messages.Key.BATTLE_VS), enemy.getName(), enemyAttack));
+
+                if (heroAttack > enemyAttack) {
+                    if (i == selectedEnemyIndex) {
+                        enemy.setStamina(enemy.getStamina() - 2);
+                        turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
+                    } else {
+                        turnResult.append(Messages.get(Messages.Key.BATTLE_WINS_NOT_TARGETING));
+                    }
+                } else if (enemyAttack > heroAttack) {
+                    heroDamageTaken += 2;
+                    turnResult.append(Messages.get(Messages.Key.BATTLE_HERO_LOSES));
+                } else {
+                    turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
+                }
+                turnResult.append("\n");
+            }
         }
 
         if (heroDamageTaken > 0) {
