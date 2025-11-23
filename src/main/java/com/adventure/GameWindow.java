@@ -167,6 +167,7 @@ public class GameWindow extends JFrame {
             } else {
                 textArea.setText(Messages.get(Messages.Key.GAME_OVER));
             }
+            textArea.setCaretPosition(0);
             
             buttonPanel.removeAll();
             battleUI = null;
@@ -188,6 +189,7 @@ public class GameWindow extends JFrame {
             // Luck test UI is already shown
         } else {
             textArea.setText(controller.getDisplayText());
+            textArea.setCaretPosition(0);
             buttonPanel.removeAll();
             
             // Show buttons for all actions in the chapter
