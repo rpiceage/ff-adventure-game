@@ -326,6 +326,50 @@ public class UITest {
         });
     }
 
+    @Test
+    public void testDeathAction_ShowsSkull() throws Exception {
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-death.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+
+        SwingUtilities.invokeAndWait(() -> {
+            window = new GameWindow(adventure);
+            window.setVisible(true);
+        });
+
+        Thread.sleep(200);
+
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                // Click the wrong door button
+                JPanel buttonPanel = getField(window, "buttonPanel");
+                JButton wrongDoorButton = findButton(buttonPanel, "Right door");
+                assertNotNull(wrongDoorButton, "Right door button should exist");
+                wrongDoorButton.doClick();
+            } catch (Exception e) {
+                fail("Failed to click button: " + e.getMessage());
+            }
+        });
+
+        Thread.sleep(200);
+
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                GameController controller = getField(window, "controller");
+                
+                // Hero should be dead
+                assertTrue(controller.isGameOver());
+                assertEquals(0, controller.getHero().getStamina());
+                
+                // Stats panel should be removed (replaced by skull)
+                JPanel statsPanel = getField(window, "statsPanel");
+                assertFalse(statsPanel.isShowing(), "Stats panel should not be showing after death");
+            } catch (Exception e) {
+                fail("Failed to test death action: " + e.getMessage());
+            }
+        });
+    }
+
     // Helper methods
     private JButton findButton(Container container, String text) {
         for (Component c : container.getComponents()) {

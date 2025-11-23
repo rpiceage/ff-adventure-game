@@ -236,6 +236,20 @@
   - Button text comes from existing or missing text field
   - Seamlessly integrates with other navigation options
 
+## Death System
+- Instant death action for wrong choices or traps
+- YAML format for death:
+  ```yaml
+  - death: |
+      You choose wrongly and cannot escape this room. Your adventure ends here.
+  ```
+- Death mechanics:
+  - Instantly sets hero STAMINA to 0 (game over)
+  - Works regardless of current stamina level
+  - Displays the death message from YAML
+  - Shows skull.jpg background (same as stamina death)
+  - No way to continue after death
+
 ## Architecture
 - Action-based system for extensibility
 - All action types implement `Action` interface:
@@ -250,6 +264,7 @@
   - `DisplayAction` (DISPLAY) - shows chapter text
   - `ModifyAction` (PASSIVE) - auto-applies attribute modifications
   - `NewEventAction` (PASSIVE) - records events automatically
+  - `DeathAction` (PASSIVE) - instant death (sets stamina to 0)
   - `BattleAction` (SINGLE_BUTTON) - triggers battle encounters
   - `LuckAction` (SINGLE_BUTTON) - triggers luck tests
   - `AddItemAction` (MULTIPLE_BUTTONS) - provides item pickup choices

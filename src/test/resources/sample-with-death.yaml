@@ -1,0 +1,19 @@
+title: Death Test
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You enter a dark room with two doors. Which do you choose?
+      - goto:
+          - chapter: 1
+            text: Left door
+          - chapter: 2
+            text: Right door
+  - index: 1
+    actions:
+      - display: |
+          You open the left door and find treasure! You win!
+  - index: 2
+    actions:
+      - death: |
+          You choose wrongly and cannot escape this room. Your adventure ends here.

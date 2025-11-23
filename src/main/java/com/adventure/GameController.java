@@ -26,6 +26,7 @@ public class GameController {
         actions.add(new DisplayAction());
         actions.add(new ModifyAction());
         actions.add(new NewEventAction());
+        actions.add(new DeathAction());
         actions.add(new BattleAction());
         actions.add(new LuckAction());
         actions.add(new AddItemAction());

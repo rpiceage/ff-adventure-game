@@ -12,6 +12,7 @@ com/adventure/actions/AddItemAction.class
 com/adventure/GameWindow$3.class
 com/adventure/GameWindow$1.class
 com/adventure/actions/Action.class
+com/adventure/actions/DeathAction.class
 com/adventure/DiceAnimator$DiceGroup.class
 com/adventure/Hero.class
 com/adventure/Messages$Key.class
