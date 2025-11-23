@@ -14,6 +14,7 @@ import java.util.Random;
 public class GameWindow extends JFrame {
     private JTextArea textArea;
     private JPanel buttonPanel;
+    private JScrollPane buttonScrollPane;
     private JPanel statsPanel;
     private JPanel itemsPanel;
     private JLabel skillLabel;
@@ -146,10 +147,19 @@ public class GameWindow extends JFrame {
         add(statsPanel, BorderLayout.EAST);
 
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        JScrollPane buttonScrollPane = new JScrollPane(buttonPanel);
+        buttonScrollPane = new JScrollPane(buttonPanel);
         buttonScrollPane.setPreferredSize(new Dimension(0, 80));
         buttonScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         buttonScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        
+        // Add listener to recalculate button panel height when viewport size changes
+        buttonScrollPane.getViewport().addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                recalculateButtonPanelHeight();
+            }
+        });
+        
         add(buttonScrollPane, BorderLayout.SOUTH);
 
         // Initialize previous values
@@ -284,8 +294,39 @@ public class GameWindow extends JFrame {
             }
         }
         
+        recalculateButtonPanelHeight();
         buttonPanel.revalidate();
         buttonPanel.repaint();
+        buttonScrollPane.revalidate();
+    }
+    
+    private void recalculateButtonPanelHeight() {
+        // Manually calculate wrapped height for FlowLayout
+        int panelWidth = buttonScrollPane.getViewport().getWidth();
+        if (panelWidth > 0 && buttonPanel.getComponentCount() > 0) {
+            FlowLayout layout = (FlowLayout) buttonPanel.getLayout();
+            int hgap = layout.getHgap();
+            int vgap = layout.getVgap();
+            
+            int rowHeight = 0;
+            int totalHeight = vgap;
+            int currentWidth = hgap;
+            
+            for (Component comp : buttonPanel.getComponents()) {
+                Dimension d = comp.getPreferredSize();
+                if (currentWidth + d.width + hgap > panelWidth && currentWidth > hgap) {
+                    totalHeight += rowHeight + vgap;
+                    currentWidth = hgap;
+                    rowHeight = 0;
+                }
+                currentWidth += d.width + hgap;
+                rowHeight = Math.max(rowHeight, d.height);
+            }
+            totalHeight += rowHeight + vgap;
+            
+            buttonPanel.setPreferredSize(new Dimension(panelWidth, totalHeight));
+            buttonPanel.revalidate();
+        }
     }
 
     private JLabel createStyledLabel() {

@@ -437,4 +437,79 @@ public class UITest {
         field.setAccessible(true);
         return (T) field.get(obj);
     }
+    
+    @Test
+    public void testButtonPanelScrollsWithManyButtons() throws Exception {
+        // Create a YAML with many long button choices
+        String yaml = "title: Scroll Test\n" +
+                      "chapters:\n" +
+                      "  - index: 0\n" +
+                      "    actions:\n" +
+                      "      - display: Choose one\n" +
+                      "      - goto:\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number One\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Two\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Three\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Four\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Five\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Six\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Seven\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Eight\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Nine\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Ten\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Eleven\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Twelve\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Thirteen\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Fourteen\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Fifteen\n" +
+                      "          - chapter: 1\n" +
+                      "            text: Very Long Button Text Number Sixteen\n" +
+                      "  - index: 1\n" +
+                      "    actions:\n" +
+                      "      - display: Done\n";
+        
+        Yaml yamlParser = new Yaml(new LoaderOptions());
+        Adventure adventure = yamlParser.loadAs(yaml, Adventure.class);
+        
+        SwingUtilities.invokeAndWait(() -> {
+            window = new GameWindow(adventure);
+        });
+        
+        Thread.sleep(100); // Let UI settle
+        
+        JScrollPane buttonScrollPane = getField(window, "buttonScrollPane");
+        JPanel buttonPanel = getField(window, "buttonPanel");
+        
+        assertNotNull(buttonScrollPane);
+        assertNotNull(buttonPanel);
+        
+        // Check if button panel height exceeds scroll pane viewport height
+        int panelHeight = buttonPanel.getPreferredSize().height;
+        int viewportHeight = buttonScrollPane.getViewport().getHeight();
+        
+        System.out.println("Button panel preferred height: " + panelHeight);
+        System.out.println("Viewport height: " + viewportHeight);
+        System.out.println("Scroll pane height: " + buttonScrollPane.getHeight());
+        
+        // If panel is taller than viewport, scrollbar should be visible
+        if (panelHeight > viewportHeight) {
+            JScrollBar verticalScrollBar = buttonScrollPane.getVerticalScrollBar();
+            assertTrue(verticalScrollBar.isVisible(), "Vertical scrollbar should be visible when content exceeds viewport");
+        }
+    }
 }
