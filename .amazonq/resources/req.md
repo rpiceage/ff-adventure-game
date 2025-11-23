@@ -173,6 +173,48 @@
   - Inactive items show popup message
   - No visual distinction between active/inactive (discovered through interaction)
 
+## Event System
+- Events track significant story moments that affect later choices
+- Hero maintains a list of recorded events
+- Events persist throughout the game
+- YAML format for recording events:
+  ```yaml
+  - newEvent:
+      name: Djinn
+      description: Hero freed a Djinn, and was granted a wish.
+  ```
+- Event mechanics:
+  - Events are automatically recorded when entering a chapter with newEvent action
+  - Events are stored by name (description is for documentation only)
+  - Multiple events can be tracked simultaneously
+  - Events cannot be removed once recorded
+
+## Check Event System
+- Conditional navigation based on recorded events or possessed items
+- Checks for BOTH events AND items (either triggers the "existing" path)
+- YAML format for checking events:
+  ```yaml
+  - checkEvent:
+      name:
+        - Elf-boots
+      existing:
+        chapter: 128
+        text: As you are wearing elf-boots...
+      missing:
+        chapter: 374
+        text: As you are wearing normal boots...
+  ```
+- Check event mechanics:
+  - Checks if hero has ANY of the listed events OR items
+  - If found: shows "existing" button that navigates to existing chapter
+  - If not found: shows "missing" button that navigates to missing chapter
+  - Only ONE button is shown based on the check result
+  - Multiple names can be checked (OR logic - any match triggers existing path)
+- Check event UI:
+  - Single button displayed based on event/item check
+  - Button text comes from existing or missing text field
+  - Seamlessly integrates with other navigation options
+
 ## Architecture
 - Action-based system for extensibility
 - All action types implement `Action` interface:
@@ -186,10 +228,12 @@
 - Implemented actions:
   - `DisplayAction` (DISPLAY) - shows chapter text
   - `ModifyAction` (PASSIVE) - auto-applies attribute modifications
+  - `NewEventAction` (PASSIVE) - records events automatically
   - `BattleAction` (SINGLE_BUTTON) - triggers battle encounters
   - `LuckAction` (SINGLE_BUTTON) - triggers luck tests
   - `AddItemAction` (MULTIPLE_BUTTONS) - provides item pickup choices
   - `UseItemAction` (DISPLAY) - enables item buttons for navigation
+  - `CheckEventAction` (MULTIPLE_BUTTONS) - conditional navigation based on events/items
   - `GotoAction` (MULTIPLE_BUTTONS) - provides navigation choices
 - DiceAnimator class handles all dice animations (battle and luck)
 - GameController manages action registry and execution

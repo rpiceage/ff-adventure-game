@@ -1,0 +1,63 @@
+title: Event Test
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You encounter a trapped Djinn in a bottle. Do you free it?
+      - goto:
+          - chapter: 1
+            text: Free the Djinn
+          - chapter: 2
+            text: Leave it trapped
+  - index: 1
+    actions:
+      - display: |
+          You free the Djinn! It grants you a wish and disappears.
+      - newEvent:
+          name: Djinn
+          description: Hero freed a Djinn, and was granted a wish.
+      - modify:
+          values:
+            - field: LUCK
+              value: 2
+      - goto:
+          - chapter: 3
+            text: Continue
+  - index: 2
+    actions:
+      - display: |
+          You leave the Djinn trapped and continue on your way.
+      - goto:
+          - chapter: 3
+            text: Continue
+  - index: 3
+    actions:
+      - display: |
+          You reach a dangerous bridge. How do you cross?
+      - goto:
+          - chapter: 4
+            text: Walk carefully
+          - chapter: 5
+            text: Run across
+  - index: 4
+    actions:
+      - display: |
+          You walk carefully across the bridge and make it safely.
+      - goto:
+          - chapter: 6
+            text: Continue
+  - index: 5
+    actions:
+      - display: |
+          You run across but slip and fall! You lose stamina.
+      - modify:
+          values:
+            - field: STAMINA
+              value: -3
+      - goto:
+          - chapter: 6
+            text: Continue
+  - index: 6
+    actions:
+      - display: |
+          You reach the end of your journey. Victory!

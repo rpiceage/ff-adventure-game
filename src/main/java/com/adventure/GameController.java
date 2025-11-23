@@ -24,10 +24,12 @@ public class GameController {
     private void registerActions() {
         actions.add(new DisplayAction());
         actions.add(new ModifyAction());
+        actions.add(new NewEventAction());
         actions.add(new BattleAction());
         actions.add(new LuckAction());
         actions.add(new AddItemAction());
         actions.add(new UseItemAction());
+        actions.add(new CheckEventAction());
         actions.add(new GotoAction());
     }
 

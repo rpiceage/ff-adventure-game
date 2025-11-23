@@ -1,0 +1,47 @@
+title: Check Event Test
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You find magical elf-boots. Do you take them?
+      - addItem:
+          items:
+            - name: Elf-boots
+      - goto:
+          - chapter: 1
+            text: Continue
+  - index: 1
+    actions:
+      - display: |
+          You approach a narrow bridge over a chasm.
+      - checkEvent:
+          name:
+            - Elf-boots
+          existing:
+            chapter: 2
+            text: As you are wearing elf-boots...
+          missing:
+            chapter: 3
+            text: As you are wearing normal boots...
+  - index: 2
+    actions:
+      - display: |
+          Your elf-boots allow you to walk across the bridge effortlessly. You make it safely!
+      - goto:
+          - chapter: 4
+            text: Continue
+  - index: 3
+    actions:
+      - display: |
+          You carefully cross the bridge but slip and hurt yourself.
+      - modify:
+          values:
+            - field: STAMINA
+              value: -2
+      - goto:
+          - chapter: 4
+            text: Continue
+  - index: 4
+    actions:
+      - display: |
+          You reach the other side. Victory!

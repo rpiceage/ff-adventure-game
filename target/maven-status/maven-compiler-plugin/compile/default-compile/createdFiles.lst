@@ -1,5 +1,6 @@
 com/adventure/DiceAnimator.class
 com/adventure/Battle.class
+com/adventure/actions/NewEventAction.class
 com/adventure/Adventure$Init.class
 com/adventure/Main.class
 com/adventure/actions/GotoAction.class
@@ -20,6 +21,7 @@ com/adventure/GameWindow$5.class
 com/adventure/ui/BattleUI.class
 com/adventure/ui/BattleUI$AnimatedDicePanel.class
 com/adventure/actions/Action$Choice.class
+com/adventure/actions/CheckEventAction.class
 com/adventure/Enemy.class
 com/adventure/DiceAnimator$1.class
 com/adventure/actions/ModifyAction.class

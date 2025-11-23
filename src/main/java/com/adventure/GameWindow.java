@@ -189,6 +189,28 @@ public class GameWindow extends JFrame {
                                 });
                                 buttonPanel.add(btn);
                             }
+                        } else if (action instanceof com.adventure.actions.CheckEventAction) {
+                            // Handle CheckEventAction
+                            com.adventure.actions.CheckEventAction checkAction = (com.adventure.actions.CheckEventAction) action;
+                            List<com.adventure.actions.Action.Choice> choices = action.getChoices(actionData);
+                            
+                            if (checkAction.hasEventOrItem(controller, actionData)) {
+                                // Show existing button
+                                JButton btn = new JButton(choices.get(0).text);
+                                btn.addActionListener(e -> {
+                                    controller.goToChapter(checkAction.getExistingChapter(actionData));
+                                    updateDisplay();
+                                });
+                                buttonPanel.add(btn);
+                            } else {
+                                // Show missing button
+                                JButton btn = new JButton(choices.get(1).text);
+                                btn.addActionListener(e -> {
+                                    controller.goToChapter(checkAction.getMissingChapter(actionData));
+                                    updateDisplay();
+                                });
+                                buttonPanel.add(btn);
+                            }
                         } else {
                             // Handle GotoAction
                             List<com.adventure.actions.Action.Choice> choices = action.getChoices(actionData);
