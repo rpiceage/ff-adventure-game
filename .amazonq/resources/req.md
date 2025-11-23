@@ -2,12 +2,25 @@
 
 ## Requirements
 - Desktop application in Java using Swing
+- Welcome menu with game selection when started without arguments
 - Handles a YAML document as input, like the requirements/sample.yaml
-- Displays adventure text in a scrollable text area
+- Displays adventure text in a scrollable text area with parchment background
 - Handles navigation choices with buttons at the bottom
-- Shows hero statistics in a panel on the right side
+- Shows hero statistics in a panel on the right side with wall background
 - Displays temporary notifications for attribute changes in the lower left corner
 - Supports internationalization (English and Hungarian)
+
+## Welcome Menu
+- Shown when application starts without command-line arguments
+- Menu options:
+  - New Game: Opens game selection screen
+  - Load Game: (Not yet implemented)
+- Game Selection Screen:
+  - Dynamically scans resources/books/ directory for YAML files
+  - Displays game titles from YAML metadata
+  - Clicking a game starts it
+  - Back button returns to welcome menu
+- Command-line argument still supported: `java -jar ff.jar path/to/game.yaml`
 
 ## Internationalization
 - Optional `language` field in YAML (defaults to "en")
@@ -16,17 +29,19 @@
 - All UI strings are translated including:
   - Game over message
   - Adventure sheet title
-  - Attribute names (SKILL/ÜGYESSÉG, STAMINA/ÉLETERŐ, LUCK/SZERENCSE)
+  - Attribute names (SKILL/ÜGYESSÉG, STAMINA/ÉLETERŐ, LUCK/SZERENCSE, GOLD/ARANY, PROVISIONS/ÉLELEM)
   - Notification messages
   - Battle UI strings
+  - Provisions messages
 
 ## Hero Attributes
-- Hero has four attributes: SKILL, STAMINA, LUCK, and GOLD
-- Default initial values: SKILL: 12, STAMINA: 24, LUCK: 12, GOLD: 0
-- Initial GOLD can be set in YAML with `init: gold: 10`
-- Attributes displayed in a stats panel on the right side of the window
+- Hero has five attributes: SKILL, STAMINA, LUCK, GOLD, and PROVISIONS
+- Default initial values: SKILL: 12, STAMINA: 24, LUCK: 12, GOLD: 0, PROVISIONS: 0
+- Initial GOLD and PROVISIONS can be set in YAML with `init: gold: 10, provisions: 3`
+- Attributes displayed in a stats panel on the right side of the window with wall.jpg background
 - SKILL, STAMINA, LUCK show current value and initial value in parentheses
-- GOLD shows only current value (no initial value displayed)
+- GOLD and PROVISIONS show only current value (no initial value displayed)
+- All text in character sheet is white with semi-transparent background for readability
 - Attributes can be modified through YAML chapter actions using the `modify` action
 - SKILL, STAMINA, LUCK values cannot exceed their initial values (capped at max)
 - SKILL, STAMINA, LUCK, GOLD values cannot go below 0 (capped at min)
@@ -65,7 +80,11 @@
           value: 2
         - field: GOLD
           value: 10
+        - field: PROVISIONS
+          value: 2
   ```
+- Valid attributes: SKILL, STAMINA, LUCK, GOLD, PROVISIONS
+- Unknown attributes throw IllegalArgumentException with helpful error message
 - Modifications are applied when entering a chapter (including chapter 0)
 - A notification popup appears in the lower left corner showing all attribute changes
 - Notification auto-dismisses after 3 seconds
@@ -114,6 +133,14 @@
   - Animated dice panel with table.jpg background showing dice rolls
   - Scrollable battle log in center showing all turn results
   - "Next Turn" button to execute each turn
+- Dice animation:
+  - Dice displayed as: Hero: [dice][dice] Enemy: [dice][dice] in one row per enemy
+  - Dice drawn with dots (not Unicode characters) for cross-platform compatibility
+  - Dice panel height scales dynamically: 100px per enemy
+  - Dice spin independently at different speeds for 1 second
+  - After animation, dice show actual rolled values
+  - Next Turn button disabled during animation
+  - Dice animation shows for killing blow
 - Dice animation:
   - Single enemy: 4 dice (2 for hero, 2 for enemy) in one row
   - Multiple enemies: 4 dice per enemy (2 hero + 2 enemy) in separate rows
