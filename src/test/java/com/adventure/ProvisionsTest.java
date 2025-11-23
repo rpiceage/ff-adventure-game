@@ -99,4 +99,23 @@ public class ProvisionsTest {
         // Cannot consume anymore
         assertFalse(hero.consumeProvision());
     }
+    
+    @Test
+    public void testModifyProvisions() {
+        Hero hero = new Hero(12, 24, 12, 0, 3);
+        
+        assertEquals(3, hero.getProvisions());
+        
+        // Add provisions
+        hero.modifyProvisions(2);
+        assertEquals(5, hero.getProvisions());
+        
+        // Remove provisions
+        hero.modifyProvisions(-3);
+        assertEquals(2, hero.getProvisions());
+        
+        // Cannot go below 0
+        hero.modifyProvisions(-10);
+        assertEquals(0, hero.getProvisions());
+    }
 }

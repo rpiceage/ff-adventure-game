@@ -140,6 +140,12 @@ public class Hero {
         return provisions;
     }
 
+    public void modifyProvisions(int delta) {
+        int newValue = this.provisions + delta;
+        this.provisions = Math.max(0, newValue);
+        lastModifications.add(Messages.get(Messages.Key.PROVISIONS) + " " + (delta > 0 ? "+" : "") + delta);
+    }
+
     public boolean consumeProvision() {
         if (provisions <= 0) {
             return false;
