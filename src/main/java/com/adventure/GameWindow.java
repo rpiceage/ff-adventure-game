@@ -133,8 +133,12 @@ public class GameWindow extends JFrame {
         
         add(statsPanel, BorderLayout.EAST);
 
-        buttonPanel = new JPanel();
-        add(buttonPanel, BorderLayout.SOUTH);
+        buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JScrollPane buttonScrollPane = new JScrollPane(buttonPanel);
+        buttonScrollPane.setPreferredSize(new Dimension(0, 80));
+        buttonScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        buttonScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        add(buttonScrollPane, BorderLayout.SOUTH);
 
         updateDisplay();
         setVisible(true);
