@@ -10,9 +10,15 @@ public class GameController {
     private Adventure.Chapter currentChapter;
     private Hero hero;
     private List<Action> actions;
+    private String gameYamlPath;
 
     public GameController(Adventure adventure) {
+        this(adventure, null);
+    }
+    
+    public GameController(Adventure adventure, String gameYamlPath) {
         this.adventure = adventure;
+        this.gameYamlPath = gameYamlPath;
         this.currentChapter = getChapter(0);
         int initialGold = (adventure.init != null) ? adventure.init.gold : 0;
         int initialProvisions = (adventure.init != null) ? adventure.init.provisions : 0;
@@ -82,6 +88,14 @@ public class GameController {
     public Hero getHero() {
         return hero;
     }
+    
+    public Adventure getAdventure() {
+        return adventure;
+    }
+    
+    public String getGameYamlPath() {
+        return gameYamlPath;
+    }
 
     public String getDisplayText() {
         for (Map<String, Object> actionData : currentChapter.actions) {
@@ -134,5 +148,29 @@ public class GameController {
         return adventure.chapters.stream()
             .filter(c -> c.index == index)
             .findFirst().orElse(null);
+    }
+    
+    public SaveGame createSaveGame() {
+        return new SaveGame(adventure.title, gameYamlPath, currentChapter.index, hero);
+    }
+    
+    public void loadSaveGame(SaveGame saveGame) {
+        // Restore hero state
+        hero.setSkill(saveGame.getSkill());
+        hero.setStamina(saveGame.getStamina());
+        hero.setLuck(saveGame.getLuck());
+        hero.setGold(saveGame.getGold());
+        hero.setProvisions(saveGame.getProvisions());
+        hero.setMaxSkill(saveGame.getMaxSkill());
+        hero.setMaxStamina(saveGame.getMaxStamina());
+        hero.setMaxLuck(saveGame.getMaxLuck());
+        hero.setInventory(saveGame.getInventory());
+        hero.setEvents(saveGame.getEvents());
+        
+        // Clear modification history
+        hero.clearModifications();
+        
+        // Go to saved chapter
+        goToChapter(saveGame.getCurrentChapterIndex());
     }
 }

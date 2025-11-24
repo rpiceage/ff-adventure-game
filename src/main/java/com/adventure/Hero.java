@@ -9,9 +9,9 @@ public class Hero {
     private int luck;
     private int gold;
     private int provisions;
-    private final int maxSkill;
-    private final int maxStamina;
-    private final int maxLuck;
+    private int maxSkill;
+    private int maxStamina;
+    private int maxLuck;
     private List<String> lastModifications;
     private List<String> inventory;
     private List<String> events;
@@ -157,4 +157,16 @@ public class Hero {
         modifyStaminaSilent(4);
         return true;
     }
+    
+    // Setters for loading save games
+    public void setSkill(int skill) { this.skill = skill; }
+    public void setStamina(int stamina) { this.stamina = stamina; }
+    public void setLuck(int luck) { this.luck = luck; }
+    public void setGold(int gold) { this.gold = gold; }
+    public void setProvisions(int provisions) { this.provisions = provisions; }
+    public void setMaxSkill(int maxSkill) { this.maxSkill = maxSkill; }
+    public void setMaxStamina(int maxStamina) { this.maxStamina = maxStamina; }
+    public void setMaxLuck(int maxLuck) { this.maxLuck = maxLuck; }
+    public void setInventory(List<String> inventory) { this.inventory = new ArrayList<>(inventory); }
+    public void setEvents(List<String> events) { this.events = new ArrayList<>(events); }
 }

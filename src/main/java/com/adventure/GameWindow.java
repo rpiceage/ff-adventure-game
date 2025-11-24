@@ -32,11 +32,18 @@ public class GameWindow extends JFrame {
     private int prevSkill, prevStamina, prevLuck, prevGold, prevProvisions;
 
     public GameWindow(Adventure adventure) {
-        this.controller = new GameController(adventure);
+        this(adventure, null);
+    }
+    
+    public GameWindow(Adventure adventure, String gameYamlPath) {
+        this.controller = new GameController(adventure, gameYamlPath);
         setTitle(adventure.title);
         setSize(1200, 800);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        
+        // Create menu bar
+        createMenuBar();
 
         try {
             InputStream bgStream = getClass().getClassLoader().getResourceAsStream("pergament.jpg");
@@ -174,7 +181,7 @@ public class GameWindow extends JFrame {
         setVisible(true);
     }
 
-    private void updateDisplay() {
+    public void updateDisplay() {
         updateHeroStats();
         
         Hero hero = controller.getHero();
@@ -583,6 +590,81 @@ public class GameWindow extends JFrame {
         if (hero.consumeProvision()) {
             updateHeroStats();
             updateDisplay();
+        }
+    }
+    
+    private void createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        
+        JMenuItem saveItem = new JMenuItem("Save Game");
+        saveItem.addActionListener(e -> saveGame());
+        fileMenu.add(saveItem);
+        
+        JMenuItem loadItem = new JMenuItem("Load Game");
+        loadItem.addActionListener(e -> loadGame());
+        fileMenu.add(loadItem);
+        
+        menuBar.add(fileMenu);
+        setJMenuBar(menuBar);
+    }
+    
+    public GameController getController() {
+        return controller;
+    }
+    
+    private void saveGame() {
+        JFileChooser fileChooser = new JFileChooser(SaveGameManager.getDefaultSaveDirectory());
+        fileChooser.setDialogTitle("Save Game");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("FF Save Files (*.ffsave)", "ffsave"));
+        
+        // Set default filename: {game-title}_{timestamp}.ffsave
+        String gameTitle = controller.getAdventure().title.replaceAll("[^a-zA-Z0-9]", "_");
+        String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+        String defaultFilename = gameTitle + "_" + timestamp + ".ffsave";
+        fileChooser.setSelectedFile(new File(SaveGameManager.getDefaultSaveDirectory(), defaultFilename));
+        
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            if (!file.getName().endsWith(".ffsave")) {
+                file = new File(file.getAbsolutePath() + ".ffsave");
+            }
+            
+            try {
+                SaveGame saveGame = controller.createSaveGame();
+                SaveGameManager.save(saveGame, file);
+                JOptionPane.showMessageDialog(this, "Game saved successfully!", "Save Game", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error saving game: " + ex.getMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    private void loadGame() {
+        JFileChooser fileChooser = new JFileChooser(SaveGameManager.getDefaultSaveDirectory());
+        fileChooser.setDialogTitle("Load Game");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("FF Save Files (*.ffsave)", "ffsave"));
+        
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try {
+                SaveGame saveGame = SaveGameManager.load(fileChooser.getSelectedFile());
+                
+                // Check if it's the same game
+                if (!saveGame.getGameYamlPath().equals(controller.getGameYamlPath())) {
+                    // Different game - create new window and close this one
+                    SaveGameManager.loadAndStartGame(fileChooser.getSelectedFile());
+                    dispose();
+                } else {
+                    // Same game - just load the save
+                    controller.loadSaveGame(saveGame);
+                    updateDisplay();
+                    JOptionPane.showMessageDialog(this, "Game loaded successfully!", "Load Game", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error loading game: " + ex.getMessage(), "Load Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

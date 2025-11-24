@@ -14,13 +14,39 @@
 - Shown when application starts without command-line arguments
 - Menu options:
   - New Game: Opens game selection screen
-  - Load Game: (Not yet implemented)
+  - Load Game: Opens file chooser to load a saved game
 - Game Selection Screen:
   - Dynamically scans resources/books/ directory for YAML files
   - Displays game titles from YAML metadata
   - Clicking a game starts it
   - Back button returns to welcome menu
 - Command-line argument still supported: `java -jar ff.jar path/to/game.yaml`
+
+## Save/Load Game
+- Save game via File → Save Game menu in game window
+- Load game via:
+  - Welcome menu "Load Game" button
+  - File → Load Game menu in game window
+- Save file format:
+  - JSON format with `.ffsave` extension
+  - Default location: `~/.ff/saves/`
+  - Default filename: `{game-title}_{timestamp}.ffsave`
+  - User can choose any location via file chooser
+- Saved state includes:
+  - Game title and YAML resource path
+  - Current chapter index
+  - All hero attributes (skill, stamina, luck, gold, provisions)
+  - Max attributes (initial values)
+  - Complete inventory (items)
+  - Recorded events
+- Loading a save:
+  - Restores complete game state
+  - Loads correct game YAML from resources
+  - Applies saved language setting
+  - If loading different game from menu, creates new window
+  - If loading same game from menu, updates current window
+- SaveGameManager handles all save/load operations
+- Uses Jackson library for JSON serialization
 
 ## Internationalization
 - Optional `language` field in YAML (defaults to "en")

@@ -106,7 +106,7 @@ public class GameSelectionWindow extends JFrame {
                     Messages.setLanguage(adventure.language);
                 }
                 
-                new GameWindow(adventure);
+                new GameWindow(adventure, gameFile);
                 dispose();
             }
         } catch (Exception e) {

@@ -35,7 +35,7 @@ public class WelcomeWindow extends JFrame {
         loadGameButton.setFont(new Font("Arial", Font.PLAIN, 24));
         loadGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loadGameButton.setMaximumSize(new Dimension(300, 60));
-        loadGameButton.setEnabled(false); // TODO: Implement load game
+        loadGameButton.addActionListener(e -> loadGame());
         panel.add(loadGameButton);
         
         add(panel);
@@ -45,5 +45,21 @@ public class WelcomeWindow extends JFrame {
     private void showGameSelection() {
         new GameSelectionWindow(this);
         setVisible(false);
+    }
+    
+    private void loadGame() {
+        JFileChooser fileChooser = new JFileChooser(SaveGameManager.getDefaultSaveDirectory());
+        fileChooser.setDialogTitle("Load Game");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("FF Save Files (*.ffsave)", "ffsave"));
+        
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try {
+                SaveGameManager.loadAndStartGame(fileChooser.getSelectedFile());
+                dispose();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error loading game: " + ex.getMessage(), "Load Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }
