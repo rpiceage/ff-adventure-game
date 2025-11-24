@@ -1,0 +1,74 @@
+title: Lose Item Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You find some items on the ground.
+      - addItem:
+          items:
+            - name: Sword
+            - name: Shield
+            - name: Potion
+            - name: Key
+      - goto:
+          - chapter: 1
+            text: Continue your adventure
+  - index: 1
+    actions:
+      - display: |
+          Choose your fate.
+      - goto:
+          - chapter: 2
+            text: Lose your shield
+          - chapter: 3
+            text: Lose sword and shield
+          - chapter: 4
+            text: Lose everything except sword
+          - chapter: 5
+            text: Lose everything
+  - index: 2
+    actions:
+      - display: |
+          You lose your shield!
+      - loseItem:
+          lose:
+            - Shield
+      - goto:
+          - chapter: 6
+            text: Continue
+  - index: 3
+    actions:
+      - display: |
+          You lose your sword and shield!
+      - loseItem:
+          lose:
+            - Sword
+            - Shield
+      - goto:
+          - chapter: 6
+            text: Continue
+  - index: 4
+    actions:
+      - display: |
+          You lose everything except your sword!
+      - loseItem:
+          all:
+            except:
+              - Sword
+      - goto:
+          - chapter: 6
+            text: Continue
+  - index: 5
+    actions:
+      - display: |
+          You lose everything!
+      - loseItem:
+          all: {}
+      - goto:
+          - chapter: 6
+            text: Continue
+  - index: 6
+    actions:
+      - display: |
+          Your adventure ends here.

@@ -115,6 +115,14 @@ public class Hero {
     public void addItem(String itemName) {
         inventory.add(itemName);
     }
+    
+    public void removeItem(String itemName) {
+        inventory.remove(itemName);
+    }
+    
+    public void removeAllItemsExcept(List<String> except) {
+        inventory.removeIf(item -> !except.contains(item));
+    }
 
     public List<String> getInventory() {
         return new ArrayList<>(inventory);

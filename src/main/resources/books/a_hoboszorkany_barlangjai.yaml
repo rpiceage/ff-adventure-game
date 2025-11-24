@@ -459,9 +459,10 @@ chapters:
             values:
               - field: GOLD
                 value: 0
+              - field: PROVISIONS
+                value: 0
         - loseItem:
             all:
-              withProvisions: true
               except:
                 - Kard
         - luck:

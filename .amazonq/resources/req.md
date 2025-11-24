@@ -262,6 +262,33 @@
   - Items displayed in order collected
 - Items are stored as strings (item names)
 
+## Lose Item System
+- Items can be removed from hero's inventory
+- YAML format for losing items:
+  ```yaml
+  - loseItem:
+      lose:
+        - Shield
+        - Sword
+  ```
+- YAML format for losing all items except specific ones:
+  ```yaml
+  - loseItem:
+      all:
+        except:
+          - Sword
+  ```
+- Lose item mechanics:
+  - `lose` field: removes specific items from inventory
+  - `all` field: removes all items, optionally keeping items in `except` list
+  - Applied automatically when entering chapter (PASSIVE action)
+  - No notification shown (silent operation)
+  - Items not in inventory are silently ignored
+- Lose item UI:
+  - No UI interaction required
+  - Item buttons disappear when items are removed
+  - Useful for story events (losing backpack, theft, etc.)
+
 ## Use Item System
 - Items can be used in specific chapters to navigate to different chapters
 - YAML format for using items:

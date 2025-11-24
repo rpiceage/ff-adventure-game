@@ -38,6 +38,7 @@ public class GameController {
         actions.add(new LuckAction());
         actions.add(new AttributeTestAction());
         actions.add(new AddItemAction());
+        actions.add(new LoseItemAction());
         actions.add(new UseItemAction());
         actions.add(new CheckEventAction());
         actions.add(new CheckParameterAction());
