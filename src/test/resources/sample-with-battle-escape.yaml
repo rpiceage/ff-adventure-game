@@ -1,0 +1,24 @@
+title: Battle Escape Test
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You encounter a fierce warrior. Fight or flee after 2 turns!
+      - battle:
+          enemies:
+            - enemy: Fierce Warrior
+              skill: 9
+              stamina: 10
+          escape:
+            turn: 2
+            chapter: 2
+          win: 1
+          battleText: After 2 turns, you can escape if you wish.
+  - index: 1
+    actions:
+      - display: |
+          Victory! You defeated the warrior.
+  - index: 2
+    actions:
+      - display: |
+          You escaped from the battle.

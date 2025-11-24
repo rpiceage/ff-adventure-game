@@ -512,4 +512,29 @@ public class UITest {
             assertTrue(verticalScrollBar.isVisible(), "Vertical scrollbar should be visible when content exceeds viewport");
         }
     }
+    
+    @Test
+    public void testBattleEscapeYamlLoads() throws Exception {
+        // Simple test to verify battle escape YAML loads correctly
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-battle-escape.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+        
+        assertNotNull(adventure);
+        assertEquals("Battle Escape Test", adventure.title);
+        
+        // Verify battle has escape configuration
+        var battleAction = adventure.chapters.get(0).actions.stream()
+            .filter(a -> a.containsKey("battle"))
+            .findFirst()
+            .orElse(null);
+        
+        assertNotNull(battleAction);
+        var battleData = (java.util.Map<String, Object>) battleAction.get("battle");
+        assertTrue(battleData.containsKey("escape"));
+        
+        var escapeData = (java.util.Map<String, Object>) battleData.get("escape");
+        assertEquals(2, escapeData.get("turn"));
+        assertEquals(2, escapeData.get("chapter"));
+    }
 }

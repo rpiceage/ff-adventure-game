@@ -170,6 +170,12 @@
   - Optional `winText` field for custom victory message
   - Replaces default "You have defeated all enemies!" message
   - Can be used with or without interrupt
+- Battle escape:
+  - Optional `escape.turn` specifies after which turn escape becomes available
+  - Optional `escape.chapter` specifies where to go when escaping
+  - Escape button appears alongside "Next Turn" button when turn >= escape.turn
+  - Clicking escape costs 2 STAMINA and navigates to escape chapter
+  - Optional `battleText` to inform player about escape option (added to battle log)
 - Battle UI:
   - Enemy stats panel at top showing all enemies with SKILL and STAMINA
   - Simultaneous mode: Radio buttons to select target enemy (bold text shows selected)

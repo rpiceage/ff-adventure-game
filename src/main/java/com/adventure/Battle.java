@@ -15,6 +15,8 @@ public class Battle {
     private int mode; // 0 = simultaneous (default), 1 = sequential
     private Integer interruptStamina; // Optional: battle ends when enemy reaches this stamina
     private boolean interrupted; // Track if battle was interrupted
+    private Integer escapeTurn; // Optional: turn after which escape is allowed
+    private int currentTurn; // Track current turn number
 
     public Battle(Hero hero, String enemyName, int enemySkill, int enemyStamina) {
         this(hero, enemyName, enemySkill, enemyStamina, new Random());
@@ -31,6 +33,8 @@ public class Battle {
         this.mode = 0;
         this.interruptStamina = null;
         this.interrupted = false;
+        this.escapeTurn = null;
+        this.currentTurn = 0;
     }
 
     public Battle(Hero hero, List<Enemy> enemies) {
@@ -51,6 +55,8 @@ public class Battle {
         this.mode = mode;
         this.interruptStamina = null;
         this.interrupted = false;
+        this.escapeTurn = null;
+        this.currentTurn = 0;
     }
 
     public String getEnemyName() {
@@ -96,8 +102,13 @@ public class Battle {
     public String getBattleLog() {
         return battleLog.toString();
     }
+    
+    public void appendToBattleLog(String text) {
+        battleLog.append(text);
+    }
 
     public void executeTurn() {
+        currentTurn++;
         StringBuilder turnResult = new StringBuilder();
         int heroDamageTaken = 0;
 
@@ -216,5 +227,17 @@ public class Battle {
     
     public boolean wasInterrupted() {
         return interrupted;
+    }
+    
+    public void setEscapeTurn(Integer escapeTurn) {
+        this.escapeTurn = escapeTurn;
+    }
+    
+    public boolean canEscape() {
+        return escapeTurn != null && currentTurn >= escapeTurn;
+    }
+    
+    public int getCurrentTurn() {
+        return currentTurn;
     }
 }

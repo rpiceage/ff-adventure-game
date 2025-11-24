@@ -39,6 +39,7 @@ public class Messages {
         BATTLE_HERO_LOSES,
         BATTLE_DRAW,
         BATTLE_HERO_TAKES_DAMAGE,
+        BATTLE_ESCAPE,
         ATTRIBUTE_TEST_TITLE,
         ATTRIBUTE_TEST_BUTTON,
         ATTRIBUTE_TEST_SUCCESS,
@@ -193,6 +194,10 @@ public class Messages {
         Map.entry(Key.ATTRIBUTE_TEST_FAIL, Map.of(
             "en", "Failed!",
             "hu", "Sikertelen!"
+        )),
+        Map.entry(Key.BATTLE_ESCAPE, Map.of(
+            "en", "Escape (-2 STAMINA)",
+            "hu", "Menekülés (-2 ÉLETERŐ)"
         ))
     );
     

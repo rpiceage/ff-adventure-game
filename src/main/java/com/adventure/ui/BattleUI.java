@@ -55,6 +55,14 @@ public class BattleUI {
             }
         }
         
+        // Set escape turn if present
+        if (battleData.containsKey("escape")) {
+            Map<String, Object> escapeData = (Map<String, Object>) battleData.get("escape");
+            if (escapeData.containsKey("turn")) {
+                currentBattle.setEscapeTurn((Integer) escapeData.get("turn"));
+            }
+        }
+        
         centerPanel = new JPanel(new BorderLayout());
         battleStatsPanel = new JPanel();
         battleStatsPanel.setLayout(new BoxLayout(battleStatsPanel, BoxLayout.Y_AXIS));
@@ -104,6 +112,11 @@ public class BattleUI {
         
         centerPanel.add(topPanel, BorderLayout.NORTH);
         centerPanel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+        
+        // Add battleText to battle log if present
+        if (battleData.containsKey("battleText")) {
+            currentBattle.appendToBattleLog((String) battleData.get("battleText") + "\n\n");
+        }
         
         updateDisplay();
         return centerPanel;
@@ -256,6 +269,24 @@ public class BattleUI {
                 animTimer.start();
             });
             buttonPanel.add(nextTurnButton);
+            
+            // Add escape button if escape is available
+            if (currentBattle.canEscape()) {
+                Map<String, Object> battleData = (Map<String, Object>) battleActionData.get("battle");
+                Map<String, Object> escapeData = (Map<String, Object>) battleData.get("escape");
+                int escapeChapter = (Integer) escapeData.get("chapter");
+                
+                JButton escapeButton = new JButton(Messages.get(Messages.Key.BATTLE_ESCAPE));
+                escapeButton.addActionListener(e -> {
+                    // Escaping costs 2 STAMINA
+                    controller.getHero().modifyStaminaSilent(-2);
+                    gameWindow.updateHeroStats();
+                    currentBattle = null;
+                    controller.goToChapter(escapeChapter);
+                    onComplete.run();
+                });
+                buttonPanel.add(escapeButton);
+            }
         }
         
         buttonPanel.revalidate();
