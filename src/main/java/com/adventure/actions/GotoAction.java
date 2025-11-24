@@ -30,16 +30,40 @@ public class GotoAction implements Action {
         List<Map<String, Object>> gotoData = (List<Map<String, Object>>) actionData.get("goto");
         List<Choice> choices = new ArrayList<>();
         for (int i = 0; i < gotoData.size(); i++) {
-            int chapter = (Integer) gotoData.get(i).get("chapter");
-            String text = (String) gotoData.get(i).get("text");
+            Map<String, Object> choice = gotoData.get(i);
+            int chapter = (Integer) choice.get("chapter");
+            String text = (String) choice.get("text");
             
             // Filter out visited chapters
             if (controller != null && controller.getHero().hasVisitedChapter(chapter)) {
                 continue;
             }
             
-            choices.add(new Choice(i, text));
+            // Check condition if present
+            boolean enabled = true;
+            if (controller != null && choice.containsKey("condition")) {
+                Map<String, Object> condition = (Map<String, Object>) choice.get("condition");
+                if (condition.containsKey("parameter")) {
+                    Map<String, Object> parameter = (Map<String, Object>) condition.get("parameter");
+                    String paramName = (String) parameter.get("name");
+                    int threshold = (Integer) parameter.get("greaterThanOrEquals");
+                    
+                    int value = getAttributeValue(controller, paramName);
+                    enabled = value >= threshold;
+                }
+            }
+            
+            choices.add(new Choice(i, text, enabled));
         }
         return choices;
+    }
+    
+    private int getAttributeValue(GameController controller, String attribute) {
+        try {
+            String methodName = "get" + attribute.charAt(0) + attribute.substring(1).toLowerCase();
+            return (int) controller.getHero().getClass().getMethod(methodName).invoke(controller.getHero());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Unknown attribute: " + attribute, e);
+        }
     }
 }

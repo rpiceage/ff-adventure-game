@@ -305,8 +305,10 @@ public class GameWindow extends JFrame {
                             com.adventure.actions.GotoAction gotoAction = (com.adventure.actions.GotoAction) action;
                             List<com.adventure.actions.Action.Choice> choices = gotoAction.getChoices(controller, actionData);
                             for (int i = 0; i < choices.size(); i++) {
-                                JButton btn = new JButton(choices.get(i).text);
-                                int choiceIndex = choices.get(i).index; // Use original index from Choice
+                                com.adventure.actions.Action.Choice choice = choices.get(i);
+                                JButton btn = new JButton(choice.text);
+                                btn.setEnabled(choice.enabled);
+                                int choiceIndex = choice.index; // Use original index from Choice
                                 Map<String, Object> gotoActionData = actionData;
                                 btn.addActionListener(e -> {
                                     controller.selectChoice(choiceIndex, gotoActionData);

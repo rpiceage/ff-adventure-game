@@ -416,6 +416,30 @@
   - Shows skull.jpg background (same as stamina death)
   - No way to continue after death
 
+## Conditional Goto Choices
+- Goto choices can be conditionally enabled based on hero attribute values
+- YAML format for conditional choices:
+  ```yaml
+  - goto:
+      - chapter: 1
+        text: Buy item (50 gold)
+        condition:
+          parameter:
+            name: GOLD
+            greaterThanOrEquals: 50
+      - chapter: 2
+        text: Leave
+  ```
+- Conditional choice mechanics:
+  - `condition.parameter.name` specifies the attribute (SKILL, STAMINA, LUCK, GOLD, PROVISIONS)
+  - `condition.parameter.greaterThanOrEquals` specifies the threshold value
+  - If hero's attribute value >= threshold, choice is enabled
+  - If hero's attribute value < threshold, choice is disabled but still visible
+- Conditional choice UI:
+  - Disabled choices appear as grayed-out buttons
+  - Player can see what they need but cannot select disabled options
+  - Useful for skill checks, purchase requirements, etc.
+
 ## Visited Chapter Tracking
 - Prevents revisiting chapters to avoid loops and maintain game progression
 - Hero tracks all visited chapters in order

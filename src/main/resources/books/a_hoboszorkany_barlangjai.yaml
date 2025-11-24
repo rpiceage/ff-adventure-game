@@ -475,9 +475,7 @@ chapters:
         - addItem:
             items:
             - name: Tőr
-              multiple: true
             - name: Tőr
-              multiple: true
             - name: Sós hering
             - name: Gyertya
         - modify:
@@ -2224,13 +2222,9 @@ chapters:
             - name: Fogakkal teli doboz
             - name: Pácolt gyíkfark
             - name: Sárkánytojás
-              multiple: true
             - name: Sárkánytojás
-              multiple: true
             - name: Sárkánytojás
-              multiple: true
             - name: Sárkánytojás
-              multiple: true
         - goto:
             - chapter: 150
               text: Tovább...
@@ -3992,9 +3986,7 @@ chapters:
             - name: Sózott hal
             - name: Gyertya
             - name: Tőr
-              multiple: true
             - name: Tőr
-              multiple: true
         - modify:
             values:
                 - field: GOLD
@@ -4215,9 +4207,7 @@ chapters:
             - name: Sózott hal
             - name: Gyertya
             - name: Tőr
-              multiple: true
             - name: Tőr
-              multiple: true
         - modify:
             values:
                 - field: GOLD

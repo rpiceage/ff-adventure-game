@@ -1,0 +1,36 @@
+title: Conditional Goto Test
+language: en
+init:
+  gold: 50
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You have 50 gold. The merchant offers you two items.
+      - goto:
+          - chapter: 1
+            text: Buy cheap item (50 gold)
+            condition:
+              parameter:
+                name: GOLD
+                greaterThanOrEquals: 50
+          - chapter: 2
+            text: Buy expensive item (100 gold)
+            condition:
+              parameter:
+                name: GOLD
+                greaterThanOrEquals: 100
+          - chapter: 3
+            text: Leave
+  - index: 1
+    actions:
+      - display: |
+          You bought the cheap item.
+  - index: 2
+    actions:
+      - display: |
+          You bought the expensive item.
+  - index: 3
+    actions:
+      - display: |
+          You left without buying.

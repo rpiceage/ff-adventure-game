@@ -8,10 +8,16 @@ public interface Action {
     class Choice {
         public final int index;
         public final String text;
+        public final boolean enabled;
         
         public Choice(int index, String text) {
+            this(index, text, true);
+        }
+        
+        public Choice(int index, String text, boolean enabled) {
             this.index = index;
             this.text = text;
+            this.enabled = enabled;
         }
     }
     
