@@ -63,6 +63,14 @@ public class BattleUI {
             }
         }
         
+        // Set modifier if present
+        if (battleData.containsKey("modifier")) {
+            Map<String, Object> modifierData = (Map<String, Object>) battleData.get("modifier");
+            int value = (Integer) modifierData.get("value");
+            String text = (String) modifierData.get("text");
+            currentBattle.setModifier(value, text);
+        }
+        
         centerPanel = new JPanel(new BorderLayout());
         battleStatsPanel = new JPanel();
         battleStatsPanel.setLayout(new BoxLayout(battleStatsPanel, BoxLayout.Y_AXIS));
@@ -116,6 +124,11 @@ public class BattleUI {
         // Add battleText to battle log if present
         if (battleData.containsKey("battleText")) {
             currentBattle.appendToBattleLog((String) battleData.get("battleText") + "\n\n");
+        }
+        
+        // Add modifier text to battle log if present
+        if (currentBattle.getModifierText() != null) {
+            currentBattle.appendToBattleLog(currentBattle.getModifierText() + "\n\n");
         }
         
         updateDisplay();

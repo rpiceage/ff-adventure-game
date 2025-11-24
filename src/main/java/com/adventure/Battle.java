@@ -17,6 +17,8 @@ public class Battle {
     private boolean interrupted; // Track if battle was interrupted
     private Integer escapeTurn; // Optional: turn after which escape is allowed
     private int currentTurn; // Track current turn number
+    private int modifierValue; // Modifier to hero's attack strength
+    private String modifierText; // Explanation text for the modifier
 
     public Battle(Hero hero, String enemyName, int enemySkill, int enemyStamina) {
         this(hero, enemyName, enemySkill, enemyStamina, new Random());
@@ -35,6 +37,8 @@ public class Battle {
         this.interrupted = false;
         this.escapeTurn = null;
         this.currentTurn = 0;
+        this.modifierValue = 0;
+        this.modifierText = null;
     }
 
     public Battle(Hero hero, List<Enemy> enemies) {
@@ -57,6 +61,8 @@ public class Battle {
         this.interrupted = false;
         this.escapeTurn = null;
         this.currentTurn = 0;
+        this.modifierValue = 0;
+        this.modifierText = null;
     }
 
     public String getEnemyName() {
@@ -119,7 +125,7 @@ public class Battle {
             
             int heroDice1 = random.nextInt(6) + 1;
             int heroDice2 = random.nextInt(6) + 1;
-            int heroAttack = hero.getSkill() + heroDice1 + heroDice2;
+            int heroAttack = hero.getSkill() + heroDice1 + heroDice2 + modifierValue;
 
             int enemyDice1 = random.nextInt(6) + 1;
             int enemyDice2 = random.nextInt(6) + 1;
@@ -150,7 +156,7 @@ public class Battle {
 
                 int heroDice1 = random.nextInt(6) + 1;
                 int heroDice2 = random.nextInt(6) + 1;
-                int heroAttack = hero.getSkill() + heroDice1 + heroDice2;
+                int heroAttack = hero.getSkill() + heroDice1 + heroDice2 + modifierValue;
 
                 int enemyDice1 = random.nextInt(6) + 1;
                 int enemyDice2 = random.nextInt(6) + 1;
@@ -239,5 +245,14 @@ public class Battle {
     
     public int getCurrentTurn() {
         return currentTurn;
+    }
+    
+    public void setModifier(int value, String text) {
+        this.modifierValue = value;
+        this.modifierText = text;
+    }
+    
+    public String getModifierText() {
+        return modifierText;
     }
 }

@@ -138,6 +138,10 @@
         - enemy: Cave Man
           skill: 12
           stamina: 20
+      modifier:  # optional: modify hero's attack strength
+        attribute: SKILL
+        value: -2
+        text: Deduct 2 from your Attack Strength each round.
       interrupt:  # optional: end battle when enemy reaches this stamina
         stamina: 3
       win: 1  # chapter to go to after victory
@@ -170,6 +174,13 @@
   - Optional `winText` field for custom victory message
   - Replaces default "You have defeated all enemies!" message
   - Can be used with or without interrupt
+- Battle modifier:
+  - Optional `modifier` field to adjust hero's attack strength
+  - `modifier.attribute` specifies which attribute (currently only SKILL supported)
+  - `modifier.value` is added to hero's attack calculation (can be negative)
+  - `modifier.text` explains the modifier to the player
+  - Modifier text is displayed in battle log at start
+  - Modifier applies to every turn throughout the battle
 - Battle escape:
   - Optional `escape.turn` specifies after which turn escape becomes available
   - Optional `escape.chapter` specifies where to go when escaping

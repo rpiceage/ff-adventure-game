@@ -1,0 +1,21 @@
+title: Battle Modifier Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You enter a dark cave. A Night Hunter appears!
+      - battle:
+          enemies:
+            - enemy: Night Hunter
+              skill: 11
+              stamina: 8
+          modifier:
+            attribute: SKILL
+            value: -2
+            text: Deduct 2 from your Attack Strength each round because you are not skilled at fighting in the dark.
+          win: 1
+  - index: 1
+    actions:
+      - display: |
+          You defeated the Night Hunter! Well done.

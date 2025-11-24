@@ -226,4 +226,35 @@ public class GameFlowTest {
         assertEquals(2, controller.getCurrentChapter().index);
         assertTrue(controller.getDisplayText().contains("failed"));
     }
+    
+    private static class FixedRandom extends java.util.Random {
+        private int[] values;
+        private int index = 0;
+
+        public FixedRandom(int... values) {
+            this.values = values;
+        }
+
+        @Override
+        public int nextInt(int bound) {
+            return values[index++] - 1;
+        }
+    }
+    
+    @Test
+    public void testBattleModifierCausesHeroToLose() {
+        Hero hero = new Hero(12, 20, 12, 0, 0);
+        
+        // Without modifier: Hero 12+4+3=19 vs Enemy 10+4+4=18 -> Hero wins
+        // With -2 modifier: Hero 12+4+3-2=17 vs Enemy 10+4+4=18 -> Hero loses
+        FixedRandom random = new FixedRandom(4, 3, 4, 4);
+        Battle battle = new Battle(hero, "Night Hunter", 10, 10, random);
+        battle.setModifier(-2, "Deduct 2 from your Attack Strength.");
+        
+        battle.executeTurn();
+        
+        // Hero should take damage because of the modifier
+        assertEquals(18, hero.getStamina()); // 20 - 2 = 18
+        assertEquals(10, battle.getEnemyStamina()); // Enemy takes no damage
+    }
 }
