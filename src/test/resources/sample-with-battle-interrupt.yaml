@@ -1,0 +1,19 @@
+title: Battle Interrupt Test
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You encounter a warrior. Fight until he surrenders!
+      - battle:
+          enemies:
+            - enemy: Warrior
+              skill: 7
+              stamina: 8
+          interrupt:
+            stamina: 3
+          win: 1
+          winText: The warrior drops his weapon and surrenders!
+  - index: 1
+    actions:
+      - display: |
+          Victory! The warrior has surrendered.

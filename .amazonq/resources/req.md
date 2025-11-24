@@ -138,7 +138,10 @@
         - enemy: Cave Man
           skill: 12
           stamina: 20
+      interrupt:  # optional: end battle when enemy reaches this stamina
+        stamina: 3
       win: 1  # chapter to go to after victory
+      winText: The enemy surrenders!  # optional: custom victory message
   ```
 - Battle mechanics (single enemy):
   - Each turn: both hero and enemy roll 2d6 and add their SKILL value
@@ -158,6 +161,15 @@
   - Hero takes 0 or 2 damage per turn (from current enemy only)
   - When an enemy dies, next enemy becomes active
   - Battle ends when all enemies dead or hero dies
+- Battle interrupt:
+  - Optional `interrupt.stamina` threshold
+  - Battle ends when first enemy's stamina reaches or goes below threshold
+  - Counts as hero victory (enemy surrenders/flees)
+  - Enemy remains alive but battle is over
+- Custom victory text:
+  - Optional `winText` field for custom victory message
+  - Replaces default "You have defeated all enemies!" message
+  - Can be used with or without interrupt
 - Battle UI:
   - Enemy stats panel at top showing all enemies with SKILL and STAMINA
   - Simultaneous mode: Radio buttons to select target enemy (bold text shows selected)

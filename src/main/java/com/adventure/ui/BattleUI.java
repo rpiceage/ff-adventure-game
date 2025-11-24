@@ -47,6 +47,14 @@ public class BattleUI {
         int mode = battleData.containsKey("mode") ? (Integer) battleData.get("mode") : 0;
         currentBattle = new Battle(controller.getHero(), enemies, new java.util.Random(), mode);
         
+        // Set interrupt stamina if present
+        if (battleData.containsKey("interrupt")) {
+            Map<String, Object> interruptData = (Map<String, Object>) battleData.get("interrupt");
+            if (interruptData.containsKey("stamina")) {
+                currentBattle.setInterruptStamina((Integer) interruptData.get("stamina"));
+            }
+        }
+        
         centerPanel = new JPanel(new BorderLayout());
         battleStatsPanel = new JPanel();
         battleStatsPanel.setLayout(new BoxLayout(battleStatsPanel, BoxLayout.Y_AXIS));
@@ -159,8 +167,15 @@ public class BattleUI {
         
         if (currentBattle.isOver()) {
             if (currentBattle.heroWon()) {
-                textArea.append("\n" + Messages.get(Messages.Key.BATTLE_VICTORY_ALL));
                 Map<String, Object> battleData = (Map<String, Object>) battleActionData.get("battle");
+                
+                // Use winText if present, otherwise use default victory message
+                if (battleData.containsKey("winText")) {
+                    textArea.append("\n" + battleData.get("winText"));
+                } else {
+                    textArea.append("\n" + Messages.get(Messages.Key.BATTLE_VICTORY_ALL));
+                }
+                
                 int winChapter = (Integer) battleData.get("win");
                 
                 JButton continueButton = new JButton(Messages.get(Messages.Key.BATTLE_CLOSE));

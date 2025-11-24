@@ -13,6 +13,8 @@ public class Battle {
     private String lastTurnResult;
     private StringBuilder battleLog;
     private int mode; // 0 = simultaneous (default), 1 = sequential
+    private Integer interruptStamina; // Optional: battle ends when enemy reaches this stamina
+    private boolean interrupted; // Track if battle was interrupted
 
     public Battle(Hero hero, String enemyName, int enemySkill, int enemyStamina) {
         this(hero, enemyName, enemySkill, enemyStamina, new Random());
@@ -27,6 +29,8 @@ public class Battle {
         this.lastTurnResult = "";
         this.battleLog = new StringBuilder();
         this.mode = 0;
+        this.interruptStamina = null;
+        this.interrupted = false;
     }
 
     public Battle(Hero hero, List<Enemy> enemies) {
@@ -45,6 +49,8 @@ public class Battle {
         this.lastTurnResult = "";
         this.battleLog = new StringBuilder();
         this.mode = mode;
+        this.interruptStamina = null;
+        this.interrupted = false;
     }
 
     public String getEnemyName() {
@@ -167,17 +173,25 @@ public class Battle {
             hero.modifyStaminaSilent(-heroDamageTaken);
             turnResult.append(String.format(Messages.get(Messages.Key.BATTLE_HERO_TAKES_DAMAGE), heroDamageTaken)).append("\n");
         }
+        
+        // Check for interrupt condition
+        if (interruptStamina != null && !enemies.isEmpty()) {
+            Enemy firstEnemy = enemies.get(0);
+            if (firstEnemy.getStamina() <= interruptStamina && firstEnemy.getStamina() > 0) {
+                interrupted = true;
+            }
+        }
 
         lastTurnResult = turnResult.toString();
         battleLog.append(lastTurnResult).append("\n");
     }
 
     public boolean isOver() {
-        return hero.getStamina() == 0 || getAliveEnemies().isEmpty();
+        return hero.getStamina() == 0 || getAliveEnemies().isEmpty() || interrupted;
     }
 
     public boolean heroWon() {
-        return getAliveEnemies().isEmpty() && hero.getStamina() > 0;
+        return (getAliveEnemies().isEmpty() || interrupted) && hero.getStamina() > 0;
     }
 
     public int getLastHeroDice1() { 
@@ -194,5 +208,13 @@ public class Battle {
     
     public int getLastEnemyDice2() { 
         return enemies.get(selectedEnemyIndex).getEnemyDice2();
+    }
+    
+    public void setInterruptStamina(Integer interruptStamina) {
+        this.interruptStamina = interruptStamina;
+    }
+    
+    public boolean wasInterrupted() {
+        return interrupted;
     }
 }
