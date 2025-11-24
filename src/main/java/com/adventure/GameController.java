@@ -39,6 +39,7 @@ public class GameController {
         actions.add(new AddItemAction());
         actions.add(new UseItemAction());
         actions.add(new CheckEventAction());
+        actions.add(new CheckParameterAction());
         actions.add(new GotoAction());
     }
 

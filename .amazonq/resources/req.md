@@ -297,6 +297,32 @@
   - Button text comes from existing or missing text field
   - Seamlessly integrates with other navigation options
 
+## Check Parameter System
+- Conditional navigation based on hero attribute values
+- Compares attribute against a threshold value
+- YAML format for checking parameters:
+  ```yaml
+  - checkParameter:
+      parameter: SKILL
+      threshold: 10
+      greaterThanOrEquals:
+        chapter: 1
+        text: You managed to break the door.
+      lessThan:
+        chapter: 2
+        text: The door stays closed.
+  ```
+- Check parameter mechanics:
+  - Compares hero attribute (SKILL, STAMINA, LUCK, GOLD, PROVISIONS) to threshold
+  - If value >= threshold: shows "greaterThanOrEquals" button
+  - If value < threshold: shows "lessThan" button
+  - Only ONE button is shown based on the comparison result
+  - No dice rolling - direct attribute comparison
+- Check parameter UI:
+  - Single button displayed based on attribute check
+  - Button text comes from greaterThanOrEquals or lessThan text field
+  - Useful for skill checks, stat requirements, etc.
+
 ## Death System
 - Instant death action for wrong choices or traps
 - YAML format for death:

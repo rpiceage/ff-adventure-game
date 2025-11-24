@@ -1,0 +1,23 @@
+title: Check Parameter Test
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You encounter a locked door. Are you strong enough to break it?
+      - checkParameter:
+          parameter: SKILL
+          threshold: 10
+          greaterThanOrEquals:
+            chapter: 1
+            text: You managed to break the door.
+          lessThan:
+            chapter: 2
+            text: The door stays closed.
+  - index: 1
+    actions:
+      - display: |
+          Success! You broke through the door and continue your adventure.
+  - index: 2
+    actions:
+      - display: |
+          The door is too strong. You must find another way.
