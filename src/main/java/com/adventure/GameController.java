@@ -31,6 +31,7 @@ public class GameController {
     private void registerActions() {
         actions.add(new DisplayAction());
         actions.add(new ModifyAction());
+        actions.add(new SetValueAction());
         actions.add(new NewEventAction());
         actions.add(new DeathAction());
         actions.add(new BattleAction());

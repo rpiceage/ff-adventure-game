@@ -1,0 +1,51 @@
+title: Set Value Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          Start of adventure. Choose your path.
+      - goto:
+          - chapter: 1
+            text: Lose your gold
+          - chapter: 2
+            text: Lose everything
+          - chapter: 3
+            text: Nearly die
+  - index: 1
+    actions:
+      - display: |
+          You lose all your gold!
+      - setValue:
+          values:
+            - field: GOLD
+              value: 0
+      - goto:
+          - chapter: 0
+            text: Back to start
+  - index: 2
+    actions:
+      - display: |
+          You lose everything and your luck is set to 10!
+      - setValue:
+          values:
+            - field: GOLD
+              value: 0
+            - field: PROVISIONS
+              value: 0
+            - field: LUCK
+              value: 10
+      - goto:
+          - chapter: 0
+            text: Back to start
+  - index: 3
+    actions:
+      - display: |
+          You are nearly dead!
+      - setValue:
+          values:
+            - field: STAMINA
+              value: 1
+      - goto:
+          - chapter: 0
+            text: Back to start

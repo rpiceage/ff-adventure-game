@@ -326,6 +326,28 @@
   - Button text comes from existing or missing text field
   - Seamlessly integrates with other navigation options
 
+## Set Value System
+- Sets hero attribute to a specific value
+- YAML format for setting values:
+  ```yaml
+  - setValue:
+      values:
+        - field: GOLD
+          value: 0
+        - field: PROVISIONS
+          value: 0
+  ```
+- Set value mechanics:
+  - Sets attribute to exact value (not relative modification)
+  - Valid attributes: SKILL, STAMINA, LUCK, GOLD, PROVISIONS
+  - Multiple attributes can be set in one action
+  - Applied automatically when entering chapter (PASSIVE action)
+  - No notification shown (silent operation)
+- Set value UI:
+  - No UI interaction required
+  - Changes applied immediately
+  - Useful for story events that reset attributes (losing items, near-death experiences)
+
 ## Check Parameter System
 - Conditional navigation based on hero attribute values
 - Compares attribute against a threshold value
