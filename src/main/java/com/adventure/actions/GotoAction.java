@@ -23,10 +23,21 @@ public class GotoAction implements Action {
     
     @Override
     public List<Choice> getChoices(Map<String, Object> actionData) {
+        return getChoices(null, actionData);
+    }
+    
+    public List<Choice> getChoices(GameController controller, Map<String, Object> actionData) {
         List<Map<String, Object>> gotoData = (List<Map<String, Object>>) actionData.get("goto");
         List<Choice> choices = new ArrayList<>();
         for (int i = 0; i < gotoData.size(); i++) {
+            int chapter = (Integer) gotoData.get(i).get("chapter");
             String text = (String) gotoData.get(i).get("text");
+            
+            // Filter out visited chapters
+            if (controller != null && controller.getHero().hasVisitedChapter(chapter)) {
+                continue;
+            }
+            
             choices.add(new Choice(i, text));
         }
         return choices;

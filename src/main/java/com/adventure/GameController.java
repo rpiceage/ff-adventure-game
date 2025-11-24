@@ -23,6 +23,7 @@ public class GameController {
         int initialGold = (adventure.init != null) ? adventure.init.gold : 0;
         int initialProvisions = (adventure.init != null) ? adventure.init.provisions : 0;
         this.hero = new Hero(12, 24, 12, initialGold, initialProvisions);
+        this.hero.visitChapter(0); // Mark starting chapter as visited
         this.actions = new ArrayList<>();
         registerActions();
         applyModifiers(); // Apply modifiers for initial chapter
@@ -121,6 +122,7 @@ public class GameController {
         if (gotoData != null && choiceIndex >= 0 && choiceIndex < gotoData.size()) {
             int targetChapter = (Integer) gotoData.get(choiceIndex).get("chapter");
             currentChapter = getChapter(targetChapter);
+            hero.visitChapter(targetChapter);
             applyModifiers();
         }
     }
@@ -131,6 +133,7 @@ public class GameController {
 
     public void goToChapter(int chapterIndex) {
         currentChapter = getChapter(chapterIndex);
+        hero.visitChapter(chapterIndex);
         applyModifiers();
     }
 
@@ -169,6 +172,7 @@ public class GameController {
         hero.setMaxLuck(saveGame.getMaxLuck());
         hero.setInventory(saveGame.getInventory());
         hero.setEvents(saveGame.getEvents());
+        hero.setVisitedChapters(saveGame.getVisitedChapters());
         
         // Clear modification history
         hero.clearModifications();

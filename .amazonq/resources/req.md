@@ -39,6 +39,7 @@
   - Max attributes (initial values)
   - Complete inventory (items)
   - Recorded events
+  - Visited chapters list
 - Loading a save:
   - Restores complete game state
   - Loads correct game YAML from resources
@@ -414,6 +415,21 @@
   - Displays the death message from YAML
   - Shows skull.jpg background (same as stamina death)
   - No way to continue after death
+
+## Visited Chapter Tracking
+- Prevents revisiting chapters to avoid loops and maintain game progression
+- Hero tracks all visited chapters in order
+- Chapter 0 marked as visited at game start
+- Visited chapter mechanics:
+  - Each chapter visit is recorded when navigating via goToChapter or selectChoice
+  - GotoAction automatically filters out visited chapters from available choices
+  - Filtered choices maintain original YAML indices for correct navigation
+  - Chapters can be visited multiple times (recorded each time)
+  - Visit order preserved in list for potential future use
+- Visited chapter UI:
+  - No visual indication - filtered choices simply don't appear
+  - Seamless filtering in button panel
+  - Useful for preventing backtracking in linear story progression
 
 ## Architecture
 - Action-based system for extensibility

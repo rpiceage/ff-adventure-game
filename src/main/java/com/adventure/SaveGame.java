@@ -20,6 +20,7 @@ public class SaveGame {
     // Hero collections
     private List<String> inventory;
     private List<String> events;
+    private List<Integer> visitedChapters;
     
     public SaveGame() {
         // Default constructor for JSON deserialization
@@ -41,6 +42,7 @@ public class SaveGame {
         
         this.inventory = hero.getInventory();
         this.events = hero.getEvents();
+        this.visitedChapters = hero.getVisitedChapters();
     }
     
     // Getters and setters
@@ -82,4 +84,7 @@ public class SaveGame {
     
     public List<String> getEvents() { return events; }
     public void setEvents(List<String> events) { this.events = events; }
+    
+    public List<Integer> getVisitedChapters() { return visitedChapters; }
+    public void setVisitedChapters(List<Integer> visitedChapters) { this.visitedChapters = visitedChapters; }
 }

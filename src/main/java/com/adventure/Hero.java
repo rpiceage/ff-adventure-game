@@ -15,6 +15,7 @@ public class Hero {
     private List<String> lastModifications;
     private List<String> inventory;
     private List<String> events;
+    private List<Integer> visitedChapters;
 
     public Hero(int skill, int stamina, int luck) {
         this(skill, stamina, luck, 0, 0);
@@ -36,6 +37,7 @@ public class Hero {
         this.lastModifications = new ArrayList<>();
         this.inventory = new ArrayList<>();
         this.events = new ArrayList<>();
+        this.visitedChapters = new ArrayList<>();
     }
 
     public int getSkill() { return skill; }
@@ -143,6 +145,18 @@ public class Hero {
     public List<String> getEvents() {
         return new ArrayList<>(events);
     }
+    
+    public void visitChapter(int chapterIndex) {
+        visitedChapters.add(chapterIndex);
+    }
+    
+    public boolean hasVisitedChapter(int chapterIndex) {
+        return visitedChapters.contains(chapterIndex);
+    }
+    
+    public List<Integer> getVisitedChapters() {
+        return new ArrayList<>(visitedChapters);
+    }
 
     public int getProvisions() {
         return provisions;
@@ -177,4 +191,5 @@ public class Hero {
     public void setMaxLuck(int maxLuck) { this.maxLuck = maxLuck; }
     public void setInventory(List<String> inventory) { this.inventory = new ArrayList<>(inventory); }
     public void setEvents(List<String> events) { this.events = new ArrayList<>(events); }
+    public void setVisitedChapters(List<Integer> visitedChapters) { this.visitedChapters = new ArrayList<>(visitedChapters); }
 }

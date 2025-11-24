@@ -1,0 +1,51 @@
+title: Visited Chapters Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You are at the entrance of a dungeon. Choose your path.
+      - goto:
+          - chapter: 1
+            text: Go left
+          - chapter: 2
+            text: Go right
+  - index: 1
+    actions:
+      - display: |
+          You went left and found a treasure room!
+      - goto:
+          - chapter: 0
+            text: Return to entrance (will be filtered)
+          - chapter: 2
+            text: Continue to the right path
+          - chapter: 3
+            text: Go deeper into the dungeon
+  - index: 2
+    actions:
+      - display: |
+          You went right and found a monster!
+      - goto:
+          - chapter: 0
+            text: Return to entrance (will be filtered)
+          - chapter: 1
+            text: Go to the left path (will be filtered if visited)
+          - chapter: 3
+            text: Go deeper into the dungeon
+  - index: 3
+    actions:
+      - display: |
+          You went deeper. The adventure continues!
+      - goto:
+          - chapter: 0
+            text: Return to entrance (will be filtered)
+          - chapter: 1
+            text: Go to treasure room (will be filtered if visited)
+          - chapter: 2
+            text: Go to monster room (will be filtered if visited)
+          - chapter: 4
+            text: Exit the dungeon
+  - index: 4
+    actions:
+      - display: |
+          You successfully exited the dungeon. Your adventure ends here.
