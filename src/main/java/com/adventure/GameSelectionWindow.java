@@ -63,14 +63,31 @@ public class GameSelectionWindow extends JFrame {
     private List<String> findGameFiles() {
         List<String> files = new ArrayList<>();
         try {
+            // Try to list files from JAR or filesystem
             URL booksUrl = getClass().getClassLoader().getResource("books/");
             if (booksUrl != null) {
-                java.io.File booksDir = new java.io.File(booksUrl.toURI());
-                if (booksDir.exists() && booksDir.isDirectory()) {
-                    java.io.File[] yamlFiles = booksDir.listFiles((dir, name) -> name.endsWith(".yaml"));
-                    if (yamlFiles != null) {
-                        for (java.io.File file : yamlFiles) {
-                            files.add("books/" + file.getName());
+                if (booksUrl.getProtocol().equals("jar")) {
+                    // Running from JAR - use JAR file system
+                    String jarPath = booksUrl.getPath().substring(5, booksUrl.getPath().indexOf("!"));
+                    try (java.util.jar.JarFile jar = new java.util.jar.JarFile(java.net.URLDecoder.decode(jarPath, "UTF-8"))) {
+                        java.util.Enumeration<java.util.jar.JarEntry> entries = jar.entries();
+                        while (entries.hasMoreElements()) {
+                            java.util.jar.JarEntry entry = entries.nextElement();
+                            String name = entry.getName();
+                            if (name.startsWith("books/") && name.endsWith(".yaml") && !name.equals("books/")) {
+                                files.add(name);
+                            }
+                        }
+                    }
+                } else {
+                    // Running from filesystem
+                    java.io.File booksDir = new java.io.File(booksUrl.toURI());
+                    if (booksDir.exists() && booksDir.isDirectory()) {
+                        java.io.File[] yamlFiles = booksDir.listFiles((dir, name) -> name.endsWith(".yaml"));
+                        if (yamlFiles != null) {
+                            for (java.io.File file : yamlFiles) {
+                                files.add("books/" + file.getName());
+                            }
                         }
                     }
                 }
