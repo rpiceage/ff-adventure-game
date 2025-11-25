@@ -392,7 +392,10 @@ public class GameWindow extends JFrame {
                         }
                     } else if (action.getActionType() == com.adventure.actions.ActionType.SINGLE_BUTTON) {
                         JButton actionButton = new JButton(action.getButtonText());
-                        actionButton.addActionListener(e -> handleSingleButtonAction(action, actionData));
+                        actionButton.addActionListener(e -> {
+                            actionButton.setEnabled(false);
+                            handleSingleButtonAction(action, actionData);
+                        });
                         buttonPanel.add(actionButton);
                     }
                 }
