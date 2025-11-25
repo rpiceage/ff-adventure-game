@@ -165,6 +165,52 @@ public class UITest {
     }
 
     @Test
+    public void testRandomModify_ComponentsAndFlow() throws Exception {
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-random-modify.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+
+        SwingUtilities.invokeAndWait(() -> {
+            window = new GameWindow(adventure);
+        });
+
+        GameController controller = getField(window, "controller");
+        int initialStamina = controller.getHero().getStamina();
+
+        // Verify only "Roll dice" button exists initially (no goto button yet)
+        SwingUtilities.invokeAndWait(() -> {
+            JButton rollButton = findButton(window, Messages.get(Messages.Key.ROLL_DICE));
+            assertNotNull(rollButton, "Roll dice button should exist");
+            
+            // Click roll button
+            rollButton.doClick();
+        });
+
+        // Wait for dice animation to complete
+        Thread.sleep(1200);
+
+        // Verify stamina changed and goto button now appears
+        SwingUtilities.invokeAndWait(() -> {
+            int staminaAfterRoll = controller.getHero().getStamina();
+            assertTrue(staminaAfterRoll < initialStamina, "Stamina should decrease after roll");
+            assertTrue(staminaAfterRoll >= initialStamina - 6, "Stamina should decrease by at most 6 (one die)");
+            
+            // Goto button should now be visible
+            JButton gotoButton = findButton(window, "Continue if still alive...");
+            assertNotNull(gotoButton, "Goto button should appear after roll");
+            
+            // Click goto button to proceed to next chapter
+            gotoButton.doClick();
+        });
+
+        // Verify we moved to next chapter
+        Thread.sleep(100);
+        SwingUtilities.invokeAndWait(() -> {
+            assertEquals(1, controller.getCurrentChapter().index);
+        });
+    }
+
+    @Test
     public void testItemButtons_DisabledAfterUse() throws Exception {
         InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-items.yaml");
         Yaml yaml = new Yaml(new LoaderOptions());

@@ -468,6 +468,7 @@
 - Implemented actions:
   - `DisplayAction` (DISPLAY) - shows chapter text
   - `ModifyAction` (PASSIVE) - auto-applies attribute modifications
+  - `RandomModifyAction` (SINGLE_BUTTON) - random dice-based attribute modifications
   - `NewEventAction` (PASSIVE) - records events automatically
   - `DeathAction` (PASSIVE) - instant death (sets stamina to 0)
   - `BattleAction` (SINGLE_BUTTON) - triggers battle encounters
@@ -483,11 +484,39 @@
 - No instanceof checks - uses ActionType for behavior
 - Easy to add new action types without modifying existing code
 
+## Random Modify System
+- Random attribute modification based on dice rolls
+- YAML format for random modifications:
+  ```yaml
+  - randomModify:
+      field: STAMINA    # Attribute to modify (SKILL, STAMINA, LUCK, GOLD, PROVISIONS)
+      type: 0           # 0 = decrease, 1 = increase
+      dice: 1           # Number of dice to roll
+  ```
+- Random modify mechanics:
+  - Rolls specified number of dice (1d6 each)
+  - Type 0: subtracts total from attribute
+  - Type 1: adds total to attribute
+  - Applied silently (no notification popup)
+  - Attribute changes respect min/max caps
+- Random modify UI:
+  - Chapter text displayed normally with parchment background
+  - Only "Roll dice" button shown initially (goto buttons hidden)
+  - Clicking "Roll dice" shows dice panel above text area
+  - Dice panel with table.jpg background (matches text area width)
+  - Animated dice showing rolled values (1 or 2 dice as specified)
+  - After animation, dice result remains visible
+  - Goto buttons appear after roll completes
+  - Dice panel removed when navigating to next chapter
+  - Each chapter's randomModify can only be executed once
+- Dice animation same as battle/luck system (spinning, white backgrounds)
+
 ## UI Architecture
 - Separation of concerns between main window and feature-specific UI
 - GameWindow - main window, stats panel, navigation, items panel
 - BattleUI - self-contained battle UI logic
 - LuckUI - self-contained luck test UI logic
+- RandomModifyUI - self-contained random modification UI logic
 - Feature UIs are independently testable and maintainable
 - GameWindow provides updateHeroStats() for real-time stat updates
 - GameWindow provides updateItemButtons() for inventory display updates

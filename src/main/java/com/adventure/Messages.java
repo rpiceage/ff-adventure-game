@@ -43,7 +43,10 @@ public class Messages {
         ATTRIBUTE_TEST_TITLE,
         ATTRIBUTE_TEST_BUTTON,
         ATTRIBUTE_TEST_SUCCESS,
-        ATTRIBUTE_TEST_FAIL
+        ATTRIBUTE_TEST_FAIL,
+        ROLL_DICE,
+        ROLL_LABEL,
+        CONTINUE
     }
     
     private static final Map<Key, Map<String, String>> translations = Map.ofEntries(
@@ -198,6 +201,18 @@ public class Messages {
         Map.entry(Key.BATTLE_ESCAPE, Map.of(
             "en", "Escape (-2 STAMINA)",
             "hu", "Menekülés (-2 ÉLETERŐ)"
+        )),
+        Map.entry(Key.ROLL_DICE, Map.of(
+            "en", "Roll dice",
+            "hu", "Dobj kockával"
+        )),
+        Map.entry(Key.ROLL_LABEL, Map.of(
+            "en", "Roll!",
+            "hu", "Dobj!"
+        )),
+        Map.entry(Key.CONTINUE, Map.of(
+            "en", "Continue",
+            "hu", "Tovább"
         ))
     );
     

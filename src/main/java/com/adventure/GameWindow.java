@@ -26,10 +26,14 @@ public class GameWindow extends JFrame {
     private JWindow notificationWindow;
     private com.adventure.ui.BattleUI battleUI;
     private com.adventure.ui.LuckUI luckUI;
+    private com.adventure.ui.RandomModifyUI randomModifyUI;
     private com.adventure.ui.AttributeTestUI attributeTestUI;
     private JScrollPane textScrollPane;
     private JPanel currentCenterPanel;
+    private JPanel currentDicePanel;
     private int prevSkill, prevStamina, prevLuck, prevGold, prevProvisions;
+    private java.util.Set<Integer> chaptersWithExecutedRandomModify = new java.util.HashSet<>();
+    private int lastDisplayedChapter = -1;
 
     public GameWindow(Adventure adventure) {
         this(adventure, null);
@@ -227,6 +231,8 @@ public class GameWindow extends JFrame {
             }
         } else if (battleUI != null && battleUI.isActive()) {
             battleUI.updateDisplay();
+        } else if (randomModifyUI != null) {
+            // Random modify UI is already shown
         } else if (luckUI != null) {
             // Luck test UI is already shown
         } else if (attributeTestUI != null) {
@@ -234,11 +240,62 @@ public class GameWindow extends JFrame {
         } else {
             textArea.setText(controller.getDisplayText());
             textArea.setCaretPosition(0);
+            System.out.println(">>> Clearing buttonPanel, current components: " + buttonPanel.getComponentCount());
             buttonPanel.removeAll();
             
+            // Remove dice panel only if chapter changed
+            int currentChapter = controller.getCurrentChapter().index;
+            if (currentChapter != lastDisplayedChapter && currentDicePanel != null) {
+                // Extract text scroll pane from wrapper before removing
+                Component[] components = currentDicePanel.getComponents();
+                for (Component comp : components) {
+                    if (comp instanceof JScrollPane) {
+                        currentDicePanel.remove(comp);
+                        getContentPane().add(comp, BorderLayout.CENTER);
+                        break;
+                    }
+                }
+                getContentPane().remove(currentDicePanel);
+                currentDicePanel = null;
+                getContentPane().revalidate();
+                getContentPane().repaint();
+            }
+            lastDisplayedChapter = currentChapter;
+            
             // Show buttons for all actions in the chapter
+            System.out.println("=== Chapter " + controller.getCurrentChapter().index + " ===");
+            System.out.println("Executed chapters: " + chaptersWithExecutedRandomModify);
+            System.out.println("Number of actions: " + controller.getCurrentChapter().actions.size());
+            
+            // Check if this chapter has an unexecuted randomModify
+            boolean hasUnexecutedRandomModify = false;
             for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
+                if (actionData.containsKey("randomModify") && 
+                    !chaptersWithExecutedRandomModify.contains(controller.getCurrentChapter().index)) {
+                    hasUnexecutedRandomModify = true;
+                    break;
+                }
+            }
+            
+            for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
+                System.out.println("Action: " + actionData.keySet());
+                if (actionData.containsKey("goto")) {
+                    System.out.println("  Goto data: " + actionData.get("goto"));
+                }
                 com.adventure.actions.Action action = controller.getActionForData(actionData);
+                
+                // Skip randomModify if already executed in this chapter
+                if (actionData.containsKey("randomModify") && 
+                    chaptersWithExecutedRandomModify.contains(controller.getCurrentChapter().index)) {
+                    System.out.println("  -> Skipping randomModify (already executed)");
+                    continue;
+                }
+                
+                // Skip other buttons if randomModify hasn't been executed yet
+                if (hasUnexecutedRandomModify && !actionData.containsKey("randomModify")) {
+                    System.out.println("  -> Skipping (waiting for randomModify)");
+                    continue;
+                }
                 
                 if (action != null) {
                     if (action.getActionType() == com.adventure.actions.ActionType.MULTIPLE_BUTTONS) {
@@ -310,6 +367,7 @@ public class GameWindow extends JFrame {
                                 btn.setEnabled(choice.enabled);
                                 int choiceIndex = choice.index; // Use original index from Choice
                                 Map<String, Object> gotoActionData = actionData;
+                                System.out.println("  -> Adding GOTO button: " + choice.text);
                                 btn.addActionListener(e -> {
                                     controller.selectChoice(choiceIndex, gotoActionData);
                                     updateDisplay();
@@ -319,6 +377,7 @@ public class GameWindow extends JFrame {
                         }
                     } else if (action.getActionType() == com.adventure.actions.ActionType.SINGLE_BUTTON) {
                         JButton actionButton = new JButton(action.getButtonText());
+                        System.out.println("  -> Adding SINGLE_BUTTON: " + action.getButtonText());
                         actionButton.addActionListener(e -> handleSingleButtonAction(action, actionData));
                         buttonPanel.add(actionButton);
                     }
@@ -471,6 +530,16 @@ public class GameWindow extends JFrame {
             currentCenterPanel = battlePanel;
             revalidate();
             repaint();
+        } else if (actionData.containsKey("randomModify")) {
+            System.out.println(">>> Starting randomModify roll");
+            randomModifyUI = new com.adventure.ui.RandomModifyUI(controller, this, () -> {
+                System.out.println(">>> RandomModify completed, showing goto buttons");
+                randomModifyUI = null;
+                // Mark this chapter as having executed randomModify
+                chaptersWithExecutedRandomModify.add(controller.getCurrentChapter().index);
+                updateDisplay();
+            });
+            randomModifyUI.rollDice(actionData);
         } else if (actionData.containsKey("luck")) {
             luckUI = new com.adventure.ui.LuckUI(textArea, buttonPanel, controller, this, () -> {
                 luckUI = null;
@@ -636,6 +705,10 @@ public class GameWindow extends JFrame {
     
     public GameController getController() {
         return controller;
+    }
+    
+    public void setCurrentDicePanel(JPanel dicePanel) {
+        this.currentDicePanel = dicePanel;
     }
     
     private void saveGame() {

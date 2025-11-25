@@ -1,0 +1,31 @@
+title: Random Modify Test
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You enter a mysterious chamber. A strange mask hangs on the wall.
+          The Healer tells you to put it on your face.
+          Roll one die and subtract the result from your STAMINA.
+      - randomModify:
+          field: STAMINA
+          type: 0
+          dice: 1
+      - goto:
+          - chapter: 1
+            text: Continue if still alive...
+  - index: 1
+    actions:
+      - display: |
+          You survived! Now you find a healing potion.
+          Roll two dice and add the result to your STAMINA.
+      - randomModify:
+          field: STAMINA
+          type: 1
+          dice: 2
+      - goto:
+          - chapter: 2
+            text: Continue
+  - index: 2
+    actions:
+      - display: |
+          The adventure continues...
