@@ -244,7 +244,6 @@ public class GameWindow extends JFrame {
         } else {
             textArea.setText(controller.getDisplayText());
             textArea.setCaretPosition(0);
-            System.out.println(">>> Clearing buttonPanel, current components: " + buttonPanel.getComponentCount());
             buttonPanel.removeAll();
             
             // Remove dice panel only if chapter changed
@@ -267,9 +266,6 @@ public class GameWindow extends JFrame {
             lastDisplayedChapter = currentChapter;
             
             // Show buttons for all actions in the chapter
-            System.out.println("=== Chapter " + controller.getCurrentChapter().index + " ===");
-            System.out.println("Executed chapters: " + chaptersWithExecutedRandomModify);
-            System.out.println("Number of actions: " + controller.getCurrentChapter().actions.size());
             
             // Check if this chapter has an unexecuted randomModify or randomGoto
             boolean hasUnexecutedRandomModify = false;
@@ -288,30 +284,23 @@ public class GameWindow extends JFrame {
             }
             
             for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
-                System.out.println("Action: " + actionData.keySet());
-                if (actionData.containsKey("goto")) {
-                    System.out.println("  Goto data: " + actionData.get("goto"));
-                }
                 com.adventure.actions.Action action = controller.getActionForData(actionData);
                 
                 // Skip randomModify if already executed in this chapter
                 if (actionData.containsKey("randomModify") && 
                     chaptersWithExecutedRandomModify.contains(controller.getCurrentChapter().index)) {
-                    System.out.println("  -> Skipping randomModify (already executed)");
                     continue;
                 }
                 
                 // Skip randomGoto if already executed in this chapter
                 if (actionData.containsKey("randomGoto") && 
                     chaptersWithExecutedRandomGoto.contains(controller.getCurrentChapter().index)) {
-                    System.out.println("  -> Skipping randomGoto (already executed)");
                     continue;
                 }
                 
                 // Skip other buttons if randomModify or randomGoto hasn't been executed yet
                 if ((hasUnexecutedRandomModify && !actionData.containsKey("randomModify")) ||
                     (hasUnexecutedRandomGoto && !actionData.containsKey("randomGoto"))) {
-                    System.out.println("  -> Skipping (waiting for random action)");
                     continue;
                 }
                 
@@ -323,6 +312,9 @@ public class GameWindow extends JFrame {
                             List<com.adventure.actions.Action.Choice> choices = action.getChoices(actionData);
                             for (int i = 0; i < choices.size(); i++) {
                                 JButton btn = new JButton(choices.get(i).text);
+                                btn.setBackground(new Color(0, 100, 0)); // Dark green
+                                btn.setForeground(Color.WHITE);
+                                btn.setOpaque(true);
                                 int itemIndex = i;
                                 btn.addActionListener(e -> {
                                     addItemAction.addItem(controller, actionData, itemIndex);
@@ -385,7 +377,6 @@ public class GameWindow extends JFrame {
                                 btn.setEnabled(choice.enabled);
                                 int choiceIndex = choice.index; // Use original index from Choice
                                 Map<String, Object> gotoActionData = actionData;
-                                System.out.println("  -> Adding GOTO button: " + choice.text);
                                 btn.addActionListener(e -> {
                                     controller.selectChoice(choiceIndex, gotoActionData);
                                     updateDisplay();
@@ -395,7 +386,6 @@ public class GameWindow extends JFrame {
                         }
                     } else if (action.getActionType() == com.adventure.actions.ActionType.SINGLE_BUTTON) {
                         JButton actionButton = new JButton(action.getButtonText());
-                        System.out.println("  -> Adding SINGLE_BUTTON: " + action.getButtonText());
                         actionButton.addActionListener(e -> handleSingleButtonAction(action, actionData));
                         buttonPanel.add(actionButton);
                     }
@@ -549,9 +539,7 @@ public class GameWindow extends JFrame {
             revalidate();
             repaint();
         } else if (actionData.containsKey("randomModify")) {
-            System.out.println(">>> Starting randomModify roll");
             randomModifyUI = new com.adventure.ui.RandomModifyUI(controller, this, () -> {
-                System.out.println(">>> RandomModify completed, showing goto buttons");
                 randomModifyUI = null;
                 // Mark this chapter as having executed randomModify
                 chaptersWithExecutedRandomModify.add(controller.getCurrentChapter().index);
