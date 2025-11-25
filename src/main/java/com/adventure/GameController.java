@@ -33,6 +33,7 @@ public class GameController {
         actions.add(new DisplayAction());
         actions.add(new ModifyAction());
         actions.add(new RandomModifyAction());
+        actions.add(new RandomGotoAction());
         actions.add(new SetValueAction());
         actions.add(new NewEventAction());
         actions.add(new DeathAction());

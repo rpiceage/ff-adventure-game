@@ -469,6 +469,7 @@
   - `DisplayAction` (DISPLAY) - shows chapter text
   - `ModifyAction` (PASSIVE) - auto-applies attribute modifications
   - `RandomModifyAction` (SINGLE_BUTTON) - random dice-based attribute modifications
+  - `RandomGotoAction` (SINGLE_BUTTON) - random navigation based on die roll
   - `NewEventAction` (PASSIVE) - records events automatically
   - `DeathAction` (PASSIVE) - instant death (sets stamina to 0)
   - `BattleAction` (SINGLE_BUTTON) - triggers battle encounters
@@ -510,6 +511,41 @@
   - Dice panel removed when navigating to next chapter
   - Each chapter's randomModify can only be executed once
 - Dice animation same as battle/luck system (spinning, white backgrounds)
+
+## Random Goto System
+- Random navigation based on single die roll
+- YAML format for random goto:
+  ```yaml
+  - randomGoto:
+      choices:
+        - chapter: 140
+          text: Let's see what happens...
+        - chapter: 140
+          text: Let's see what happens...
+        - chapter: 330
+          text: Let's see what happens...
+        - chapter: 330
+          text: Let's see what happens...
+        - chapter: 245
+          text: Let's see what happens...
+        - chapter: 245
+          text: Let's see what happens...
+  ```
+- Random goto mechanics:
+  - Rolls one die (1d6)
+  - Die result (1-6) maps to choices array index (0-5)
+  - Shows single goto button based on die result
+  - Must have exactly 6 choices (one per die face)
+- Random goto UI:
+  - Chapter text displayed normally with parchment background
+  - Only "Roll dice" button shown initially
+  - Clicking "Roll dice" shows dice panel above text area
+  - Dice panel with table.jpg background (matches text area width)
+  - Animated die showing rolled value
+  - After animation, single goto button appears based on result
+  - Dice panel stays visible until navigating to next chapter
+  - Each chapter's randomGoto can only be executed once
+- Dice animation same as battle/luck/randomModify system
 
 ## UI Architecture
 - Separation of concerns between main window and feature-specific UI

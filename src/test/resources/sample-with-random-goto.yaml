@@ -1,0 +1,32 @@
+title: Random Goto Test
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You throw a stone at the target. Roll one die to see where it lands!
+      - randomGoto:
+          choices:
+            - chapter: 1
+              text: Hit the center!
+            - chapter: 2
+              text: Hit the edge
+            - chapter: 2
+              text: Hit the edge
+            - chapter: 3
+              text: Missed completely
+            - chapter: 3
+              text: Missed completely
+            - chapter: 3
+              text: Missed completely
+  - index: 1
+    actions:
+      - display: |
+          Perfect shot! You hit the center.
+  - index: 2
+    actions:
+      - display: |
+          Not bad, you hit the edge.
+  - index: 3
+    actions:
+      - display: |
+          You missed the target completely.

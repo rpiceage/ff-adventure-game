@@ -27,12 +27,14 @@ public class GameWindow extends JFrame {
     private com.adventure.ui.BattleUI battleUI;
     private com.adventure.ui.LuckUI luckUI;
     private com.adventure.ui.RandomModifyUI randomModifyUI;
+    private com.adventure.ui.RandomGotoUI randomGotoUI;
     private com.adventure.ui.AttributeTestUI attributeTestUI;
     private JScrollPane textScrollPane;
     private JPanel currentCenterPanel;
     private JPanel currentDicePanel;
     private int prevSkill, prevStamina, prevLuck, prevGold, prevProvisions;
     private java.util.Set<Integer> chaptersWithExecutedRandomModify = new java.util.HashSet<>();
+    private java.util.Set<Integer> chaptersWithExecutedRandomGoto = new java.util.HashSet<>();
     private int lastDisplayedChapter = -1;
 
     public GameWindow(Adventure adventure) {
@@ -233,6 +235,8 @@ public class GameWindow extends JFrame {
             battleUI.updateDisplay();
         } else if (randomModifyUI != null) {
             // Random modify UI is already shown
+        } else if (randomGotoUI != null) {
+            // Random goto UI is already shown
         } else if (luckUI != null) {
             // Luck test UI is already shown
         } else if (attributeTestUI != null) {
@@ -267,12 +271,18 @@ public class GameWindow extends JFrame {
             System.out.println("Executed chapters: " + chaptersWithExecutedRandomModify);
             System.out.println("Number of actions: " + controller.getCurrentChapter().actions.size());
             
-            // Check if this chapter has an unexecuted randomModify
+            // Check if this chapter has an unexecuted randomModify or randomGoto
             boolean hasUnexecutedRandomModify = false;
+            boolean hasUnexecutedRandomGoto = false;
             for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
                 if (actionData.containsKey("randomModify") && 
                     !chaptersWithExecutedRandomModify.contains(controller.getCurrentChapter().index)) {
                     hasUnexecutedRandomModify = true;
+                    break;
+                }
+                if (actionData.containsKey("randomGoto") && 
+                    !chaptersWithExecutedRandomGoto.contains(controller.getCurrentChapter().index)) {
+                    hasUnexecutedRandomGoto = true;
                     break;
                 }
             }
@@ -291,9 +301,17 @@ public class GameWindow extends JFrame {
                     continue;
                 }
                 
-                // Skip other buttons if randomModify hasn't been executed yet
-                if (hasUnexecutedRandomModify && !actionData.containsKey("randomModify")) {
-                    System.out.println("  -> Skipping (waiting for randomModify)");
+                // Skip randomGoto if already executed in this chapter
+                if (actionData.containsKey("randomGoto") && 
+                    chaptersWithExecutedRandomGoto.contains(controller.getCurrentChapter().index)) {
+                    System.out.println("  -> Skipping randomGoto (already executed)");
+                    continue;
+                }
+                
+                // Skip other buttons if randomModify or randomGoto hasn't been executed yet
+                if ((hasUnexecutedRandomModify && !actionData.containsKey("randomModify")) ||
+                    (hasUnexecutedRandomGoto && !actionData.containsKey("randomGoto"))) {
+                    System.out.println("  -> Skipping (waiting for random action)");
                     continue;
                 }
                 
@@ -540,6 +558,11 @@ public class GameWindow extends JFrame {
                 updateDisplay();
             });
             randomModifyUI.rollDice(actionData);
+        } else if (actionData.containsKey("randomGoto")) {
+            randomGotoUI = new com.adventure.ui.RandomGotoUI(controller, this);
+            randomGotoUI.rollDice(actionData, () -> {
+                randomGotoUI = null;
+            });
         } else if (actionData.containsKey("luck")) {
             luckUI = new com.adventure.ui.LuckUI(textArea, buttonPanel, controller, this, () -> {
                 luckUI = null;
@@ -709,6 +732,21 @@ public class GameWindow extends JFrame {
     
     public void setCurrentDicePanel(JPanel dicePanel) {
         this.currentDicePanel = dicePanel;
+    }
+    
+    public void showRandomGotoButton(int targetChapter, String buttonText) {
+        SwingUtilities.invokeLater(() -> {
+            buttonPanel.removeAll();
+            JButton gotoButton = new JButton(buttonText);
+            gotoButton.addActionListener(e -> {
+                chaptersWithExecutedRandomGoto.add(controller.getCurrentChapter().index);
+                controller.goToChapter(targetChapter);
+                updateDisplay();
+            });
+            buttonPanel.add(gotoButton);
+            buttonPanel.revalidate();
+            buttonPanel.repaint();
+        });
     }
     
     private void saveGame() {

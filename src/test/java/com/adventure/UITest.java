@@ -211,6 +211,58 @@ public class UITest {
     }
 
     @Test
+    public void testRandomGoto_ComponentsAndFlow() throws Exception {
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-random-goto.yaml");
+        Yaml yaml = new Yaml(new LoaderOptions());
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+
+        SwingUtilities.invokeAndWait(() -> {
+            window = new GameWindow(adventure);
+        });
+
+        GameController controller = getField(window, "controller");
+
+        // Verify only "Roll dice" button exists initially
+        SwingUtilities.invokeAndWait(() -> {
+            JButton rollButton = findButton(window, Messages.get(Messages.Key.ROLL_DICE));
+            assertNotNull(rollButton, "Roll dice button should exist");
+            
+            // Click roll button
+            rollButton.doClick();
+        });
+
+        // Wait for dice animation to complete
+        Thread.sleep(1200);
+
+        // Verify a goto button appears based on die result
+        SwingUtilities.invokeAndWait(() -> {
+            // One of the three possible buttons should appear
+            JButton button1 = findButton(window, "Hit the center!");
+            JButton button2 = findButton(window, "Hit the edge");
+            JButton button3 = findButton(window, "Missed completely");
+            
+            assertTrue(button1 != null || button2 != null || button3 != null, 
+                "One of the result buttons should appear");
+            
+            // Click whichever button appeared
+            if (button1 != null) {
+                button1.doClick();
+            } else if (button2 != null) {
+                button2.doClick();
+            } else {
+                button3.doClick();
+            }
+        });
+
+        // Verify we moved to a result chapter (1, 2, or 3)
+        Thread.sleep(100);
+        SwingUtilities.invokeAndWait(() -> {
+            int chapter = controller.getCurrentChapter().index;
+            assertTrue(chapter >= 1 && chapter <= 3, "Should be in chapter 1, 2, or 3");
+        });
+    }
+
+    @Test
     public void testItemButtons_DisabledAfterUse() throws Exception {
         InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-items.yaml");
         Yaml yaml = new Yaml(new LoaderOptions());
