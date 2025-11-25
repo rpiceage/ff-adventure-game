@@ -1,6 +1,7 @@
 package com.adventure.actions;
 
 import com.adventure.GameController;
+import com.adventure.Messages;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ public class NewEventAction implements Action {
     public void execute(GameController controller, Map<String, Object> actionData) {
         Map<String, Object> eventData = (Map<String, Object>) actionData.get("newEvent");
         String eventName = (String) eventData.get("name");
+        controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_EVENT_RECORDED), eventName));
         controller.getHero().addEvent(eventName);
     }
     

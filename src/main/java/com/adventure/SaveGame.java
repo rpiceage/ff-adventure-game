@@ -21,12 +21,13 @@ public class SaveGame {
     private List<String> inventory;
     private List<String> events;
     private List<Integer> visitedChapters;
+    private List<String> logEntries;
     
     public SaveGame() {
         // Default constructor for JSON deserialization
     }
     
-    public SaveGame(String gameTitle, String gameYamlPath, int currentChapterIndex, Hero hero) {
+    public SaveGame(String gameTitle, String gameYamlPath, int currentChapterIndex, Hero hero, AdventureLog adventureLog) {
         this.gameTitle = gameTitle;
         this.gameYamlPath = gameYamlPath;
         this.currentChapterIndex = currentChapterIndex;
@@ -43,6 +44,7 @@ public class SaveGame {
         this.inventory = hero.getInventory();
         this.events = hero.getEvents();
         this.visitedChapters = hero.getVisitedChapters();
+        this.logEntries = adventureLog.getEntries();
     }
     
     // Getters and setters
@@ -87,4 +89,7 @@ public class SaveGame {
     
     public List<Integer> getVisitedChapters() { return visitedChapters; }
     public void setVisitedChapters(List<Integer> visitedChapters) { this.visitedChapters = visitedChapters; }
+    
+    public List<String> getLogEntries() { return logEntries; }
+    public void setLogEntries(List<String> logEntries) { this.logEntries = logEntries; }
 }

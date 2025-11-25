@@ -10,6 +10,7 @@ public class GameController {
     private Adventure.Chapter currentChapter;
     private Hero hero;
     private List<Action> actions;
+    private AdventureLog adventureLog;
     private String gameYamlPath;
 
     public GameController(Adventure adventure) {
@@ -19,6 +20,7 @@ public class GameController {
     public GameController(Adventure adventure, String gameYamlPath) {
         this.adventure = adventure;
         this.gameYamlPath = gameYamlPath;
+        this.adventureLog = new AdventureLog();
         this.currentChapter = getChapter(0);
         int initialGold = (adventure.init != null) ? adventure.init.gold : 0;
         int initialProvisions = (adventure.init != null) ? adventure.init.provisions : 0;
@@ -27,6 +29,10 @@ public class GameController {
         this.actions = new ArrayList<>();
         registerActions();
         applyModifiers(); // Apply modifiers for initial chapter
+        adventureLog.log(String.format(Messages.get(Messages.Key.LOG_ADVENTURE_STARTED), adventure.title));
+        String displayText = getDisplayText();
+        adventureLog.log(String.format(Messages.get(Messages.Key.LOG_CHAPTER), 0));
+        adventureLog.log(displayText.replaceAll("\\n", " "));
     }
 
     private void registerActions() {
@@ -126,6 +132,9 @@ public class GameController {
             currentChapter = getChapter(targetChapter);
             hero.visitChapter(targetChapter);
             applyModifiers();
+            String displayText = getDisplayText();
+            adventureLog.log(String.format(Messages.get(Messages.Key.LOG_CHAPTER), targetChapter));
+            adventureLog.log(displayText.replaceAll("\\n", " "));
         }
     }
 
@@ -137,6 +146,13 @@ public class GameController {
         currentChapter = getChapter(chapterIndex);
         hero.visitChapter(chapterIndex);
         applyModifiers();
+        String displayText = getDisplayText();
+        adventureLog.log(String.format(Messages.get(Messages.Key.LOG_CHAPTER), chapterIndex));
+        adventureLog.log(displayText.replaceAll("\\n", " "));
+    }
+    
+    public AdventureLog getAdventureLog() {
+        return adventureLog;
     }
 
     private void applyModifiers() {
@@ -146,6 +162,14 @@ public class GameController {
                     action.execute(this, actionData);
                 }
             }
+        }
+        // Log any modifications that occurred
+        List<String> mods = hero.getLastModifications();
+        if (!mods.isEmpty()) {
+            for (String mod : mods) {
+                adventureLog.log("  " + mod);
+            }
+            // Don't clear here - let GameWindow handle it
         }
     }
 
@@ -159,7 +183,7 @@ public class GameController {
     }
     
     public SaveGame createSaveGame() {
-        return new SaveGame(adventure.title, gameYamlPath, currentChapter.index, hero);
+        return new SaveGame(adventure.title, gameYamlPath, currentChapter.index, hero, adventureLog);
     }
     
     public void loadSaveGame(SaveGame saveGame) {
@@ -175,6 +199,10 @@ public class GameController {
         hero.setInventory(saveGame.getInventory());
         hero.setEvents(saveGame.getEvents());
         hero.setVisitedChapters(saveGame.getVisitedChapters());
+        
+        // Restore adventure log
+        adventureLog.restoreEntries(saveGame.getLogEntries());
+        adventureLog.log(Messages.get(Messages.Key.LOG_GAME_LOADED));
         
         // Clear modification history
         hero.clearModifications();

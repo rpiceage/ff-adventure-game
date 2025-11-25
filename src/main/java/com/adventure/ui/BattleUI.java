@@ -47,6 +47,14 @@ public class BattleUI {
         int mode = battleData.containsKey("mode") ? (Integer) battleData.get("mode") : 0;
         currentBattle = new Battle(controller.getHero(), enemies, new java.util.Random(), mode);
         
+        // Log battle start
+        StringBuilder enemyNames = new StringBuilder();
+        for (int i = 0; i < enemies.size(); i++) {
+            if (i > 0) enemyNames.append(", ");
+            enemyNames.append(enemies.get(i).getName());
+        }
+        controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_STARTED), enemyNames));
+        
         // Set interrupt stamina if present
         if (battleData.containsKey("interrupt")) {
             Map<String, Object> interruptData = (Map<String, Object>) battleData.get("interrupt");
@@ -207,6 +215,7 @@ public class BattleUI {
                 JButton continueButton = new JButton(Messages.get(Messages.Key.BATTLE_CLOSE));
                 continueButton.addActionListener(e -> {
                     currentBattle = null;
+                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_WON), controller.getHero().getStamina()));
                     controller.goToChapter(winChapter);
                     onComplete.run();
                 });
@@ -214,6 +223,7 @@ public class BattleUI {
             } else {
                 textArea.append("\n" + Messages.get(Messages.Key.BATTLE_DEFEAT_GENERAL));
                 currentBattle = null;
+                controller.getAdventureLog().log(Messages.get(Messages.Key.LOG_BATTLE_LOST));
                 onComplete.run();
             }
         } else {
@@ -223,6 +233,9 @@ public class BattleUI {
                 
                 List<Enemy> aliveBeforeTurn = new ArrayList<>(currentBattle.getAliveEnemies());
                 currentBattle.executeTurn();
+                
+                // Log turn result
+                controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_TURN), currentBattle.getCurrentTurn(), currentBattle.getLastTurnResult().replace("\n", " ")));
                 
                 dicePanel.removeAll();
                 dicePanel.setLayout(new BoxLayout(dicePanel, BoxLayout.Y_AXIS));
@@ -294,6 +307,7 @@ public class BattleUI {
                     // Escaping costs 2 STAMINA
                     controller.getHero().modifyStaminaSilent(-2);
                     gameWindow.updateHeroStats();
+                    controller.getAdventureLog().log(Messages.get(Messages.Key.LOG_BATTLE_ESCAPED));
                     currentBattle = null;
                     controller.goToChapter(escapeChapter);
                     onComplete.run();

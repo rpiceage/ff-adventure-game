@@ -93,4 +93,76 @@ public class SaveLoadTest {
         assertEquals(2, loaded.getInventory().size());
         assertEquals(1, loaded.getEvents().size());
     }
+    
+    @Test
+    public void testSaveAndLoadAdventureLog(@TempDir File tempDir) throws Exception {
+        // Load a game
+        Yaml yaml = new Yaml();
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-complete.yaml");
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+        
+        GameController controller = new GameController(adventure, "sample-complete.yaml");
+        
+        // Perform actions that generate log entries
+        controller.getHero().modifyGold(50);
+        controller.getHero().addItem("Test Item");
+        controller.goToChapter(1);
+        
+        // Get initial log entries count
+        int initialLogSize = controller.getAdventureLog().getEntries().size();
+        assertTrue(initialLogSize > 0, "Log should have entries");
+        
+        // Save the game
+        SaveGame saveGame = controller.createSaveGame();
+        File saveFile = new File(tempDir, "test-log.ffsave");
+        SaveGameManager.save(saveGame, saveFile);
+        
+        // Load the game
+        SaveGame loadedSave = SaveGameManager.load(saveFile);
+        
+        // Verify log entries were saved
+        assertNotNull(loadedSave.getLogEntries());
+        assertEquals(initialLogSize, loadedSave.getLogEntries().size());
+        
+        // Create new controller and load save
+        GameController newController = new GameController(adventure, "sample-complete.yaml");
+        newController.loadSaveGame(loadedSave);
+        
+        // Verify log was restored and "Game Loaded" entry was added
+        assertTrue(newController.getAdventureLog().getEntries().size() > initialLogSize);
+        assertTrue(newController.getAdventureLog().getFullLog().contains("=== Game Loaded ==="));
+        
+        // Verify old entries are still present
+        assertTrue(newController.getAdventureLog().getFullLog().contains("Adventure Started"));
+    }
+    
+    @Test
+    public void testLogContinuesAfterLoad(@TempDir File tempDir) throws Exception {
+        // Load a game
+        Yaml yaml = new Yaml();
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-gold.yaml");
+        Adventure adventure = yaml.loadAs(input, Adventure.class);
+        
+        GameController controller = new GameController(adventure, "sample-with-gold.yaml");
+        
+        // Save the game
+        SaveGame saveGame = controller.createSaveGame();
+        File saveFile = new File(tempDir, "test-continue.ffsave");
+        SaveGameManager.save(saveGame, saveFile);
+        
+        // Load the game
+        SaveGame loadedSave = SaveGameManager.load(saveFile);
+        GameController newController = new GameController(adventure, "sample-with-gold.yaml");
+        newController.loadSaveGame(loadedSave);
+        
+        int logSizeAfterLoad = newController.getAdventureLog().getEntries().size();
+        
+        // Perform new action - navigate to chapter with gold modification
+        newController.goToChapter(1);
+        
+        // Verify log continued with new entries
+        assertTrue(newController.getAdventureLog().getEntries().size() > logSizeAfterLoad);
+        String fullLog = newController.getAdventureLog().getFullLog();
+        assertTrue(fullLog.contains("Chapter 1"));
+    }
 }

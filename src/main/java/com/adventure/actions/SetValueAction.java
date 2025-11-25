@@ -2,6 +2,7 @@ package com.adventure.actions;
 
 import com.adventure.GameController;
 import com.adventure.Hero;
+import com.adventure.Messages;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,8 @@ public class SetValueAction implements Action {
         for (Map<String, Object> valueData : values) {
             String field = (String) valueData.get("field");
             int value = (Integer) valueData.get("value");
+            
+            controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_SET_VALUE), field, value));
             
             switch (field) {
                 case "SKILL":

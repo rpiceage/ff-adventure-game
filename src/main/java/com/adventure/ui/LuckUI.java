@@ -58,6 +58,10 @@ public class LuckUI {
                 // Testing luck decreases LUCK by 1 after animation (silently, no notification)
                 controller.getHero().modifyLuckSilent(-1);
                 gameWindow.updateHeroStats();
+                
+                String result = lucky ? "lucky" : "unlucky";
+                controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_LUCK_TEST), total, heroLuck, result));
+                
                 textArea.setText(lucky ? Messages.get(Messages.Key.LUCK_LUCKY) : Messages.get(Messages.Key.LUCK_UNLUCKY));
                 
                 buttonPanel.removeAll();

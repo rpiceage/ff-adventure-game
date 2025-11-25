@@ -316,8 +316,10 @@ public class GameWindow extends JFrame {
                                 btn.setForeground(Color.WHITE);
                                 btn.setOpaque(true);
                                 int itemIndex = i;
+                                String itemName = choices.get(i).text.replace("Take ", "");
                                 btn.addActionListener(e -> {
                                     addItemAction.addItem(controller, actionData, itemIndex);
+                                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_TOOK_ITEM), itemName));
                                     btn.setEnabled(false);
                                     updateItemButtons(); // Only update items panel, not full display
                                 });
@@ -332,6 +334,7 @@ public class GameWindow extends JFrame {
                                 // Show existing button
                                 JButton btn = new JButton(choices.get(0).text);
                                 btn.addActionListener(e -> {
+                                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_EVENT_FOUND), checkAction.getExistingChapter(actionData)));
                                     controller.goToChapter(checkAction.getExistingChapter(actionData));
                                     updateDisplay();
                                 });
@@ -340,6 +343,7 @@ public class GameWindow extends JFrame {
                                 // Show missing button
                                 JButton btn = new JButton(choices.get(1).text);
                                 btn.addActionListener(e -> {
+                                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_EVENT_NOT_FOUND), checkAction.getMissingChapter(actionData)));
                                     controller.goToChapter(checkAction.getMissingChapter(actionData));
                                     updateDisplay();
                                 });
@@ -354,6 +358,7 @@ public class GameWindow extends JFrame {
                                 // Show greaterThanOrEquals button
                                 JButton btn = new JButton(choices.get(0).text);
                                 btn.addActionListener(e -> {
+                                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_PARAMETER_PASSED), checkAction.getGreaterThanOrEqualsChapter(actionData)));
                                     controller.goToChapter(checkAction.getGreaterThanOrEqualsChapter(actionData));
                                     updateDisplay();
                                 });
@@ -362,6 +367,7 @@ public class GameWindow extends JFrame {
                                 // Show lessThan button
                                 JButton btn = new JButton(choices.get(1).text);
                                 btn.addActionListener(e -> {
+                                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_PARAMETER_FAILED), checkAction.getLessThanChapter(actionData)));
                                     controller.goToChapter(checkAction.getLessThanChapter(actionData));
                                     updateDisplay();
                                 });
@@ -520,6 +526,7 @@ public class GameWindow extends JFrame {
 
     private void handleSingleButtonAction(com.adventure.actions.Action action, Map<String, Object> actionData) {
         if (actionData.containsKey("battle")) {
+            controller.getAdventureLog().log("  Battle started");
             battleUI = new com.adventure.ui.BattleUI(textArea, buttonPanel, controller, this, () -> {
                 battleUI = null;
                 if (currentCenterPanel != null) {
@@ -543,16 +550,27 @@ public class GameWindow extends JFrame {
                 randomModifyUI = null;
                 // Mark this chapter as having executed randomModify
                 chaptersWithExecutedRandomModify.add(controller.getCurrentChapter().index);
+                // Log the modification
+                List<String> mods = controller.getHero().getLastModifications();
+                if (!mods.isEmpty()) {
+                    for (String mod : mods) {
+                        controller.getAdventureLog().log("  Random modify: " + mod);
+                    }
+                    controller.getHero().clearModifications();
+                }
                 updateDisplay();
             });
             randomModifyUI.rollDice(actionData);
         } else if (actionData.containsKey("randomGoto")) {
             randomGotoUI = new com.adventure.ui.RandomGotoUI(controller, this);
             randomGotoUI.rollDice(actionData, () -> {
+                controller.getAdventureLog().log("  Random goto executed");
                 randomGotoUI = null;
             });
         } else if (actionData.containsKey("luck")) {
+            controller.getAdventureLog().log("  Luck test");
             luckUI = new com.adventure.ui.LuckUI(textArea, buttonPanel, controller, this, () -> {
+                controller.getAdventureLog().log("  Luck test completed - LUCK: " + controller.getHero().getLuck());
                 luckUI = null;
                 if (currentCenterPanel != null) {
                     remove(currentCenterPanel);
@@ -645,6 +663,7 @@ public class GameWindow extends JFrame {
             if (useItemMap.containsKey(item)) {
                 int targetChapter = useItemMap.get(item);
                 itemButton.addActionListener(e -> {
+                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_USED_ITEM), item, targetChapter));
                     controller.goToChapter(targetChapter);
                     updateDisplay();
                 });
@@ -693,6 +712,7 @@ public class GameWindow extends JFrame {
         }
         
         if (hero.consumeProvision()) {
+            controller.getAdventureLog().log(Messages.get(Messages.Key.LOG_CONSUMED_PROVISION));
             updateHeroStats();
             updateDisplay();
         }
@@ -710,8 +730,18 @@ public class GameWindow extends JFrame {
         loadItem.addActionListener(e -> loadGame());
         fileMenu.add(loadItem);
         
+        fileMenu.addSeparator();
+        
+        JMenuItem logItem = new JMenuItem("Adventure Log");
+        logItem.addActionListener(e -> showAdventureLog());
+        fileMenu.add(logItem);
+        
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
+    }
+    
+    private void showAdventureLog() {
+        new AdventureLogWindow(controller.getAdventureLog());
     }
     
     public GameController getController() {

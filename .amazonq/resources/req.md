@@ -40,14 +40,57 @@
   - Complete inventory (items)
   - Recorded events
   - Visited chapters list
+  - Adventure log entries
 - Loading a save:
   - Restores complete game state
   - Loads correct game YAML from resources
   - Applies saved language setting
+  - Restores adventure log with all previous entries
+  - Adds "=== Game Loaded ===" entry to log
   - If loading different game from menu, creates new window
   - If loading same game from menu, updates current window
 - SaveGameManager handles all save/load operations
 - Uses Jackson library for JSON serialization
+
+## Adventure Log
+- Comprehensive logging system that records all game actions
+- Accessible via File → Adventure Log menu in game window
+- Log window features:
+  - Parchment background matching game text area
+  - Arial Bold 24 font matching game styling
+  - Scrollable text area with line wrapping
+  - Export button to save log as text file
+- Export functionality:
+  - Opens file chooser dialog
+  - Default filename: `adventure_log_{timestamp}.txt`
+  - Saves complete log history to text file
+- Logged actions include:
+  - Game start with title
+  - Chapter navigation with full chapter text
+  - Attribute modifications (SKILL, STAMINA, LUCK, GOLD, PROVISIONS)
+  - Battle events (start, each turn result, win/loss/escape)
+  - Luck tests with dice rolls and results
+  - Item actions (taken, used, lost)
+  - Event recording
+  - Provisions consumption
+  - Parameter checks (passed/failed)
+  - Event/item checks (found/not found)
+  - Random actions (modify, goto)
+  - Set value operations
+- Log entries format:
+  - Each entry prefixed with timestamp `[HH:mm:ss]`
+  - Chapter entries: `--- Chapter X ---` followed by chapter text
+  - Action entries indented with two spaces
+- Save/Load integration:
+  - Log entries saved with game state in `.ffsave` file
+  - Log restored when loading saved game
+  - "=== Game Loaded ===" entry added after load
+  - Log continues seamlessly after loading
+- Implementation:
+  - AdventureLog class manages log entries with timestamps
+  - AdventureLogWindow displays log with game styling
+  - All actions log their execution automatically
+  - No text truncation - full chapter text preserved
 
 ## Internationalization
 - Optional `language` field in YAML (defaults to "en")

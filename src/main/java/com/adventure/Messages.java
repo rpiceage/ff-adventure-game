@@ -46,7 +46,27 @@ public class Messages {
         ATTRIBUTE_TEST_FAIL,
         ROLL_DICE,
         ROLL_LABEL,
-        CONTINUE
+        CONTINUE,
+        LOG_ADVENTURE_STARTED,
+        LOG_CHAPTER,
+        LOG_GAME_LOADED,
+        LOG_TOOK_ITEM,
+        LOG_USED_ITEM,
+        LOG_LOST_ITEM,
+        LOG_LOST_ALL_ITEMS_EXCEPT,
+        LOG_EVENT_RECORDED,
+        LOG_SET_VALUE,
+        LOG_CHECK_EVENT_FOUND,
+        LOG_CHECK_EVENT_NOT_FOUND,
+        LOG_CHECK_PARAMETER_PASSED,
+        LOG_CHECK_PARAMETER_FAILED,
+        LOG_BATTLE_STARTED,
+        LOG_BATTLE_WON,
+        LOG_BATTLE_LOST,
+        LOG_BATTLE_ESCAPED,
+        LOG_BATTLE_TURN,
+        LOG_LUCK_TEST,
+        LOG_CONSUMED_PROVISION
     }
     
     private static final Map<Key, Map<String, String>> translations = Map.ofEntries(
@@ -213,6 +233,86 @@ public class Messages {
         Map.entry(Key.CONTINUE, Map.of(
             "en", "Continue",
             "hu", "Tovább"
+        )),
+        Map.entry(Key.LOG_ADVENTURE_STARTED, Map.of(
+            "en", "=== Adventure Started: %s ===",
+            "hu", "=== Kaland kezdődött: %s ==="
+        )),
+        Map.entry(Key.LOG_CHAPTER, Map.of(
+            "en", "--- Chapter %d ---",
+            "hu", "--- %d. fejezet ---"
+        )),
+        Map.entry(Key.LOG_GAME_LOADED, Map.of(
+            "en", "=== Game Loaded ===",
+            "hu", "=== Játék betöltve ==="
+        )),
+        Map.entry(Key.LOG_TOOK_ITEM, Map.of(
+            "en", "  Took item: %s",
+            "hu", "  Tárgy felvéve: %s"
+        )),
+        Map.entry(Key.LOG_USED_ITEM, Map.of(
+            "en", "Used item: %s -> Chapter %d",
+            "hu", "Tárgy használva: %s -> %d. fejezet"
+        )),
+        Map.entry(Key.LOG_LOST_ITEM, Map.of(
+            "en", "  Lost item: %s",
+            "hu", "  Tárgy elveszítve: %s"
+        )),
+        Map.entry(Key.LOG_LOST_ALL_ITEMS_EXCEPT, Map.of(
+            "en", "  Lost all items except: %s",
+            "hu", "  Minden tárgy elveszítve kivéve: %s"
+        )),
+        Map.entry(Key.LOG_EVENT_RECORDED, Map.of(
+            "en", "  Event recorded: %s",
+            "hu", "  Esemény rögzítve: %s"
+        )),
+        Map.entry(Key.LOG_SET_VALUE, Map.of(
+            "en", "  Set %s = %d",
+            "hu", "  %s beállítva = %d"
+        )),
+        Map.entry(Key.LOG_CHECK_EVENT_FOUND, Map.of(
+            "en", "Check event/item: found -> Chapter %d",
+            "hu", "Esemény/tárgy ellenőrzés: megvan -> %d. fejezet"
+        )),
+        Map.entry(Key.LOG_CHECK_EVENT_NOT_FOUND, Map.of(
+            "en", "Check event/item: not found -> Chapter %d",
+            "hu", "Esemény/tárgy ellenőrzés: nincs meg -> %d. fejezet"
+        )),
+        Map.entry(Key.LOG_CHECK_PARAMETER_PASSED, Map.of(
+            "en", "Check parameter: passed -> Chapter %d",
+            "hu", "Paraméter ellenőrzés: sikeres -> %d. fejezet"
+        )),
+        Map.entry(Key.LOG_CHECK_PARAMETER_FAILED, Map.of(
+            "en", "Check parameter: failed -> Chapter %d",
+            "hu", "Paraméter ellenőrzés: sikertelen -> %d. fejezet"
+        )),
+        Map.entry(Key.LOG_BATTLE_STARTED, Map.of(
+            "en", "Battle started: %s",
+            "hu", "Harc kezdődött: %s"
+        )),
+        Map.entry(Key.LOG_BATTLE_WON, Map.of(
+            "en", "  Battle won - Hero STAMINA: %d",
+            "hu", "  Harc megnyerve - Hős ÉLETERŐ: %d"
+        )),
+        Map.entry(Key.LOG_BATTLE_LOST, Map.of(
+            "en", "  Battle lost - Hero defeated",
+            "hu", "  Harc elveszítve - Hős legyőzve"
+        )),
+        Map.entry(Key.LOG_BATTLE_ESCAPED, Map.of(
+            "en", "  Escaped from battle - Lost 2 STAMINA",
+            "hu", "  Menekülés a harcból - 2 ÉLETERŐ elveszítve"
+        )),
+        Map.entry(Key.LOG_BATTLE_TURN, Map.of(
+            "en", "  Turn %d: %s",
+            "hu", "  %d. kör: %s"
+        )),
+        Map.entry(Key.LOG_LUCK_TEST, Map.of(
+            "en", "Luck test: rolled %d vs LUCK %d - %s",
+            "hu", "Szerencse próba: dobás %d vs SZERENCSE %d - %s"
+        )),
+        Map.entry(Key.LOG_CONSUMED_PROVISION, Map.of(
+            "en", "  Consumed provision - Restored 4 STAMINA",
+            "hu", "  Élelem elfogyasztva - 4 ÉLETERŐ visszaállítva"
         ))
     );
     
