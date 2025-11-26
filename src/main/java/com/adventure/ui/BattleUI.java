@@ -353,6 +353,10 @@ public class BattleUI {
                             panel.stopAnimation();
                         }
                         
+                        // Update battle log and text area immediately after normal turn
+                        textArea.setText(currentBattle.getBattleLog());
+                        gameWindow.updateHeroStats();
+                        
                         // If extra damage is enabled, show extra damage button instead of updating display
                         if (currentBattle.hasExtraDamage() && !currentBattle.isOver()) {
                             buttonPanel.removeAll();
@@ -397,13 +401,13 @@ public class BattleUI {
                                         String resultMsg;
                                         if (damage > 0) {
                                             resultMsg = String.format(Messages.get(Messages.Key.BATTLE_EXTRA_DAMAGE_HIT), damage);
-                                            textArea.append("\n" + resultMsg + "\n");
-                                            currentBattle.appendToBattleLog(resultMsg + "\n");
+                                            textArea.append("\n" + resultMsg + "\n\n");
+                                            currentBattle.appendToBattleLog(resultMsg + "\n\n");
                                             controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_EXTRA_DAMAGE), roll, String.format("%d STAMINA lost", damage)));
                                         } else {
                                             resultMsg = Messages.get(Messages.Key.BATTLE_EXTRA_DAMAGE_MISS);
-                                            textArea.append("\n" + resultMsg + "\n");
-                                            currentBattle.appendToBattleLog(resultMsg + "\n");
+                                            textArea.append("\n" + resultMsg + "\n\n");
+                                            currentBattle.appendToBattleLog(resultMsg + "\n\n");
                                             controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_EXTRA_DAMAGE), roll, "no damage"));
                                         }
                                         
