@@ -231,6 +231,44 @@
   - Escape button appears alongside "Next Turn" button when turn >= escape.turn
   - Clicking escape costs 2 STAMINA and navigates to escape chapter
   - Optional `battleText` to inform player about escape option (added to battle log)
+- Battle extra damage:
+  - Optional `extraHeroDamage` field for additional damage after each turn
+  - YAML format:
+    ```yaml
+    extraHeroDamage:
+      everyTurn: true
+      randomExtraDamage:
+        dice: 1
+        damage:
+          - stamina: 1
+            trigger:
+              - 1
+              - 2
+              - 3
+    ```
+  - After normal turn completes, "Roll for extra damage" button appears
+  - Player rolls die, if result matches trigger values, hero loses specified stamina
+  - Extra damage die animates in new row in dice panel
+  - Dice panel height increases by 100px for extra damage row
+  - Result logged to battle log and adventure log
+  - All strings translated (English/Hungarian)
+- Battle ally:
+  - Optional `ally` field for NPC that fights first
+  - YAML format:
+    ```yaml
+    ally:
+      name: Knight
+      skill: 9
+      stamina: 10
+    ```
+  - Ally fights enemy first before hero
+  - Ally stats shown in battle log (not in panel header)
+  - Ally dice displayed as "Ally: [dice][dice] Enemy: [dice][dice]"
+  - If ally wins: battle ends, hero doesn't fight
+  - If ally dies: hero continues fighting the enemy
+  - Ally stamina loss shows remaining stamina: "Knight loses 2 STAMINA (8 remaining)"
+  - Ally death logged: "Ally Knight died - Hero continues the fight"
+  - All strings translated (English/Hungarian)
 - Battle UI:
   - Enemy stats panel at top showing all enemies with SKILL and STAMINA
   - Simultaneous mode: Radio buttons to select target enemy (bold text shows selected)
@@ -519,6 +557,7 @@
   - `LuckAction` (SINGLE_BUTTON) - triggers luck tests
   - `AddItemAction` (MULTIPLE_BUTTONS) - provides item pickup choices
   - `UseItemAction` (DISPLAY) - enables item buttons for navigation
+  - `SellItemAction` (DISPLAY) - enables item buttons for selling
   - `CheckEventAction` (MULTIPLE_BUTTONS) - conditional navigation based on events/items
   - `GotoAction` (MULTIPLE_BUTTONS) - provides navigation choices
 - DiceAnimator class handles all dice animations (battle and luck)
@@ -589,6 +628,29 @@
   - Dice panel stays visible until navigating to next chapter
   - Each chapter's randomGoto can only be executed once
 - Dice animation same as battle/luck/randomModify system
+
+## Sell Item System
+- Items can be sold for gold in specific chapters
+- YAML format for selling items:
+  ```yaml
+  - sellItem:
+      all: 50           # gold per item
+      maxItemCount: 12  # optional: max items that can be sold in this chapter
+  ```
+- Sell item mechanics:
+  - `all` field specifies gold amount per item
+  - `maxItemCount` field limits how many items can be sold (optional, defaults to unlimited)
+  - Items in adventure sheet become clickable to sell
+  - Clicking item button adds gold and removes item from inventory
+  - After reaching maxItemCount, remaining item buttons are disabled
+  - Sold items count resets when moving to new chapter
+- Sell item UI:
+  - Item buttons in stats panel become active for selling
+  - Clicking item sells it for specified gold amount
+  - Item disappears from inventory after sale
+  - Buttons disabled after maxItemCount reached
+  - All actions logged to adventure log
+  - All strings translated (English/Hungarian)
 
 ## UI Architecture
 - Separation of concerns between main window and feature-specific UI

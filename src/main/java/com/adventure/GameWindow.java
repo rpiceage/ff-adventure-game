@@ -36,6 +36,7 @@ public class GameWindow extends JFrame {
     private java.util.Set<Integer> chaptersWithExecutedRandomModify = new java.util.HashSet<>();
     private java.util.Set<Integer> chaptersWithExecutedRandomGoto = new java.util.HashSet<>();
     private int lastDisplayedChapter = -1;
+    private int soldItemsCount = 0;
 
     public GameWindow(Adventure adventure) {
         this(adventure, null);
@@ -249,20 +250,23 @@ public class GameWindow extends JFrame {
             
             // Remove dice panel only if chapter changed
             int currentChapter = controller.getCurrentChapter().index;
-            if (currentChapter != lastDisplayedChapter && currentDicePanel != null) {
-                // Extract text scroll pane from wrapper before removing
-                Component[] components = currentDicePanel.getComponents();
-                for (Component comp : components) {
-                    if (comp instanceof JScrollPane) {
-                        currentDicePanel.remove(comp);
-                        getContentPane().add(comp, BorderLayout.CENTER);
-                        break;
+            if (currentChapter != lastDisplayedChapter) {
+                soldItemsCount = 0; // Reset sold items count for new chapter
+                if (currentDicePanel != null) {
+                    // Extract text scroll pane from wrapper before removing
+                    Component[] components = currentDicePanel.getComponents();
+                    for (Component comp : components) {
+                        if (comp instanceof JScrollPane) {
+                            currentDicePanel.remove(comp);
+                            getContentPane().add(comp, BorderLayout.CENTER);
+                            break;
+                        }
                     }
+                    getContentPane().remove(currentDicePanel);
+                    currentDicePanel = null;
+                    getContentPane().revalidate();
+                    getContentPane().repaint();
                 }
-                getContentPane().remove(currentDicePanel);
-                currentDicePanel = null;
-                getContentPane().revalidate();
-                getContentPane().repaint();
             }
             lastDisplayedChapter = currentChapter;
             
@@ -654,6 +658,7 @@ public class GameWindow extends JFrame {
         itemsPanel.removeAll();
         
         Map<String, Integer> useItemMap = getUseItemMap();
+        com.adventure.actions.SellItemAction sellItemAction = getSellItemAction();
         
         for (String item : controller.getHero().getInventory()) {
             JButton itemButton = new JButton(item);
@@ -671,6 +676,23 @@ public class GameWindow extends JFrame {
                     controller.goToChapter(targetChapter);
                     updateDisplay();
                 });
+            } else if (sellItemAction != null) {
+                Map<String, Object> sellActionData = getSellItemActionData();
+                int goldPerItem = sellItemAction.getGoldPerItem(sellActionData);
+                int maxItemCount = sellItemAction.getMaxItemCount(sellActionData);
+                
+                if (soldItemsCount < maxItemCount) {
+                    itemButton.addActionListener(e -> {
+                        controller.getHero().modifyGold(goldPerItem);
+                        controller.getHero().removeItem(item);
+                        soldItemsCount++;
+                        controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_SOLD_ITEM), item, goldPerItem));
+                        updateHeroStats();
+                        updateItemButtons();
+                    });
+                } else {
+                    itemButton.setEnabled(false);
+                }
             } else {
                 itemButton.addActionListener(e -> showItemCantUsePopup());
             }
@@ -695,6 +717,24 @@ public class GameWindow extends JFrame {
             }
         }
         return map;
+    }
+    
+    private com.adventure.actions.SellItemAction getSellItemAction() {
+        for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
+            if (actionData.containsKey("sellItem")) {
+                return new com.adventure.actions.SellItemAction();
+            }
+        }
+        return null;
+    }
+    
+    private Map<String, Object> getSellItemActionData() {
+        for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
+            if (actionData.containsKey("sellItem")) {
+                return actionData;
+            }
+        }
+        return null;
     }
 
     private void showItemCantUsePopup() {

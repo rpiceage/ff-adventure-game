@@ -49,6 +49,7 @@ public class GameController {
         actions.add(new AddItemAction());
         actions.add(new LoseItemAction());
         actions.add(new UseItemAction());
+        actions.add(new SellItemAction());
         actions.add(new CheckEventAction());
         actions.add(new CheckParameterAction());
         actions.add(new GotoAction());

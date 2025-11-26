@@ -72,7 +72,8 @@ public class Messages {
         BATTLE_EXTRA_DAMAGE_MISS,
         LOG_BATTLE_EXTRA_DAMAGE,
         LOG_BATTLE_ALLY_DIED,
-        BATTLE_ALLY_LOSES_STAMINA
+        BATTLE_ALLY_LOSES_STAMINA,
+        LOG_SOLD_ITEM
     }
     
     private static final Map<Key, Map<String, String>> translations = Map.ofEntries(
@@ -343,6 +344,10 @@ public class Messages {
         Map.entry(Key.BATTLE_ALLY_LOSES_STAMINA, Map.of(
             "en", "%s loses 2 STAMINA (%d remaining)",
             "hu", "%s veszít 2 ÉLETERŐT (%d maradt)"
+        )),
+        Map.entry(Key.LOG_SOLD_ITEM, Map.of(
+            "en", "  Sold item: %s for %d gold",
+            "hu", "  Tárgy eladva: %s %d aranyért"
         ))
     );
     

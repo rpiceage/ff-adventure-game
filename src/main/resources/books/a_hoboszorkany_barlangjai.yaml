@@ -1917,7 +1917,10 @@ chapters:
             A Hóboszorkány kincstárnoka halott, és így szabadon rendelkezhetsz a boszorkány vagyonával, bár az egészet képtelen vagy elvinni. Elhatározod, hogy megtöltöd a hátizsákodat arannyal - 600 Aranytallért találsz. De minden 50 Arany helyett ott kell hagynod valamit Felszerelési Tárgyaid közül, mert nincs elég hely a hátizsákodban.
         - sellItem:
             all: 50
-            goto: 571
+            maxItemCount: 12
+        - goto:
+            - chapter: 571
+              text: Tovább...
     - index: 571
       actions:
         - display: |

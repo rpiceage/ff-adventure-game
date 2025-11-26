@@ -1,0 +1,24 @@
+title: Sell Item Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You find a treasure room! You can sell your items for 50 gold each (max 3 items).
+      - addItem:
+          items:
+            - name: Sword
+            - name: Shield
+            - name: Potion
+            - name: Ring
+            - name: Amulet
+      - sellItem:
+          all: 50
+          maxItemCount: 3
+      - goto:
+          - chapter: 1
+            text: Continue
+  - index: 1
+    actions:
+      - display: |
+          You leave the treasure room.
