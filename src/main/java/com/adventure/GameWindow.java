@@ -13,6 +13,7 @@ import java.util.Random;
 
 public class GameWindow extends JFrame {
     private JTextArea textArea;
+    private JEditorPane displayPane;
     private JPanel buttonPanel;
     private JScrollPane buttonScrollPane;
     private JPanel statsPanel;
@@ -30,6 +31,7 @@ public class GameWindow extends JFrame {
     private com.adventure.ui.RandomGotoUI randomGotoUI;
     private com.adventure.ui.AttributeTestUI attributeTestUI;
     private JScrollPane textScrollPane;
+    private JScrollPane textWithIllustrationPanel;
     private JPanel currentCenterPanel;
     private JPanel currentDicePanel;
     private int prevSkill, prevStamina, prevLuck, prevGold, prevProvisions;
@@ -37,6 +39,8 @@ public class GameWindow extends JFrame {
     private java.util.Set<Integer> chaptersWithExecutedRandomGoto = new java.util.HashSet<>();
     private int lastDisplayedChapter = -1;
     private int soldItemsCount = 0;
+    private String gameYamlPath;
+    private JLabel illustrationLabel;
 
     public GameWindow(Adventure adventure) {
         this(adventure, null);
@@ -44,6 +48,7 @@ public class GameWindow extends JFrame {
     
     public GameWindow(Adventure adventure, String gameYamlPath) {
         this.controller = new GameController(adventure, gameYamlPath);
+        this.gameYamlPath = gameYamlPath;
         setTitle(adventure.title);
         setSize(1200, 800);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -55,11 +60,26 @@ public class GameWindow extends JFrame {
         try {
             InputStream bgStream = getClass().getClassLoader().getResourceAsStream("pergament.jpg");
             BufferedImage bgImage = ImageIO.read(bgStream);
+            
             textArea = new JTextArea() {
+                private BufferedImage illustration = null;
+                
+                public void setIllustration(BufferedImage img) {
+                    this.illustration = img;
+                    repaint();
+                }
+                
                 @Override
                 protected void paintComponent(Graphics g) {
                     g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
                     super.paintComponent(g);
+                    
+                    // Draw illustration on top right if available
+                    if (illustration != null) {
+                        int x = getWidth() - illustration.getWidth() - 10;
+                        int y = 10;
+                        g.drawImage(illustration, x, y, this);
+                    }
                 }
             };
             textArea.setOpaque(false);
@@ -71,8 +91,11 @@ public class GameWindow extends JFrame {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setFont(new Font("Arial", Font.BOLD, 24));
-        textArea.setMargin(new Insets(10, 10, 10, 10));
+        // Add right margin for illustration (310px = 300px image + 10px padding)
+        textArea.setMargin(new Insets(10, 10, 10, 320));
+        
         textScrollPane = new JScrollPane(textArea);
+        textWithIllustrationPanel = textScrollPane;
         add(textScrollPane, BorderLayout.CENTER);
 
         try {
@@ -252,6 +275,7 @@ public class GameWindow extends JFrame {
             int currentChapter = controller.getCurrentChapter().index;
             if (currentChapter != lastDisplayedChapter) {
                 soldItemsCount = 0; // Reset sold items count for new chapter
+                updateIllustration(currentChapter); // Update illustration for new chapter
                 if (currentDicePanel != null) {
                     // Extract text scroll pane from wrapper before removing
                     Component[] components = currentDicePanel.getComponents();
@@ -541,14 +565,16 @@ public class GameWindow extends JFrame {
                     remove(currentCenterPanel);
                     currentCenterPanel = null;
                 }
+                // Recreate scroll pane with textArea
                 textScrollPane = new JScrollPane(textArea);
+                textWithIllustrationPanel = textScrollPane;
                 add(textScrollPane, BorderLayout.CENTER);
                 revalidate();
                 repaint();
                 updateDisplay();
             });
             JPanel battlePanel = battleUI.start(actionData);
-            remove(textScrollPane);
+            remove(textWithIllustrationPanel);
             add(battlePanel, BorderLayout.CENTER);
             currentCenterPanel = battlePanel;
             revalidate();
@@ -584,14 +610,16 @@ public class GameWindow extends JFrame {
                     remove(currentCenterPanel);
                     currentCenterPanel = null;
                 }
+                // Recreate scroll pane with textArea
                 textScrollPane = new JScrollPane(textArea);
+                textWithIllustrationPanel = textScrollPane;
                 add(textScrollPane, BorderLayout.CENTER);
                 revalidate();
                 repaint();
                 updateDisplay();
             });
             JPanel luckPanel = luckUI.start(actionData);
-            remove(textScrollPane);
+            remove(textWithIllustrationPanel);
             add(luckPanel, BorderLayout.CENTER);
             currentCenterPanel = luckPanel;
             revalidate();
@@ -603,14 +631,16 @@ public class GameWindow extends JFrame {
                     remove(currentCenterPanel);
                     currentCenterPanel = null;
                 }
+                // Recreate scroll pane with textArea
                 textScrollPane = new JScrollPane(textArea);
+                textWithIllustrationPanel = textScrollPane;
                 add(textScrollPane, BorderLayout.CENTER);
                 revalidate();
                 repaint();
                 updateDisplay();
             });
             JPanel testPanel = attributeTestUI.start(actionData);
-            remove(textScrollPane);
+            remove(textWithIllustrationPanel);
             add(testPanel, BorderLayout.CENTER);
             currentCenterPanel = testPanel;
             revalidate();
@@ -742,6 +772,87 @@ public class GameWindow extends JFrame {
             Messages.get(Messages.Key.ITEM_CANT_USE), 
             Messages.get(Messages.Key.ITEMS_TITLE), 
             JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private void updateIllustration(int chapterIndex) {
+        if (gameYamlPath == null) {
+            return;
+        }
+        
+        try {
+            // Extract folder name from yaml path
+            String fileName = gameYamlPath.substring(gameYamlPath.lastIndexOf('/') + 1);
+            String folderName = fileName.replace(".yaml", "");
+            
+            // Try to load chapter-specific illustration
+            String imagePath = "books/" + folderName + "/" + chapterIndex + ".jpg";
+            InputStream imageStream = getClass().getClassLoader().getResourceAsStream(imagePath);
+            
+            // If no chapter-specific image, try random image
+            if (imageStream == null) {
+                int randomIndex = new java.util.Random().nextInt(5) + 1;
+                imagePath = "books/" + folderName + "/rnd_0" + randomIndex + ".jpg";
+                imageStream = getClass().getClassLoader().getResourceAsStream(imagePath);
+            }
+            
+            if (imageStream != null) {
+                java.awt.image.BufferedImage originalImage = javax.imageio.ImageIO.read(imageStream);
+                imageStream.close();
+                
+                // Scale image to max 300px width
+                int targetWidth = 300;
+                int targetHeight = (int) (originalImage.getHeight() * ((double) targetWidth / originalImage.getWidth()));
+                
+                // Create scaled image with adjusted transparency
+                // Make white pixels more transparent, keep black pixels darker
+                java.awt.image.BufferedImage transparentImage = new java.awt.image.BufferedImage(
+                    targetWidth, targetHeight, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2d = transparentImage.createGraphics();
+                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g2d.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+                g2d.dispose();
+                
+                // Process pixels: make white more transparent, keep black darker
+                for (int y = 0; y < targetHeight; y++) {
+                    for (int x = 0; x < targetWidth; x++) {
+                        int rgb = transparentImage.getRGB(x, y);
+                        int r = (rgb >> 16) & 0xFF;
+                        int g = (rgb >> 8) & 0xFF;
+                        int b = rgb & 0xFF;
+                        
+                        // Calculate brightness (0-255)
+                        int brightness = (r + g + b) / 3;
+                        
+                        // Make alpha inversely proportional to brightness
+                        // Bright pixels (white) become very transparent
+                        // Dark pixels (black) become more opaque
+                        int alpha = 255 - brightness;
+                        // Scale: dark pixels get up to 100% opacity, bright pixels fade away more
+                        if (brightness < 128) {
+                            // Dark pixels: make them even darker (higher opacity)
+                            alpha = (int) (alpha * 1.4);
+                            if (alpha > 255) alpha = 255;
+                        } else {
+                            // Bright pixels: make them even more transparent
+                            alpha = (int) (alpha * 0.4);
+                        }
+                        
+                        int newRgb = (alpha << 24) | (r << 16) | (g << 8) | b;
+                        transparentImage.setRGB(x, y, newRgb);
+                    }
+                }
+                
+                // Set illustration on textArea using reflection
+                try {
+                    java.lang.reflect.Method setIllustration = textArea.getClass().getMethod("setIllustration", java.awt.image.BufferedImage.class);
+                    setIllustration.invoke(textArea, transparentImage);
+                } catch (Exception e) {
+                    // Method not available
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     private void consumeProvision() {
