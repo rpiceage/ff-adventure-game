@@ -531,7 +531,7 @@ public class UITest {
 
     @SuppressWarnings("unchecked")
     private <T> T getField(Object obj, String fieldName) throws Exception {
-        // Handle refactored fields that moved to HeroStatsPanel
+        // Handle refactored fields that moved to HeroStatsPanel or InventoryPanel
         if (obj instanceof GameWindow) {
             GameWindow window = (GameWindow) obj;
             switch (fieldName) {
@@ -541,6 +541,8 @@ public class UITest {
                     return (T) window.getStaminaLabel();
                 case "provisionsButton":
                     return (T) window.getProvisionsButton();
+                case "itemsPanel":
+                    return (T) window.getItemsPanel();
             }
         }
         

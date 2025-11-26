@@ -17,7 +17,7 @@ public class GameWindow extends JFrame {
     private JPanel buttonPanel;
     private JScrollPane buttonScrollPane;
     private HeroStatsPanel heroStatsPanel;
-    private JPanel itemsPanel;
+    private InventoryPanel inventoryPanel;
     private GameController controller;
     private NotificationManager notificationManager;
     private ChapterStateManager chapterState;
@@ -111,19 +111,9 @@ public class GameWindow extends JFrame {
         heroStatsPanel.add(Box.createVerticalStrut(20));
         heroStatsPanel.add(itemsTitle);
         
-        itemsPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(UIConstants.SEMI_TRANSPARENT_BLACK);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-                super.paintComponent(g);
-            }
-        };
-        itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
-        itemsPanel.setOpaque(false);
-        heroStatsPanel.add(itemsPanel);
+        inventoryPanel = new InventoryPanel(controller.getHero(), controller, chapterState, 
+            this::updateDisplay, () -> heroStatsPanel.updateStats(battleUI != null));
+        heroStatsPanel.add(inventoryPanel);
         
         add(heroStatsPanel, BorderLayout.EAST);
 
@@ -151,7 +141,7 @@ public class GameWindow extends JFrame {
         heroStatsPanel.updateStats(battleUI != null);
         
         Hero hero = controller.getHero();
-        updateItemButtons();
+        inventoryPanel.updateItems();
         
         List<String> mods = hero.getLastModifications();
         if (!mods.isEmpty()) {
@@ -298,7 +288,7 @@ public class GameWindow extends JFrame {
                                     controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_TOOK_ITEM), itemName));
                                     chapterState.incrementTakenItems();
                                     btn.setEnabled(false);
-                                    updateItemButtons(); // Only update items panel, not full display
+                                    inventoryPanel.updateItems(); // Only update items panel, not full display
                                     
                                     // Disable all other addItem buttons if maxItems reached
                                     if (maxItems != null && chapterState.getTakenItemsCount() >= maxItems) {
@@ -431,6 +421,7 @@ public class GameWindow extends JFrame {
     public HeroStatsPanel getStatsPanel() { return heroStatsPanel; }
     public JLabel getStaminaLabel() { return heroStatsPanel.getStaminaLabel(); }
     public JButton getProvisionsButton() { return heroStatsPanel.getProvisionsButton(); }
+    public InventoryPanel getItemsPanel() { return inventoryPanel; }
 
     private void handleSingleButtonAction(com.adventure.actions.Action action, Map<String, Object> actionData) {
         if (actionData.containsKey("battle")) {
@@ -524,96 +515,6 @@ public class GameWindow extends JFrame {
         }
     }
 
-    private void updateItemButtons() {
-        itemsPanel.removeAll();
-        
-        Map<String, Integer> useItemMap = getUseItemMap();
-        com.adventure.actions.SellItemAction sellItemAction = getSellItemAction();
-        
-        for (String item : controller.getHero().getInventory()) {
-            JButton itemButton = new JButton(item);
-            itemButton.setFont(UIConstants.FONT_SMALL);
-            itemButton.setForeground(Color.WHITE);
-            itemButton.setBackground(UIConstants.SEMI_TRANSPARENT_BLACK);
-            itemButton.setOpaque(false);
-            itemButton.setContentAreaFilled(false);
-            itemButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-            
-            if (useItemMap.containsKey(item)) {
-                int targetChapter = useItemMap.get(item);
-                itemButton.addActionListener(e -> {
-                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_USED_ITEM), item, targetChapter));
-                    controller.goToChapter(targetChapter);
-                    updateDisplay();
-                });
-            } else if (sellItemAction != null) {
-                Map<String, Object> sellActionData = getSellItemActionData();
-                int goldPerItem = sellItemAction.getGoldPerItem(sellActionData);
-                int maxItemCount = sellItemAction.getMaxItemCount(sellActionData);
-                
-                if (chapterState.getSoldItemsCount() < maxItemCount) {
-                    itemButton.addActionListener(e -> {
-                        controller.getHero().modifyGold(goldPerItem);
-                        controller.getHero().removeItem(item);
-                        chapterState.incrementSoldItems();
-                        controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_SOLD_ITEM), item, goldPerItem));
-                        heroStatsPanel.updateStats(battleUI != null);
-                        updateItemButtons();
-                    });
-                } else {
-                    itemButton.setEnabled(false);
-                }
-            } else {
-                itemButton.addActionListener(e -> showItemCantUsePopup());
-            }
-            
-            itemsPanel.add(itemButton);
-        }
-        
-        itemsPanel.revalidate();
-        itemsPanel.repaint();
-    }
-    
-    private Map<String, Integer> getUseItemMap() {
-        Map<String, Integer> map = new java.util.HashMap<>();
-        for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
-            if (actionData.containsKey("useItem")) {
-                List<Map<String, Object>> items = (List<Map<String, Object>>) actionData.get("useItem");
-                for (Map<String, Object> itemData : items) {
-                    String itemName = (String) itemData.get("item");
-                    int chapter = (Integer) itemData.get("chapter");
-                    map.put(itemName, chapter);
-                }
-            }
-        }
-        return map;
-    }
-    
-    private com.adventure.actions.SellItemAction getSellItemAction() {
-        for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
-            if (actionData.containsKey("sellItem")) {
-                return new com.adventure.actions.SellItemAction();
-            }
-        }
-        return null;
-    }
-    
-    private Map<String, Object> getSellItemActionData() {
-        for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
-            if (actionData.containsKey("sellItem")) {
-                return actionData;
-            }
-        }
-        return null;
-    }
-
-    private void showItemCantUsePopup() {
-        JOptionPane.showMessageDialog(this, 
-            Messages.get(Messages.Key.ITEM_CANT_USE), 
-            Messages.get(Messages.Key.ITEMS_TITLE), 
-            JOptionPane.INFORMATION_MESSAGE);
-    }
-    
     private void updateIllustration(int chapterIndex) {
         if (gameYamlPath == null) {
             return;

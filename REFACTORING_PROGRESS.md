@@ -1,6 +1,6 @@
 # Refactoring Progress
 
-## Completed: Phases 1, 2, 3, 4, 9
+## Completed: Phases 1, 2, 3, 4, 5, 9
 
 ### Date: 2025-11-26
 
@@ -72,7 +72,21 @@
 - Self-contained stats display
 - Public updateHeroStats() method maintained for backward compatibility
 
-#### 6. Updated GameWindow.java ✅
+#### 6. Created InventoryPanel.java ✅
+- Extracted items panel logic
+- Self-contained panel with semi-transparent background
+- Manages item buttons and interactions
+- Handles use item, sell item, and default item actions
+- Includes all helper methods (getUseItemMap, getSellItemAction, etc.)
+
+**Benefits:**
+- Removed 1 field from GameWindow (itemsPanel)
+- Removed updateItemButtons() method (48 lines)
+- Removed 4 helper methods (getUseItemMap, getSellItemAction, getSellItemActionData, showItemCantUsePopup) (40 lines)
+- Self-contained inventory display
+- Cleaner separation of concerns
+
+#### 7. Updated GameWindow.java ✅
 - Replaced all magic numbers with UIConstants references
 - Replaced animation method calls with AnimationHelper
 - Replaced notification logic with NotificationManager
@@ -96,20 +110,21 @@
 - Duplicate code: 30+ lines
 
 **After:**
-- GameWindow: ~820 lines (184 lines removed, 18% reduction)
-- Fields: 29 (14 removed, 33% reduction)
+- GameWindow: ~732 lines (272 lines removed, 27% reduction)
+- Fields: 28 (15 removed, 35% reduction)
 - UIConstants: 42 lines (new)
 - AnimationHelper: 34 lines (new)
 - NotificationManager: 56 lines (new)
 - ChapterStateManager: 58 lines (new)
 - HeroStatsPanel: 145 lines (new)
+- InventoryPanel: 128 lines (new)
 - Magic numbers in GameWindow: 0
 - Duplicate code: 0
 
 **Net Change:**
-- Total lines: +335 (new utility classes)
-- GameWindow reduction: -184 lines
-- Fields reduction: -14 fields
+- Total lines: +463 (new utility classes)
+- GameWindow reduction: -272 lines
+- Fields reduction: -15 fields
 - Code quality: Significantly improved
 - Maintainability: Much better
 - Testability: Improved with getter methods
@@ -124,11 +139,6 @@
 ### Next Steps
 
 According to the refactoring plan, the remaining phases are:
-
-**Phase 5: InventoryPanel** (3 hours)
-- Extract items panel logic
-- Remove itemsPanel field and updateItemButtons method
-- Remove ~50 lines from GameWindow
 
 **Phase 6: IllustrationManager** (3 hours)
 - Extract illustration loading and processing
@@ -150,11 +160,12 @@ According to the refactoring plan, the remaining phases are:
 - Notification manager is isolated
 - Chapter state manager is clean
 - Hero stats panel is self-contained
+- Inventory panel is self-contained
 - All tests pass
 - No behavioral changes
 
 **Recommendation:**
-Continue with Phase 5 (InventoryPanel) - similar complexity to HeroStatsPanel.
+Continue with Phase 6 (IllustrationManager) - straightforward extraction.
 - Tracks sold/taken items count per chapter
 - Tracks last displayed chapter
 
