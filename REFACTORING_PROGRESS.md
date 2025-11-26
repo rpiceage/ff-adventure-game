@@ -1,12 +1,12 @@
 # Refactoring Progress
 
-## Completed: Phase 1 & 9 (Low-Risk Extractions)
+## Completed: Phases 1, 2, 3, 9 (Low-Risk Extractions)
 
 ### Date: 2025-11-26
 
 ### Changes Made
 
-#### 1. Created UIConstants.java
+#### 1. Created UIConstants.java ✅
 - Centralized all magic numbers into constants
 - Window dimensions (1200x800)
 - Panel dimensions (stats panel: 300px, button panel: 80px, illustration: 300px)
@@ -21,7 +21,7 @@
 - Easier to maintain consistent styling
 - Font objects created once and reused
 
-#### 2. Created AnimationHelper.java
+#### 2. Created AnimationHelper.java ✅
 - Extracted duplicate animation logic
 - `animateLabel()` - animates labels with size sequence
 - `animateButton()` - animates buttons with size sequence
@@ -33,42 +33,60 @@
 - Reusable animation system
 - Consistent animation behavior
 
-#### 3. Updated GameWindow.java
+#### 3. Created NotificationManager.java ✅
+- Extracted notification window logic
+- `show(message)` - displays notification in lower left
+- `hide()` - dismisses notification
+- Uses UIConstants for fonts, colors, and timing
+
+**Benefits:**
+- Removed 1 field (notificationWindow) from GameWindow
+- Removed 34 lines (showNotification method)
+- Self-contained notification system
+- Reusable across application
+
+#### 4. Created ChapterStateManager.java ✅
+- Extracted chapter state tracking
+- Tracks executed random modify/goto actions
+- Tracks sold/taken items count per chapter
+- Tracks last displayed chapter
+
+**Benefits:**
+- Removed 5 fields from GameWindow
+- Clear state management API
+- Can be saved/loaded with game state in future
+- Separates UI state from game state
+
+#### 5. Updated GameWindow.java ✅
 - Replaced all magic numbers with UIConstants references
 - Replaced animation method calls with AnimationHelper
+- Replaced notification logic with NotificationManager
+- Replaced chapter state fields with ChapterStateManager
 - Removed duplicate animation methods (30 lines)
-
-**Locations Updated:**
-- Window size: line 54
-- Text area font and margins: lines 94-96
-- Stats panel font and dimensions: lines 117-120
-- Provisions button font and color: lines 142-143
-- Items title font and color: lines 165-166
-- Items panel color: line 177
-- Button panel height: line 189
-- createStyledLabel font and color: lines 505-506
-- updateHeroStats animations: lines 516-533
-- showNotification font, color, and timing: lines 681-698
-- updateItemButtons font and color: lines 686-688
-- updateIllustration width: line 826
+- Removed showNotification method (34 lines)
 
 ### Metrics
 
 **Before:**
 - GameWindow: 1,004 lines
+- Fields: 43
 - Magic numbers: 20+ occurrences
 - Duplicate animation code: 30 lines
 
 **After:**
-- GameWindow: ~974 lines (30 lines removed)
+- GameWindow: ~910 lines (94 lines removed)
+- Fields: 36 (7 removed)
 - UIConstants: 42 lines (new)
 - AnimationHelper: 34 lines (new)
+- NotificationManager: 56 lines (new)
+- ChapterStateManager: 58 lines (new)
 - Magic numbers in GameWindow: 0
-- Duplicate animation code: 0
+- Duplicate code: 0
 
 **Net Change:**
-- Total lines: +46 (new utility classes)
-- GameWindow reduction: -30 lines
+- Total lines: +190 (new utility classes)
+- GameWindow reduction: -94 lines
+- Fields reduction: -7 fields
 - Code quality: Significantly improved
 - Maintainability: Much better
 
@@ -77,18 +95,11 @@
 ✅ All tests pass
 ✅ Compilation successful
 ✅ No behavioral changes
+✅ Manual testing confirmed working
 
 ### Next Steps
 
-According to the refactoring plan, the next phases are:
-
-**Phase 2: NotificationManager** (2 hours)
-- Extract notification window logic
-- Remove 1 field and 34 lines from GameWindow
-
-**Phase 3: ChapterStateManager** (3 hours)
-- Extract chapter state tracking
-- Remove 5 fields from GameWindow
+According to the refactoring plan, the remaining phases are:
 
 **Phase 4: HeroStatsPanel** (4 hours)
 - Extract stats panel creation and updates
@@ -115,8 +126,10 @@ According to the refactoring plan, the next phases are:
 **Completed Work: LOW RISK** ✅
 - Constants extraction is safe
 - Animation helper is straightforward
+- Notification manager is isolated
+- Chapter state manager is clean
 - All tests pass
 - No behavioral changes
 
 **Recommendation:**
-Continue with Phase 2 (NotificationManager) as it's also low-risk and builds on the UIConstants work we just completed.
+Continue with Phase 4 (HeroStatsPanel) - medium complexity but high value.

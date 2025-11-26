@@ -24,7 +24,8 @@ public class GameWindow extends JFrame {
     private JLabel goldLabel;
     private JButton provisionsButton;
     private GameController controller;
-    private JWindow notificationWindow;
+    private NotificationManager notificationManager;
+    private ChapterStateManager chapterState;
     private com.adventure.ui.BattleUI battleUI;
     private com.adventure.ui.LuckUI luckUI;
     private com.adventure.ui.RandomModifyUI randomModifyUI;
@@ -35,11 +36,6 @@ public class GameWindow extends JFrame {
     private JPanel currentCenterPanel;
     private JPanel currentDicePanel;
     private int prevSkill, prevStamina, prevLuck, prevGold, prevProvisions;
-    private java.util.Set<Integer> chaptersWithExecutedRandomModify = new java.util.HashSet<>();
-    private java.util.Set<Integer> chaptersWithExecutedRandomGoto = new java.util.HashSet<>();
-    private int lastDisplayedChapter = -1;
-    private int soldItemsCount = 0;
-    private int takenItemsCount = 0;
     private String gameYamlPath;
     private JLabel illustrationLabel;
 
@@ -50,6 +46,8 @@ public class GameWindow extends JFrame {
     public GameWindow(Adventure adventure, String gameYamlPath) {
         this.controller = new GameController(adventure, gameYamlPath);
         this.gameYamlPath = gameYamlPath;
+        this.notificationManager = new NotificationManager(this);
+        this.chapterState = new ChapterStateManager();
         setTitle(adventure.title);
         setSize(UIConstants.WINDOW_WIDTH, UIConstants.WINDOW_HEIGHT);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -220,7 +218,7 @@ public class GameWindow extends JFrame {
         
         List<String> mods = hero.getLastModifications();
         if (!mods.isEmpty()) {
-            showNotification(String.join("\n", mods));
+            notificationManager.show(String.join("\n", mods));
             hero.clearModifications();
         }
         
@@ -274,9 +272,8 @@ public class GameWindow extends JFrame {
             
             // Remove dice panel only if chapter changed
             int currentChapter = controller.getCurrentChapter().index;
-            if (currentChapter != lastDisplayedChapter) {
-                soldItemsCount = 0; // Reset sold items count for new chapter
-                takenItemsCount = 0; // Reset taken items count for new chapter
+            if (currentChapter != chapterState.getLastDisplayedChapter()) {
+                chapterState.resetForNewChapter();
                 updateIllustration(currentChapter); // Update illustration for new chapter
                 if (currentDicePanel != null) {
                     // Extract text scroll pane from wrapper before removing
@@ -294,7 +291,7 @@ public class GameWindow extends JFrame {
                     getContentPane().repaint();
                 }
             }
-            lastDisplayedChapter = currentChapter;
+            chapterState.setLastDisplayedChapter(currentChapter);
             
             // Show buttons for all actions in the chapter
             
@@ -303,12 +300,12 @@ public class GameWindow extends JFrame {
             boolean hasUnexecutedRandomGoto = false;
             for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
                 if (actionData.containsKey("randomModify") && 
-                    !chaptersWithExecutedRandomModify.contains(controller.getCurrentChapter().index)) {
+                    !chapterState.hasExecutedRandomModify(controller.getCurrentChapter().index)) {
                     hasUnexecutedRandomModify = true;
                     break;
                 }
                 if (actionData.containsKey("randomGoto") && 
-                    !chaptersWithExecutedRandomGoto.contains(controller.getCurrentChapter().index)) {
+                    !chapterState.hasExecutedRandomGoto(controller.getCurrentChapter().index)) {
                     hasUnexecutedRandomGoto = true;
                     break;
                 }
@@ -319,13 +316,13 @@ public class GameWindow extends JFrame {
                 
                 // Skip randomModify if already executed in this chapter
                 if (actionData.containsKey("randomModify") && 
-                    chaptersWithExecutedRandomModify.contains(controller.getCurrentChapter().index)) {
+                    chapterState.hasExecutedRandomModify(controller.getCurrentChapter().index)) {
                     continue;
                 }
                 
                 // Skip randomGoto if already executed in this chapter
                 if (actionData.containsKey("randomGoto") && 
-                    chaptersWithExecutedRandomGoto.contains(controller.getCurrentChapter().index)) {
+                    chapterState.hasExecutedRandomGoto(controller.getCurrentChapter().index)) {
                     continue;
                 }
                 
@@ -355,19 +352,19 @@ public class GameWindow extends JFrame {
                                 String itemName = choices.get(i).text.replace("Take ", "");
                                 
                                 // Disable button if maxItems reached
-                                if (maxItems != null && takenItemsCount >= maxItems) {
+                                if (maxItems != null && chapterState.getTakenItemsCount() >= maxItems) {
                                     btn.setEnabled(false);
                                 }
                                 
                                 btn.addActionListener(e -> {
                                     addItemAction.addItem(controller, actionData, itemIndex);
                                     controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_TOOK_ITEM), itemName));
-                                    takenItemsCount++;
+                                    chapterState.incrementTakenItems();
                                     btn.setEnabled(false);
                                     updateItemButtons(); // Only update items panel, not full display
                                     
                                     // Disable all other addItem buttons if maxItems reached
-                                    if (maxItems != null && takenItemsCount >= maxItems) {
+                                    if (maxItems != null && chapterState.getTakenItemsCount() >= maxItems) {
                                         for (Component c : buttonPanel.getComponents()) {
                                             if (c instanceof JButton && ((JButton) c).getBackground().equals(new Color(0, 100, 0))) {
                                                 c.setEnabled(false);
@@ -574,7 +571,7 @@ public class GameWindow extends JFrame {
             randomModifyUI = new com.adventure.ui.RandomModifyUI(controller, this, () -> {
                 randomModifyUI = null;
                 // Mark this chapter as having executed randomModify
-                chaptersWithExecutedRandomModify.add(controller.getCurrentChapter().index);
+                chapterState.markRandomModifyExecuted(controller.getCurrentChapter().index);
                 // Log the modification
                 List<String> mods = controller.getHero().getLastModifications();
                 if (!mods.isEmpty()) {
@@ -639,42 +636,6 @@ public class GameWindow extends JFrame {
         }
     }
 
-    private void showNotification(String message) {
-        if (notificationWindow != null) {
-            notificationWindow.dispose();
-        }
-        
-        notificationWindow = new JWindow(this);
-        JLabel label = new JLabel("<html>" + message.replace("\n", "<br>") + "</html>");
-        label.setFont(UIConstants.FONT_MEDIUM);
-        label.setForeground(Color.BLACK);
-        label.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.BLACK, 2),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
-        label.setBackground(UIConstants.NOTIFICATION_BG);
-        label.setOpaque(true);
-        notificationWindow.add(label);
-        notificationWindow.pack();
-        
-        Point location = getLocation();
-        Dimension size = getSize();
-        Dimension notifSize = notificationWindow.getSize();
-        notificationWindow.setLocation(
-            location.x + 10,
-            location.y + size.height - notifSize.height - 50
-        );
-        
-        notificationWindow.setVisible(true);
-        
-        Timer timer = new Timer(UIConstants.NOTIFICATION_DURATION_MS, e -> {
-            notificationWindow.dispose();
-            notificationWindow = null;
-        });
-        timer.setRepeats(false);
-        timer.start();
-    }
-
     private void updateItemButtons() {
         itemsPanel.removeAll();
         
@@ -702,11 +663,11 @@ public class GameWindow extends JFrame {
                 int goldPerItem = sellItemAction.getGoldPerItem(sellActionData);
                 int maxItemCount = sellItemAction.getMaxItemCount(sellActionData);
                 
-                if (soldItemsCount < maxItemCount) {
+                if (chapterState.getSoldItemsCount() < maxItemCount) {
                     itemButton.addActionListener(e -> {
                         controller.getHero().modifyGold(goldPerItem);
                         controller.getHero().removeItem(item);
-                        soldItemsCount++;
+                        chapterState.incrementSoldItems();
                         controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_SOLD_ITEM), item, goldPerItem));
                         updateHeroStats();
                         updateItemButtons();
@@ -903,7 +864,7 @@ public class GameWindow extends JFrame {
             buttonPanel.removeAll();
             JButton gotoButton = new JButton(buttonText);
             gotoButton.addActionListener(e -> {
-                chaptersWithExecutedRandomGoto.add(controller.getCurrentChapter().index);
+                chapterState.markRandomGotoExecuted(controller.getCurrentChapter().index);
                 controller.goToChapter(targetChapter);
                 updateDisplay();
             });
