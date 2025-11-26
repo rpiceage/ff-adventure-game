@@ -1,6 +1,6 @@
 # Refactoring Progress
 
-## Completed: Phases 1, 2, 3, 9 (Low-Risk Extractions)
+## Completed: Phases 1, 2, 3, 4, 9
 
 ### Date: 2025-11-26
 
@@ -48,6 +48,113 @@
 #### 4. Created ChapterStateManager.java ✅
 - Extracted chapter state tracking
 - Tracks executed random modify/goto actions
+- Tracks sold/taken items count per chapter
+- Tracks last displayed chapter
+
+**Benefits:**
+- Removed 5 fields from GameWindow
+- Clear state management API
+- Can be saved/loaded with game state in future
+- Separates UI state from game state
+
+#### 5. Created HeroStatsPanel.java ✅
+- Extracted stats panel creation and update logic
+- Self-contained panel with wall background
+- Manages stat labels and provisions button
+- Handles animations internally
+- Added getter methods for testing
+
+**Benefits:**
+- Removed 6 fields from GameWindow (skillLabel, staminaLabel, luckLabel, goldLabel, provisionsButton, statsPanel)
+- Removed 70+ lines from constructor
+- Removed createStyledLabel() method (18 lines)
+- Removed updateHeroStats() implementation (moved to panel)
+- Self-contained stats display
+- Public updateHeroStats() method maintained for backward compatibility
+
+#### 6. Updated GameWindow.java ✅
+- Replaced all magic numbers with UIConstants references
+- Replaced animation method calls with AnimationHelper
+- Replaced notification logic with NotificationManager
+- Replaced chapter state fields with ChapterStateManager
+- Replaced stats panel with HeroStatsPanel
+- Removed duplicate animation methods (30 lines)
+- Removed showNotification method (34 lines)
+- Removed createStyledLabel method (18 lines)
+
+#### 7. Updated UITest.java ✅
+- Modified getField() to handle refactored fields
+- Uses getter methods instead of reflection for moved fields
+- All tests pass
+
+### Metrics
+
+**Before:**
+- GameWindow: 1,004 lines
+- Fields: 43
+- Magic numbers: 20+ occurrences
+- Duplicate code: 30+ lines
+
+**After:**
+- GameWindow: ~820 lines (184 lines removed, 18% reduction)
+- Fields: 29 (14 removed, 33% reduction)
+- UIConstants: 42 lines (new)
+- AnimationHelper: 34 lines (new)
+- NotificationManager: 56 lines (new)
+- ChapterStateManager: 58 lines (new)
+- HeroStatsPanel: 145 lines (new)
+- Magic numbers in GameWindow: 0
+- Duplicate code: 0
+
+**Net Change:**
+- Total lines: +335 (new utility classes)
+- GameWindow reduction: -184 lines
+- Fields reduction: -14 fields
+- Code quality: Significantly improved
+- Maintainability: Much better
+- Testability: Improved with getter methods
+
+### Testing
+
+✅ All tests pass (124 tests)
+✅ Compilation successful
+✅ No behavioral changes
+✅ Test compatibility maintained
+
+### Next Steps
+
+According to the refactoring plan, the remaining phases are:
+
+**Phase 5: InventoryPanel** (3 hours)
+- Extract items panel logic
+- Remove itemsPanel field and updateItemButtons method
+- Remove ~50 lines from GameWindow
+
+**Phase 6: IllustrationManager** (3 hours)
+- Extract illustration loading and processing
+- Remove updateIllustration method (80 lines)
+
+**Phase 7: ActionButtonFactory** (4 hours)
+- Extract button creation logic
+- Remove 100+ lines from updateDisplay()
+
+**Phase 8: Refactor updateDisplay()** (6 hours)
+- Break 248-line method into smaller methods
+- Reduce cyclomatic complexity
+
+### Risk Assessment
+
+**Completed Work: LOW-MEDIUM RISK** ✅
+- Constants extraction is safe
+- Animation helper is straightforward
+- Notification manager is isolated
+- Chapter state manager is clean
+- Hero stats panel is self-contained
+- All tests pass
+- No behavioral changes
+
+**Recommendation:**
+Continue with Phase 5 (InventoryPanel) - similar complexity to HeroStatsPanel.
 - Tracks sold/taken items count per chapter
 - Tracks last displayed chapter
 

@@ -16,13 +16,8 @@ public class GameWindow extends JFrame {
     private JEditorPane displayPane;
     private JPanel buttonPanel;
     private JScrollPane buttonScrollPane;
-    private JPanel statsPanel;
+    private HeroStatsPanel heroStatsPanel;
     private JPanel itemsPanel;
-    private JLabel skillLabel;
-    private JLabel staminaLabel;
-    private JLabel luckLabel;
-    private JLabel goldLabel;
-    private JButton provisionsButton;
     private GameController controller;
     private NotificationManager notificationManager;
     private ChapterStateManager chapterState;
@@ -35,7 +30,6 @@ public class GameWindow extends JFrame {
     private JScrollPane textWithIllustrationPanel;
     private JPanel currentCenterPanel;
     private JPanel currentDicePanel;
-    private int prevSkill, prevStamina, prevLuck, prevGold, prevProvisions;
     private String gameYamlPath;
     private JLabel illustrationLabel;
 
@@ -97,57 +91,8 @@ public class GameWindow extends JFrame {
         textWithIllustrationPanel = textScrollPane;
         add(textScrollPane, BorderLayout.CENTER);
 
-        try {
-            java.io.InputStream imgStream = getClass().getClassLoader().getResourceAsStream("wall.jpg");
-            java.awt.image.BufferedImage wallImage = javax.imageio.ImageIO.read(imgStream);
-            statsPanel = new JPanel() {
-                @Override
-                protected void paintComponent(Graphics g) {
-                    super.paintComponent(g);
-                    g.drawImage(wallImage, 0, 0, getWidth(), getHeight(), this);
-                }
-            };
-        } catch (Exception ex) {
-            statsPanel = new JPanel();
-        }
-        statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
-        TitledBorder border = BorderFactory.createTitledBorder(Messages.get(Messages.Key.HERO_STATS_TITLE));
-        border.setTitleFont(UIConstants.FONT_TITLE);
-        border.setTitleColor(Color.WHITE);
-        statsPanel.setBorder(border);
-        statsPanel.setPreferredSize(new Dimension(UIConstants.STATS_PANEL_WIDTH, 0));
-        
-        skillLabel = createStyledLabel();
-        staminaLabel = createStyledLabel();
-        luckLabel = createStyledLabel();
-        goldLabel = createStyledLabel();
-        statsPanel.add(skillLabel);
-        statsPanel.add(staminaLabel);
-        statsPanel.add(luckLabel);
-        statsPanel.add(goldLabel);
-        
-        // Provisions button
-        JButton provisionsButton = new JButton() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(UIConstants.SEMI_TRANSPARENT_BLACK);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-                super.paintComponent(g);
-            }
-        };
-        provisionsButton.setFont(UIConstants.FONT_MEDIUM);
-        provisionsButton.setForeground(Color.WHITE);
-        provisionsButton.setOpaque(false);
-        provisionsButton.setContentAreaFilled(false);
-        provisionsButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        provisionsButton.addActionListener(e -> consumeProvision());
-        statsPanel.add(Box.createVerticalStrut(10));
-        statsPanel.add(provisionsButton);
-        
-        // Store reference for updates
-        this.provisionsButton = provisionsButton;
+        // Create hero stats panel
+        heroStatsPanel = new HeroStatsPanel(controller.getHero(), this::consumeProvision);
         
         // Items section
         JLabel itemsTitle = new JLabel(Messages.get(Messages.Key.ITEMS_TITLE) + ":") {
@@ -163,8 +108,8 @@ public class GameWindow extends JFrame {
         itemsTitle.setFont(UIConstants.FONT_LARGE);
         itemsTitle.setForeground(Color.WHITE);
         itemsTitle.setOpaque(false);
-        statsPanel.add(Box.createVerticalStrut(20));
-        statsPanel.add(itemsTitle);
+        heroStatsPanel.add(Box.createVerticalStrut(20));
+        heroStatsPanel.add(itemsTitle);
         
         itemsPanel = new JPanel() {
             @Override
@@ -178,9 +123,9 @@ public class GameWindow extends JFrame {
         };
         itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
         itemsPanel.setOpaque(false);
-        statsPanel.add(itemsPanel);
+        heroStatsPanel.add(itemsPanel);
         
-        add(statsPanel, BorderLayout.EAST);
+        add(heroStatsPanel, BorderLayout.EAST);
 
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonScrollPane = new JScrollPane(buttonPanel);
@@ -198,20 +143,12 @@ public class GameWindow extends JFrame {
         
         add(buttonScrollPane, BorderLayout.SOUTH);
 
-        // Initialize previous values
-        Hero hero = controller.getHero();
-        prevSkill = hero.getSkill();
-        prevStamina = hero.getStamina();
-        prevLuck = hero.getLuck();
-        prevGold = hero.getGold();
-        prevProvisions = hero.getProvisions();
-
         updateDisplay();
         setVisible(true);
     }
 
     public void updateDisplay() {
-        updateHeroStats();
+        heroStatsPanel.updateStats(battleUI != null);
         
         Hero hero = controller.getHero();
         updateItemButtons();
@@ -248,7 +185,7 @@ public class GameWindow extends JFrame {
                 InputStream skullStream = getClass().getClassLoader().getResourceAsStream("skull.jpg");
                 BufferedImage skullImage = ImageIO.read(skullStream);
                 JLabel skullLabel = new JLabel(new ImageIcon(skullImage));
-                remove(statsPanel);
+                remove(heroStatsPanel);
                 add(skullLabel, BorderLayout.EAST);
                 revalidate();
                 repaint();
@@ -486,64 +423,15 @@ public class GameWindow extends JFrame {
         }
     }
 
-    private JLabel createStyledLabel() {
-        JLabel label = new JLabel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                g2d.setColor(UIConstants.SEMI_TRANSPARENT_BLACK);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-                
-                super.paintComponent(g);
-            }
-        };
-        label.setFont(UIConstants.FONT_TITLE);
-        label.setForeground(Color.WHITE);
-        label.setOpaque(false);
-        return label;
-    }
-
     public void updateHeroStats() {
-        Hero hero = controller.getHero();
-        
-        // Check for changes and animate
-        if (hero.getSkill() != prevSkill) {
-            AnimationHelper.animateLabel(skillLabel);
-            prevSkill = hero.getSkill();
-        }
-        if (hero.getStamina() != prevStamina) {
-            AnimationHelper.animateLabel(staminaLabel);
-            prevStamina = hero.getStamina();
-        }
-        if (hero.getLuck() != prevLuck) {
-            AnimationHelper.animateLabel(luckLabel);
-            prevLuck = hero.getLuck();
-        }
-        if (hero.getGold() != prevGold) {
-            AnimationHelper.animateLabel(goldLabel);
-            prevGold = hero.getGold();
-        }
-        if (hero.getProvisions() != prevProvisions) {
-            AnimationHelper.animateButton(provisionsButton);
-            prevProvisions = hero.getProvisions();
-        }
-        
-        skillLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></div></html>", 
-            Messages.get(Messages.Key.SKILL), hero.getSkill(), hero.getInitialSkill()));
-        staminaLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></div></html>", 
-            Messages.get(Messages.Key.STAMINA), hero.getStamina(), hero.getInitialStamina()));
-        luckLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b><font color='red'>%d</font></b> <font size='5'>(%d)</font></div></html>", 
-            Messages.get(Messages.Key.LUCK), hero.getLuck(), hero.getInitialLuck()));
-        goldLabel.setText(String.format("<html><div style='text-shadow: 2px 2px 4px black;'>%s: <b><font color='red'>%d</font></b></div></html>", 
-            Messages.get(Messages.Key.GOLD), hero.getGold()));
-        
-        // Update provisions button
-        provisionsButton.setText(Messages.get(Messages.Key.PROVISIONS) + ": " + hero.getProvisions());
-        provisionsButton.setEnabled(hero.getProvisions() > 0 && battleUI == null);
+        heroStatsPanel.updateStats(battleUI != null);
     }
     
+    // Getters for testing
+    public HeroStatsPanel getStatsPanel() { return heroStatsPanel; }
+    public JLabel getStaminaLabel() { return heroStatsPanel.getStaminaLabel(); }
+    public JButton getProvisionsButton() { return heroStatsPanel.getProvisionsButton(); }
+
     private void handleSingleButtonAction(com.adventure.actions.Action action, Map<String, Object> actionData) {
         if (actionData.containsKey("battle")) {
             controller.getAdventureLog().log("  Battle started");
@@ -669,7 +557,7 @@ public class GameWindow extends JFrame {
                         controller.getHero().removeItem(item);
                         chapterState.incrementSoldItems();
                         controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_SOLD_ITEM), item, goldPerItem));
-                        updateHeroStats();
+                        heroStatsPanel.updateStats(battleUI != null);
                         updateItemButtons();
                     });
                 } else {
@@ -820,7 +708,7 @@ public class GameWindow extends JFrame {
         
         if (hero.consumeProvision()) {
             controller.getAdventureLog().log(Messages.get(Messages.Key.LOG_CONSUMED_PROVISION));
-            updateHeroStats();
+            heroStatsPanel.updateStats(battleUI != null);
             updateDisplay();
         }
     }

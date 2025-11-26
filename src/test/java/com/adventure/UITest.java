@@ -531,6 +531,20 @@ public class UITest {
 
     @SuppressWarnings("unchecked")
     private <T> T getField(Object obj, String fieldName) throws Exception {
+        // Handle refactored fields that moved to HeroStatsPanel
+        if (obj instanceof GameWindow) {
+            GameWindow window = (GameWindow) obj;
+            switch (fieldName) {
+                case "statsPanel":
+                    return (T) window.getStatsPanel();
+                case "staminaLabel":
+                    return (T) window.getStaminaLabel();
+                case "provisionsButton":
+                    return (T) window.getProvisionsButton();
+            }
+        }
+        
+        // Fall back to reflection for other fields
         Field field = obj.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         return (T) field.get(obj);
