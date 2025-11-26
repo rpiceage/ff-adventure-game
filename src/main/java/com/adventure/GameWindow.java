@@ -51,7 +51,7 @@ public class GameWindow extends JFrame {
         this.controller = new GameController(adventure, gameYamlPath);
         this.gameYamlPath = gameYamlPath;
         setTitle(adventure.title);
-        setSize(1200, 800);
+        setSize(UIConstants.WINDOW_WIDTH, UIConstants.WINDOW_HEIGHT);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         
@@ -91,9 +91,9 @@ public class GameWindow extends JFrame {
         textArea.setEditable(false);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.setFont(new Font("Arial", Font.BOLD, 24));
+        textArea.setFont(UIConstants.FONT_TITLE);
         // Add right margin for illustration (310px = 300px image + 10px padding)
-        textArea.setMargin(new Insets(10, 10, 10, 320));
+        textArea.setMargin(UIConstants.TEXT_MARGINS);
         
         textScrollPane = new JScrollPane(textArea);
         textWithIllustrationPanel = textScrollPane;
@@ -114,10 +114,10 @@ public class GameWindow extends JFrame {
         }
         statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
         TitledBorder border = BorderFactory.createTitledBorder(Messages.get(Messages.Key.HERO_STATS_TITLE));
-        border.setTitleFont(new Font("Arial", Font.BOLD, 24));
+        border.setTitleFont(UIConstants.FONT_TITLE);
         border.setTitleColor(Color.WHITE);
         statsPanel.setBorder(border);
-        statsPanel.setPreferredSize(new Dimension(300, 0));
+        statsPanel.setPreferredSize(new Dimension(UIConstants.STATS_PANEL_WIDTH, 0));
         
         skillLabel = createStyledLabel();
         staminaLabel = createStyledLabel();
@@ -134,12 +134,12 @@ public class GameWindow extends JFrame {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(new Color(0, 0, 0, 100));
+                g2d.setColor(UIConstants.SEMI_TRANSPARENT_BLACK);
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 super.paintComponent(g);
             }
         };
-        provisionsButton.setFont(new Font("Arial", Font.BOLD, 18));
+        provisionsButton.setFont(UIConstants.FONT_MEDIUM);
         provisionsButton.setForeground(Color.WHITE);
         provisionsButton.setOpaque(false);
         provisionsButton.setContentAreaFilled(false);
@@ -157,12 +157,12 @@ public class GameWindow extends JFrame {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(new Color(0, 0, 0, 100));
+                g2d.setColor(UIConstants.SEMI_TRANSPARENT_BLACK);
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 super.paintComponent(g);
             }
         };
-        itemsTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        itemsTitle.setFont(UIConstants.FONT_LARGE);
         itemsTitle.setForeground(Color.WHITE);
         itemsTitle.setOpaque(false);
         statsPanel.add(Box.createVerticalStrut(20));
@@ -173,7 +173,7 @@ public class GameWindow extends JFrame {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(new Color(0, 0, 0, 100));
+                g2d.setColor(UIConstants.SEMI_TRANSPARENT_BLACK);
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 super.paintComponent(g);
             }
@@ -186,7 +186,7 @@ public class GameWindow extends JFrame {
 
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonScrollPane = new JScrollPane(buttonPanel);
-        buttonScrollPane.setPreferredSize(new Dimension(0, 80));
+        buttonScrollPane.setPreferredSize(new Dimension(0, UIConstants.BUTTON_PANEL_HEIGHT));
         buttonScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         buttonScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         
@@ -496,13 +496,13 @@ public class GameWindow extends JFrame {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
-                g2d.setColor(new Color(0, 0, 0, 100));
+                g2d.setColor(UIConstants.SEMI_TRANSPARENT_BLACK);
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 
                 super.paintComponent(g);
             }
         };
-        label.setFont(new Font("Arial", Font.BOLD, 24));
+        label.setFont(UIConstants.FONT_TITLE);
         label.setForeground(Color.WHITE);
         label.setOpaque(false);
         return label;
@@ -513,23 +513,23 @@ public class GameWindow extends JFrame {
         
         // Check for changes and animate
         if (hero.getSkill() != prevSkill) {
-            animateLabel(skillLabel);
+            AnimationHelper.animateLabel(skillLabel);
             prevSkill = hero.getSkill();
         }
         if (hero.getStamina() != prevStamina) {
-            animateLabel(staminaLabel);
+            AnimationHelper.animateLabel(staminaLabel);
             prevStamina = hero.getStamina();
         }
         if (hero.getLuck() != prevLuck) {
-            animateLabel(luckLabel);
+            AnimationHelper.animateLabel(luckLabel);
             prevLuck = hero.getLuck();
         }
         if (hero.getGold() != prevGold) {
-            animateLabel(goldLabel);
+            AnimationHelper.animateLabel(goldLabel);
             prevGold = hero.getGold();
         }
         if (hero.getProvisions() != prevProvisions) {
-            animateButton(provisionsButton);
+            AnimationHelper.animateButton(provisionsButton);
             prevProvisions = hero.getProvisions();
         }
         
@@ -547,38 +547,6 @@ public class GameWindow extends JFrame {
         provisionsButton.setEnabled(hero.getProvisions() > 0 && battleUI == null);
     }
     
-    private void animateLabel(JLabel label) {
-        Timer timer = new Timer(50, null);
-        final int[] step = {0};
-        final float[] sizes = {24f, 25f, 26f, 27f, 26f, 25f, 24f};
-        timer.addActionListener(e -> {
-            if (step[0] < sizes.length) {
-                label.setFont(label.getFont().deriveFont(sizes[step[0]]));
-                step[0]++;
-            } else {
-                label.setFont(label.getFont().deriveFont(24f));
-                timer.stop();
-            }
-        });
-        timer.start();
-    }
-    
-    private void animateButton(JButton button) {
-        Timer timer = new Timer(50, null);
-        final int[] step = {0};
-        final float[] sizes = {18f, 19f, 20f, 21f, 20f, 19f, 18f};
-        timer.addActionListener(e -> {
-            if (step[0] < sizes.length) {
-                button.setFont(button.getFont().deriveFont(sizes[step[0]]));
-                step[0]++;
-            } else {
-                button.setFont(button.getFont().deriveFont(18f));
-                timer.stop();
-            }
-        });
-        timer.start();
-    }
-
     private void handleSingleButtonAction(com.adventure.actions.Action action, Map<String, Object> actionData) {
         if (actionData.containsKey("battle")) {
             controller.getAdventureLog().log("  Battle started");
@@ -678,13 +646,13 @@ public class GameWindow extends JFrame {
         
         notificationWindow = new JWindow(this);
         JLabel label = new JLabel("<html>" + message.replace("\n", "<br>") + "</html>");
-        label.setFont(new Font("Arial", Font.BOLD, 18));
+        label.setFont(UIConstants.FONT_MEDIUM);
         label.setForeground(Color.BLACK);
         label.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.BLACK, 2),
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
-        label.setBackground(new Color(255, 255, 200));
+        label.setBackground(UIConstants.NOTIFICATION_BG);
         label.setOpaque(true);
         notificationWindow.add(label);
         notificationWindow.pack();
@@ -699,7 +667,7 @@ public class GameWindow extends JFrame {
         
         notificationWindow.setVisible(true);
         
-        Timer timer = new Timer(3000, e -> {
+        Timer timer = new Timer(UIConstants.NOTIFICATION_DURATION_MS, e -> {
             notificationWindow.dispose();
             notificationWindow = null;
         });
@@ -715,9 +683,9 @@ public class GameWindow extends JFrame {
         
         for (String item : controller.getHero().getInventory()) {
             JButton itemButton = new JButton(item);
-            itemButton.setFont(new Font("Arial", Font.BOLD, 16));
+            itemButton.setFont(UIConstants.FONT_SMALL);
             itemButton.setForeground(Color.WHITE);
-            itemButton.setBackground(new Color(0, 0, 0, 100));
+            itemButton.setBackground(UIConstants.SEMI_TRANSPARENT_BLACK);
             itemButton.setOpaque(false);
             itemButton.setContentAreaFilled(false);
             itemButton.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -823,7 +791,7 @@ public class GameWindow extends JFrame {
                 imageStream.close();
                 
                 // Scale image to max 300px width
-                int targetWidth = 300;
+                int targetWidth = UIConstants.ILLUSTRATION_WIDTH;
                 int targetHeight = (int) (originalImage.getHeight() * ((double) targetWidth / originalImage.getWidth()));
                 
                 // Create scaled image with adjusted transparency
