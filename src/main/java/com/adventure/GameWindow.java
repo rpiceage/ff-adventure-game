@@ -22,6 +22,7 @@ public class GameWindow extends JFrame {
     private NotificationManager notificationManager;
     private ChapterStateManager chapterState;
     private IllustrationManager illustrationManager;
+    private ActionButtonFactory actionButtonFactory;
     private com.adventure.ui.BattleUI battleUI;
     private com.adventure.ui.LuckUI luckUI;
     private com.adventure.ui.RandomModifyUI randomModifyUI;
@@ -42,6 +43,7 @@ public class GameWindow extends JFrame {
         this.notificationManager = new NotificationManager(this);
         this.chapterState = new ChapterStateManager();
         this.illustrationManager = new IllustrationManager(gameYamlPath);
+        this.actionButtonFactory = new ActionButtonFactory(controller, chapterState, this::updateDisplay);
         setTitle(adventure.title);
         setSize(UIConstants.WINDOW_WIDTH, UIConstants.WINDOW_HEIGHT);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
