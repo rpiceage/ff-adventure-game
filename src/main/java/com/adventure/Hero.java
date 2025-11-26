@@ -16,6 +16,7 @@ public class Hero {
     private List<String> inventory;
     private List<String> events;
     private List<Integer> visitedChapters;
+    private java.util.Map<String, Integer> savedAttributes;
 
     public Hero(int skill, int stamina, int luck) {
         this(skill, stamina, luck, 0, 0);
@@ -38,6 +39,7 @@ public class Hero {
         this.inventory = new ArrayList<>();
         this.events = new ArrayList<>();
         this.visitedChapters = new ArrayList<>();
+        this.savedAttributes = new java.util.HashMap<>();
     }
 
     public int getSkill() { return skill; }
@@ -192,4 +194,38 @@ public class Hero {
     public void setInventory(List<String> inventory) { this.inventory = new ArrayList<>(inventory); }
     public void setEvents(List<String> events) { this.events = new ArrayList<>(events); }
     public void setVisitedChapters(List<Integer> visitedChapters) { this.visitedChapters = new ArrayList<>(visitedChapters); }
+    
+    // Record/restore attribute values
+    public void saveAttribute(String field) {
+        switch (field) {
+            case "SKILL": savedAttributes.put(field, skill); break;
+            case "STAMINA": savedAttributes.put(field, stamina); break;
+            case "LUCK": savedAttributes.put(field, luck); break;
+            case "GOLD": savedAttributes.put(field, gold); break;
+            case "PROVISIONS": savedAttributes.put(field, provisions); break;
+        }
+    }
+    
+    public void restoreAttribute(String field, boolean initial) {
+        if (initial) {
+            // Restore to initial/max value
+            switch (field) {
+                case "SKILL": skill = maxSkill; break;
+                case "STAMINA": stamina = maxStamina; break;
+                case "LUCK": luck = maxLuck; break;
+            }
+        } else {
+            // Restore saved value
+            Integer savedValue = savedAttributes.get(field);
+            if (savedValue != null) {
+                switch (field) {
+                    case "SKILL": skill = savedValue; break;
+                    case "STAMINA": stamina = savedValue; break;
+                    case "LUCK": luck = savedValue; break;
+                    case "GOLD": gold = savedValue; break;
+                    case "PROVISIONS": provisions = savedValue; break;
+                }
+            }
+        }
+    }
 }

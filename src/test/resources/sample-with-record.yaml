@@ -1,0 +1,63 @@
+title: Record Action Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You enter a cursed temple. Your SKILL will be reduced by 3 points!
+      - record:
+          set:
+            field: SKILL
+      - modify:
+          values:
+            - field: SKILL
+              value: -3
+      - goto:
+          - chapter: 1
+            text: Continue
+  - index: 1
+    actions:
+      - display: |
+          You fight a demon while cursed!
+      - battle:
+          enemies:
+            - enemy: Demon
+              skill: 8
+              stamina: 10
+          win: 2
+  - index: 2
+    actions:
+      - display: |
+          You defeat the demon! The curse is lifted and your SKILL returns to normal.
+      - record:
+          restore:
+            field: SKILL
+      - goto:
+          - chapter: 3
+            text: Continue
+  - index: 3
+    actions:
+      - display: |
+          You take heavy damage and lose 10 STAMINA!
+      - modify:
+          values:
+            - field: STAMINA
+              value: -10
+      - goto:
+          - chapter: 4
+            text: Rest
+  - index: 4
+    actions:
+      - display: |
+          You rest and fully recover your STAMINA to maximum!
+      - record:
+          restore:
+            field: STAMINA
+            initial: true
+      - goto:
+          - chapter: 5
+            text: Continue
+  - index: 5
+    actions:
+      - display: |
+          Victory! You completed the test.

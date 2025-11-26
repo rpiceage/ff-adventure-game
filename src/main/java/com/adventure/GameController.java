@@ -41,6 +41,7 @@ public class GameController {
         actions.add(new RandomModifyAction());
         actions.add(new RandomGotoAction());
         actions.add(new SetValueAction());
+        actions.add(new RecordAction());
         actions.add(new NewEventAction());
         actions.add(new DeathAction());
         actions.add(new BattleAction());
