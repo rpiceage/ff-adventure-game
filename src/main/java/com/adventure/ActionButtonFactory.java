@@ -3,6 +3,9 @@ package com.adventure;
 import com.adventure.actions.Action;
 import com.adventure.actions.ActionType;
 import com.adventure.actions.AddItemAction;
+import com.adventure.actions.CheckEventAction;
+import com.adventure.actions.CheckParameterAction;
+import com.adventure.actions.GotoAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +35,12 @@ public class ActionButtonFactory {
         if (action.getActionType() == ActionType.MULTIPLE_BUTTONS) {
             if (action instanceof AddItemAction) {
                 buttons.addAll(createAddItemButtons((AddItemAction) action, actionData));
+            } else if (action instanceof CheckEventAction) {
+                buttons.add(createCheckEventButton((CheckEventAction) action, actionData));
+            } else if (action instanceof CheckParameterAction) {
+                buttons.add(createCheckParameterButton((CheckParameterAction) action, actionData));
+            } else if (action instanceof GotoAction) {
+                buttons.addAll(createGotoButtons((GotoAction) action, actionData));
             } else {
                 buttons.addAll(createChoiceButtons(action, actionData));
             }
@@ -100,6 +109,70 @@ public class ActionButtonFactory {
                 controller.selectChoice(choice.index);
                 onActionComplete.run();
             });
+            buttons.add(btn);
+        }
+        
+        return buttons;
+    }
+    
+    private JButton createCheckEventButton(CheckEventAction action, Map<String, Object> actionData) {
+        List<Action.Choice> choices = action.getChoices(actionData);
+        
+        if (action.hasEventOrItem(controller, actionData)) {
+            JButton btn = new JButton(choices.get(0).text);
+            btn.addActionListener(e -> {
+                controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_EVENT_FOUND), action.getExistingChapter(actionData)));
+                controller.goToChapter(action.getExistingChapter(actionData));
+                onActionComplete.run();
+            });
+            return btn;
+        } else {
+            JButton btn = new JButton(choices.get(1).text);
+            btn.addActionListener(e -> {
+                controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_EVENT_NOT_FOUND), action.getMissingChapter(actionData)));
+                controller.goToChapter(action.getMissingChapter(actionData));
+                onActionComplete.run();
+            });
+            return btn;
+        }
+    }
+    
+    private JButton createCheckParameterButton(CheckParameterAction action, Map<String, Object> actionData) {
+        List<Action.Choice> choices = action.getChoices(actionData);
+        
+        if (action.meetsThreshold(controller, actionData)) {
+            JButton btn = new JButton(choices.get(0).text);
+            btn.addActionListener(e -> {
+                controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_PARAMETER_PASSED), action.getGreaterThanOrEqualsChapter(actionData)));
+                controller.goToChapter(action.getGreaterThanOrEqualsChapter(actionData));
+                onActionComplete.run();
+            });
+            return btn;
+        } else {
+            JButton btn = new JButton(choices.get(1).text);
+            btn.addActionListener(e -> {
+                controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_PARAMETER_FAILED), action.getLessThanChapter(actionData)));
+                controller.goToChapter(action.getLessThanChapter(actionData));
+                onActionComplete.run();
+            });
+            return btn;
+        }
+    }
+    
+    private List<JButton> createGotoButtons(GotoAction action, Map<String, Object> actionData) {
+        List<JButton> buttons = new ArrayList<>();
+        List<Action.Choice> choices = action.getChoices(controller, actionData);
+        
+        for (Action.Choice choice : choices) {
+            JButton btn = new JButton(choice.text);
+            btn.setEnabled(choice.enabled);
+            int choiceIndex = choice.index;
+            
+            btn.addActionListener(e -> {
+                controller.selectChoice(choiceIndex, actionData);
+                onActionComplete.run();
+            });
+            
             buttons.add(btn);
         }
         

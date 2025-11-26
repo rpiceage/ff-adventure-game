@@ -277,76 +277,10 @@ public class GameWindow extends JFrame {
                 
                 if (action != null) {
                     if (action.getActionType() == com.adventure.actions.ActionType.MULTIPLE_BUTTONS) {
-                        if (action instanceof com.adventure.actions.AddItemAction) {
-                            // Use factory to create buttons
-                            List<JButton> buttons = actionButtonFactory.createButtons(action, actionData);
-                            for (JButton btn : buttons) {
-                                buttonPanel.add(btn);
-                            }
-                        } else if (action instanceof com.adventure.actions.CheckEventAction) {
-                            // Handle CheckEventAction
-                            com.adventure.actions.CheckEventAction checkAction = (com.adventure.actions.CheckEventAction) action;
-                            List<com.adventure.actions.Action.Choice> choices = action.getChoices(actionData);
-                            
-                            if (checkAction.hasEventOrItem(controller, actionData)) {
-                                // Show existing button
-                                JButton btn = new JButton(choices.get(0).text);
-                                btn.addActionListener(e -> {
-                                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_EVENT_FOUND), checkAction.getExistingChapter(actionData)));
-                                    controller.goToChapter(checkAction.getExistingChapter(actionData));
-                                    updateDisplay();
-                                });
-                                buttonPanel.add(btn);
-                            } else {
-                                // Show missing button
-                                JButton btn = new JButton(choices.get(1).text);
-                                btn.addActionListener(e -> {
-                                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_EVENT_NOT_FOUND), checkAction.getMissingChapter(actionData)));
-                                    controller.goToChapter(checkAction.getMissingChapter(actionData));
-                                    updateDisplay();
-                                });
-                                buttonPanel.add(btn);
-                            }
-                        } else if (action instanceof com.adventure.actions.CheckParameterAction) {
-                            // Handle CheckParameterAction
-                            com.adventure.actions.CheckParameterAction checkAction = (com.adventure.actions.CheckParameterAction) action;
-                            List<com.adventure.actions.Action.Choice> choices = action.getChoices(actionData);
-                            
-                            if (checkAction.meetsThreshold(controller, actionData)) {
-                                // Show greaterThanOrEquals button
-                                JButton btn = new JButton(choices.get(0).text);
-                                btn.addActionListener(e -> {
-                                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_PARAMETER_PASSED), checkAction.getGreaterThanOrEqualsChapter(actionData)));
-                                    controller.goToChapter(checkAction.getGreaterThanOrEqualsChapter(actionData));
-                                    updateDisplay();
-                                });
-                                buttonPanel.add(btn);
-                            } else {
-                                // Show lessThan button
-                                JButton btn = new JButton(choices.get(1).text);
-                                btn.addActionListener(e -> {
-                                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_CHECK_PARAMETER_FAILED), checkAction.getLessThanChapter(actionData)));
-                                    controller.goToChapter(checkAction.getLessThanChapter(actionData));
-                                    updateDisplay();
-                                });
-                                buttonPanel.add(btn);
-                            }
-                        } else {
-                            // Handle GotoAction
-                            com.adventure.actions.GotoAction gotoAction = (com.adventure.actions.GotoAction) action;
-                            List<com.adventure.actions.Action.Choice> choices = gotoAction.getChoices(controller, actionData);
-                            for (int i = 0; i < choices.size(); i++) {
-                                com.adventure.actions.Action.Choice choice = choices.get(i);
-                                JButton btn = new JButton(choice.text);
-                                btn.setEnabled(choice.enabled);
-                                int choiceIndex = choice.index; // Use original index from Choice
-                                Map<String, Object> gotoActionData = actionData;
-                                btn.addActionListener(e -> {
-                                    controller.selectChoice(choiceIndex, gotoActionData);
-                                    updateDisplay();
-                                });
-                                buttonPanel.add(btn);
-                            }
+                        // Use factory to create all button types
+                        List<JButton> buttons = actionButtonFactory.createButtons(action, actionData);
+                        for (JButton btn : buttons) {
+                            buttonPanel.add(btn);
                         }
                     } else if (action.getActionType() == com.adventure.actions.ActionType.SINGLE_BUTTON) {
                         JButton actionButton = new JButton(action.getButtonText());
