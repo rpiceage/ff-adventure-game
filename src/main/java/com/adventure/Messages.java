@@ -70,7 +70,9 @@ public class Messages {
         BATTLE_EXTRA_DAMAGE_BUTTON,
         BATTLE_EXTRA_DAMAGE_HIT,
         BATTLE_EXTRA_DAMAGE_MISS,
-        LOG_BATTLE_EXTRA_DAMAGE
+        LOG_BATTLE_EXTRA_DAMAGE,
+        LOG_BATTLE_ALLY_DIED,
+        BATTLE_ALLY_LOSES_STAMINA
     }
     
     private static final Map<Key, Map<String, String>> translations = Map.ofEntries(
@@ -333,6 +335,14 @@ public class Messages {
         Map.entry(Key.LOG_BATTLE_EXTRA_DAMAGE, Map.of(
             "en", "  Extra damage roll: %d - %s",
             "hu", "  Extra sebzés dobás: %d - %s"
+        )),
+        Map.entry(Key.LOG_BATTLE_ALLY_DIED, Map.of(
+            "en", "  Ally %s died - Hero continues the fight",
+            "hu", "  Szövetséges %s meghalt - Hős folytatja a harcot"
+        )),
+        Map.entry(Key.BATTLE_ALLY_LOSES_STAMINA, Map.of(
+            "en", "%s loses 2 STAMINA (%d remaining)",
+            "hu", "%s veszít 2 ÉLETERŐT (%d maradt)"
         ))
     );
     

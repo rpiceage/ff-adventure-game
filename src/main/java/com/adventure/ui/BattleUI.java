@@ -91,6 +91,15 @@ public class BattleUI {
             currentBattle.setExtraDamage(dice, triggers, damageAmount);
         }
         
+        // Set ally if present
+        if (battleData.containsKey("ally")) {
+            Map<String, Object> allyData = (Map<String, Object>) battleData.get("ally");
+            String allyName = (String) allyData.get("name");
+            int allySkill = (Integer) allyData.get("skill");
+            int allyStamina = (Integer) allyData.get("stamina");
+            currentBattle.setAlly(allyName, allySkill, allyStamina);
+        }
+        
         centerPanel = new JPanel(new BorderLayout());
         battleStatsPanel = new JPanel();
         battleStatsPanel.setLayout(new BoxLayout(battleStatsPanel, BoxLayout.Y_AXIS));
@@ -149,6 +158,16 @@ public class BattleUI {
         // Add modifier text to battle log if present
         if (currentBattle.getModifierText() != null) {
             currentBattle.appendToBattleLog(currentBattle.getModifierText() + "\n\n");
+        }
+        
+        // Add ally stats to battle log if present
+        if (currentBattle.getAlly() != null) {
+            Enemy ally = currentBattle.getAlly();
+            String allyStats = String.format("%s (Ally) - %s: %d, %s: %d\n\n",
+                ally.getName(),
+                Messages.get(Messages.Key.SKILL), ally.getSkill(),
+                Messages.get(Messages.Key.STAMINA), ally.getStamina());
+            currentBattle.appendToBattleLog(allyStats);
         }
         
         updateDisplay();
@@ -258,23 +277,22 @@ public class BattleUI {
                 
                 List<AnimatedDicePanel> animatedPanels = new ArrayList<>();
                 
-                // In sequential mode, only show dice for the first alive enemy
-                List<Enemy> enemiesToShow = currentBattle.getMode() == 1 
-                    ? aliveBeforeTurn.subList(0, 1) 
-                    : aliveBeforeTurn;
-                
-                for (Enemy enemy : enemiesToShow) {
+                // Show ally vs enemy dice if in ally phase
+                if (currentBattle.isAllyPhase() && currentBattle.getAlly() != null) {
+                    Enemy ally = currentBattle.getAlly();
+                    Enemy enemy = currentBattle.getEnemies().get(0);
+                    
                     JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
                     rowPanel.setOpaque(false);
                     
-                    JLabel heroLabel = new JLabel("Hero:");
-                    heroLabel.setFont(new Font("Arial", Font.BOLD, 20));
-                    rowPanel.add(heroLabel);
+                    JLabel allyLabel = new JLabel(ally.getName() + ":");
+                    allyLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                    rowPanel.add(allyLabel);
                     
-                    AnimatedDicePanel heroDicePanel = new AnimatedDicePanel(
-                        enemy.getHeroDice1(), enemy.getHeroDice2());
-                    animatedPanels.add(heroDicePanel);
-                    rowPanel.add(heroDicePanel);
+                    AnimatedDicePanel allyDicePanel = new AnimatedDicePanel(
+                        ally.getHeroDice1(), ally.getHeroDice2());
+                    animatedPanels.add(allyDicePanel);
+                    rowPanel.add(allyDicePanel);
                     
                     JLabel enemyLabel = new JLabel(enemy.getName() + ":");
                     enemyLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -286,6 +304,36 @@ public class BattleUI {
                     rowPanel.add(enemyDicePanel);
                     
                     dicePanel.add(rowPanel);
+                } else {
+                    // In sequential mode, only show dice for the first alive enemy
+                    List<Enemy> enemiesToShow = currentBattle.getMode() == 1 
+                        ? aliveBeforeTurn.subList(0, 1) 
+                        : aliveBeforeTurn;
+                    
+                    for (Enemy enemy : enemiesToShow) {
+                        JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+                        rowPanel.setOpaque(false);
+                        
+                        JLabel heroLabel = new JLabel("Hero:");
+                        heroLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                        rowPanel.add(heroLabel);
+                        
+                        AnimatedDicePanel heroDicePanel = new AnimatedDicePanel(
+                            enemy.getHeroDice1(), enemy.getHeroDice2());
+                        animatedPanels.add(heroDicePanel);
+                        rowPanel.add(heroDicePanel);
+                        
+                        JLabel enemyLabel = new JLabel(enemy.getName() + ":");
+                        enemyLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                        rowPanel.add(enemyLabel);
+                        
+                        AnimatedDicePanel enemyDicePanel = new AnimatedDicePanel(
+                            enemy.getEnemyDice1(), enemy.getEnemyDice2());
+                        animatedPanels.add(enemyDicePanel);
+                        rowPanel.add(enemyDicePanel);
+                        
+                        dicePanel.add(rowPanel);
+                    }
                 }
                 
                 dicePanel.revalidate();

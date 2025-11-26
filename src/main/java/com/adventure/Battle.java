@@ -24,6 +24,8 @@ public class Battle {
     private List<Integer> extraDamageTriggers; // Die values that trigger damage
     private int extraDamageAmount; // Amount of stamina lost on trigger
     private int lastExtraDamageRoll; // Last extra damage die roll
+    private Enemy ally; // Optional ally that fights first
+    private boolean allyPhase; // True if ally is currently fighting
 
     public Battle(Hero hero, String enemyName, int enemySkill, int enemyStamina) {
         this(hero, enemyName, enemySkill, enemyStamina, new Random());
@@ -49,6 +51,8 @@ public class Battle {
         this.extraDamageTriggers = new ArrayList<>();
         this.extraDamageAmount = 0;
         this.lastExtraDamageRoll = 0;
+        this.ally = null;
+        this.allyPhase = false;
     }
 
     public Battle(Hero hero, List<Enemy> enemies) {
@@ -78,6 +82,8 @@ public class Battle {
         this.extraDamageTriggers = new ArrayList<>();
         this.extraDamageAmount = 0;
         this.lastExtraDamageRoll = 0;
+        this.ally = null;
+        this.allyPhase = false;
     }
 
     public String getEnemyName() {
@@ -133,7 +139,46 @@ public class Battle {
         StringBuilder turnResult = new StringBuilder();
         int heroDamageTaken = 0;
 
-        if (mode == 1) {
+        if (allyPhase && ally != null && ally.isAlive()) {
+            // Ally fights the first enemy
+            Enemy enemy = enemies.get(0);
+            
+            int allyDice1 = random.nextInt(6) + 1;
+            int allyDice2 = random.nextInt(6) + 1;
+            int allyAttack = ally.getSkill() + allyDice1 + allyDice2;
+
+            int enemyDice1 = random.nextInt(6) + 1;
+            int enemyDice2 = random.nextInt(6) + 1;
+            int enemyAttack = enemy.getSkill() + enemyDice1 + enemyDice2;
+
+            ally.setHeroDice(allyDice1, allyDice2);
+            ally.setEnemyDice(enemyDice1, enemyDice2);
+            enemy.setHeroDice(allyDice1, allyDice2);
+            enemy.setEnemyDice(enemyDice1, enemyDice2);
+
+            turnResult.append(String.format("%s: %d %s %s: %d - ",
+                ally.getName(), allyAttack, 
+                Messages.get(Messages.Key.BATTLE_VS), enemy.getName(), enemyAttack));
+
+            if (allyAttack > enemyAttack) {
+                enemy.setStamina(enemy.getStamina() - 2);
+                turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
+            } else if (enemyAttack > allyAttack) {
+                ally.setStamina(ally.getStamina() - 2);
+                turnResult.append(String.format(Messages.get(Messages.Key.BATTLE_ALLY_LOSES_STAMINA), ally.getName(), ally.getStamina()));
+            } else {
+                turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
+            }
+            turnResult.append("\n");
+            
+            // Check if ally phase is over
+            if (!ally.isAlive()) {
+                allyPhase = false;
+                turnResult.append(String.format(Messages.get(Messages.Key.LOG_BATTLE_ALLY_DIED), ally.getName())).append("\n");
+            } else if (!enemy.isAlive()) {
+                allyPhase = false;
+            }
+        } else if (mode == 1) {
             // Sequential mode: only fight the first alive enemy
             Enemy enemy = getAliveEnemies().get(0);
             int i = enemies.indexOf(enemy);
@@ -293,5 +338,18 @@ public class Battle {
     
     public int getLastExtraDamageRoll() {
         return lastExtraDamageRoll;
+    }
+    
+    public void setAlly(String name, int skill, int stamina) {
+        this.ally = new Enemy(name, skill, stamina);
+        this.allyPhase = true;
+    }
+    
+    public Enemy getAlly() {
+        return ally;
+    }
+    
+    public boolean isAllyPhase() {
+        return allyPhase;
     }
 }

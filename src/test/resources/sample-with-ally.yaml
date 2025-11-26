@@ -1,0 +1,25 @@
+title: Ally Battle Test
+language: en
+init:
+  gold: 10
+  provisions: 2
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          A knight appears to help you fight the dragon!
+      - battle:
+          enemies:
+            - enemy: White Dragon
+              skill: 12
+              stamina: 14
+          ally:
+            name: Knight
+            skill: 9
+            stamina: 10
+          win: 1
+          battleText: The summoned warrior will fight the White Dragon first. If the warrior wins, they disappear. If they die, you must continue the fight.
+  - index: 1
+    actions:
+      - display: |
+          Victory! The dragon is defeated.

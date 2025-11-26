@@ -273,7 +273,7 @@ chapters:
                   value: 3
         - checkEvent:
             name: 
-              - fagyás
+              - lefagyott kardforgató kéz
             existing:
               chapter: 424
               text: Mivel vesztettél ÜGYESSÉG pontot fagyás miatt...
@@ -284,9 +284,10 @@ chapters:
       actions:
         - display: |
             Visszakapod a fagyás miatt vesztett ÜGYESSÉG pontokat.
-        - record:
-            set:
-              field: SKILL
+        - modify:
+            values:
+                - field: SKILL
+                  value: 2
         - goto:
             - chapter: 824
               text: Tovább...
