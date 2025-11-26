@@ -37,10 +37,25 @@ public class GameSelectionWindow extends JFrame {
         List<String> gameFiles = findGameFiles();
         
         for (String gameFile : gameFiles) {
-            JButton gameButton = new JButton(getGameTitle(gameFile));
-            gameButton.setFont(new Font("Arial", Font.PLAIN, 18));
+            String gameTitle = getGameTitle(gameFile);
+            ImageIcon coverIcon = getCoverImage(gameFile);
+            
+            JButton gameButton = new JButton();
+            gameButton.setLayout(new BorderLayout());
+            gameButton.setPreferredSize(new Dimension(500, 150));
+            gameButton.setMaximumSize(new Dimension(500, 150));
             gameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            gameButton.setMaximumSize(new Dimension(500, 50));
+            
+            if (coverIcon != null) {
+                JLabel imageLabel = new JLabel(coverIcon);
+                gameButton.add(imageLabel, BorderLayout.WEST);
+            }
+            
+            JLabel gameTitleLabel = new JLabel(gameTitle);
+            gameTitleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+            gameTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            gameButton.add(gameTitleLabel, BorderLayout.CENTER);
+            
             gameButton.addActionListener(e -> startGame(gameFile));
             panel.add(gameButton);
             panel.add(Box.createVerticalStrut(10));
@@ -110,6 +125,28 @@ public class GameSelectionWindow extends JFrame {
             e.printStackTrace();
         }
         return gameFile;
+    }
+    
+    private ImageIcon getCoverImage(String gameFile) {
+        try {
+            // Extract folder name from yaml file (e.g., "books/game.yaml" -> "game")
+            String fileName = gameFile.substring(gameFile.lastIndexOf('/') + 1);
+            String folderName = fileName.replace(".yaml", "");
+            String coverPath = "books/" + folderName + "/cover.jpg";
+            
+            InputStream coverStream = getClass().getClassLoader().getResourceAsStream(coverPath);
+            if (coverStream != null) {
+                java.awt.image.BufferedImage coverImage = javax.imageio.ImageIO.read(coverStream);
+                // Scale image to fit button (height 140px, maintain aspect ratio)
+                int targetHeight = 140;
+                int targetWidth = (int) (coverImage.getWidth() * ((double) targetHeight / coverImage.getHeight()));
+                java.awt.Image scaledImage = coverImage.getScaledInstance(targetWidth, targetHeight, java.awt.Image.SCALE_SMOOTH);
+                return new ImageIcon(scaledImage);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     
     private void startGame(String gameFile) {
