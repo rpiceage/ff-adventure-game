@@ -222,7 +222,8 @@ public class GameWindow extends JFrame {
             attributeTestUI = null;
             
             try {
-                BufferedImage skullImage = ImageIO.read(new File("src/resources/skull.jpg"));
+                InputStream skullStream = getClass().getClassLoader().getResourceAsStream("skull.jpg");
+                BufferedImage skullImage = ImageIO.read(skullStream);
                 JLabel skullLabel = new JLabel(new ImageIcon(skullImage));
                 remove(statsPanel);
                 add(skullLabel, BorderLayout.EAST);

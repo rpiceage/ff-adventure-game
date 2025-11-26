@@ -1196,7 +1196,7 @@ chapters:
               condition:
                 parameter:
                   name: GOLD
-                  greaterThanOrEquals: 5
+                  greaterThanOrEquals: 10
             - chapter: 131
               text: Inkább továbbmész?
     - index: 105
