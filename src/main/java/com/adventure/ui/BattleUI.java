@@ -79,6 +79,18 @@ public class BattleUI {
             currentBattle.setModifier(value, text);
         }
         
+        // Set extra damage if present
+        if (battleData.containsKey("extraHeroDamage")) {
+            Map<String, Object> extraDamageData = (Map<String, Object>) battleData.get("extraHeroDamage");
+            Map<String, Object> randomData = (Map<String, Object>) extraDamageData.get("randomExtraDamage");
+            int dice = (Integer) randomData.get("dice");
+            List<Map<String, Object>> damageList = (List<Map<String, Object>>) randomData.get("damage");
+            Map<String, Object> damageInfo = damageList.get(0);
+            int damageAmount = (Integer) damageInfo.get("stamina");
+            List<Integer> triggers = (List<Integer>) damageInfo.get("trigger");
+            currentBattle.setExtraDamage(dice, triggers, damageAmount);
+        }
+        
         centerPanel = new JPanel(new BorderLayout());
         battleStatsPanel = new JPanel();
         battleStatsPanel.setLayout(new BoxLayout(battleStatsPanel, BoxLayout.Y_AXIS));
@@ -240,6 +252,10 @@ public class BattleUI {
                 dicePanel.removeAll();
                 dicePanel.setLayout(new BoxLayout(dicePanel, BoxLayout.Y_AXIS));
                 
+                // Reset dice panel size for normal turn
+                int dicePanelHeight = (currentBattle.getMode() == 1 ? 1 : aliveBeforeTurn.size()) * 100;
+                dicePanel.setPreferredSize(new Dimension(400, dicePanelHeight));
+                
                 List<AnimatedDicePanel> animatedPanels = new ArrayList<>();
                 
                 // In sequential mode, only show dice for the first alive enemy
@@ -288,8 +304,73 @@ public class BattleUI {
                         for (AnimatedDicePanel panel : animatedPanels) {
                             panel.stopAnimation();
                         }
-                        updateDisplay();
-                        nextTurnButton.setEnabled(true);
+                        
+                        // If extra damage is enabled, show extra damage button instead of updating display
+                        if (currentBattle.hasExtraDamage() && !currentBattle.isOver()) {
+                            buttonPanel.removeAll();
+                            JButton extraDamageButton = new JButton(Messages.get(Messages.Key.BATTLE_EXTRA_DAMAGE_BUTTON));
+                            extraDamageButton.addActionListener(evt2 -> {
+                                extraDamageButton.setEnabled(false);
+                                
+                                // Roll for extra damage first
+                                int damage = currentBattle.rollExtraDamage();
+                                int roll = currentBattle.getLastExtraDamageRoll();
+                                
+                                // Increase dice panel size for extra row (add 100px once)
+                                dicePanel.setPreferredSize(new Dimension(400, dicePanel.getPreferredSize().height + 100));
+                                dicePanel.revalidate();
+                                
+                                // Add extra damage dice row
+                                JPanel extraRowPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+                                extraRowPanel.setOpaque(false);
+                                
+                                JLabel extraLabel = new JLabel("Extra:");
+                                extraLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                                extraRowPanel.add(extraLabel);
+                                
+                                AnimatedDicePanel extraDicePanel = new AnimatedDicePanel(roll);
+                                extraRowPanel.add(extraDicePanel);
+                                
+                                dicePanel.add(extraRowPanel);
+                                dicePanel.revalidate();
+                                dicePanel.repaint();
+                                
+                                // Animate extra damage die
+                                Timer extraAnimTimer = new Timer(50, null);
+                                final int[] extraCount = {0};
+                                extraAnimTimer.addActionListener(evt3 -> {
+                                    if (extraCount[0] < 20) {
+                                        extraDicePanel.updateAnimation();
+                                        extraCount[0]++;
+                                    } else {
+                                        extraAnimTimer.stop();
+                                        extraDicePanel.stopAnimation();
+                                        
+                                        String resultMsg;
+                                        if (damage > 0) {
+                                            resultMsg = String.format(Messages.get(Messages.Key.BATTLE_EXTRA_DAMAGE_HIT), damage);
+                                            textArea.append("\n" + resultMsg + "\n");
+                                            currentBattle.appendToBattleLog(resultMsg + "\n");
+                                            controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_EXTRA_DAMAGE), roll, String.format("%d STAMINA lost", damage)));
+                                        } else {
+                                            resultMsg = Messages.get(Messages.Key.BATTLE_EXTRA_DAMAGE_MISS);
+                                            textArea.append("\n" + resultMsg + "\n");
+                                            currentBattle.appendToBattleLog(resultMsg + "\n");
+                                            controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_EXTRA_DAMAGE), roll, "no damage"));
+                                        }
+                                        
+                                        updateDisplay();
+                                    }
+                                });
+                                extraAnimTimer.start();
+                            });
+                            buttonPanel.add(extraDamageButton);
+                            buttonPanel.revalidate();
+                            buttonPanel.repaint();
+                        } else {
+                            updateDisplay();
+                            nextTurnButton.setEnabled(true);
+                        }
                     }
                 });
                 animTimer.start();

@@ -1,0 +1,31 @@
+title: Extra Damage Test
+language: en
+init:
+  gold: 10
+  provisions: 2
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You enter a frozen chamber. An ice demon awakens!
+      - battle:
+          enemies:
+            - enemy: Ice Demon
+              skill: 9
+              stamina: 11
+          extraHeroDamage:
+            everyTurn: true
+            randomExtraDamage:
+              dice: 1
+              damage:
+                - stamina: 1
+                  trigger:
+                    - 1
+                    - 2
+                    - 3
+          win: 1
+          battleText: Each turn, roll for freezing gas damage. On 1-3, lose 1 STAMINA. On 4-6, no damage.
+  - index: 1
+    actions:
+      - display: |
+          You defeated the Ice Demon! Victory is yours.

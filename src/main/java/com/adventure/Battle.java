@@ -19,6 +19,11 @@ public class Battle {
     private int currentTurn; // Track current turn number
     private int modifierValue; // Modifier to hero's attack strength
     private String modifierText; // Explanation text for the modifier
+    private boolean hasExtraDamage; // Whether extra damage is enabled
+    private int extraDamageDice; // Number of dice for extra damage
+    private List<Integer> extraDamageTriggers; // Die values that trigger damage
+    private int extraDamageAmount; // Amount of stamina lost on trigger
+    private int lastExtraDamageRoll; // Last extra damage die roll
 
     public Battle(Hero hero, String enemyName, int enemySkill, int enemyStamina) {
         this(hero, enemyName, enemySkill, enemyStamina, new Random());
@@ -39,6 +44,11 @@ public class Battle {
         this.currentTurn = 0;
         this.modifierValue = 0;
         this.modifierText = null;
+        this.hasExtraDamage = false;
+        this.extraDamageDice = 1;
+        this.extraDamageTriggers = new ArrayList<>();
+        this.extraDamageAmount = 0;
+        this.lastExtraDamageRoll = 0;
     }
 
     public Battle(Hero hero, List<Enemy> enemies) {
@@ -63,6 +73,11 @@ public class Battle {
         this.currentTurn = 0;
         this.modifierValue = 0;
         this.modifierText = null;
+        this.hasExtraDamage = false;
+        this.extraDamageDice = 1;
+        this.extraDamageTriggers = new ArrayList<>();
+        this.extraDamageAmount = 0;
+        this.lastExtraDamageRoll = 0;
     }
 
     public String getEnemyName() {
@@ -254,5 +269,29 @@ public class Battle {
     
     public String getModifierText() {
         return modifierText;
+    }
+    
+    public void setExtraDamage(int dice, List<Integer> triggers, int damageAmount) {
+        this.hasExtraDamage = true;
+        this.extraDamageDice = dice;
+        this.extraDamageTriggers = triggers;
+        this.extraDamageAmount = damageAmount;
+    }
+    
+    public boolean hasExtraDamage() {
+        return hasExtraDamage;
+    }
+    
+    public int rollExtraDamage() {
+        lastExtraDamageRoll = random.nextInt(6) + 1;
+        if (extraDamageTriggers.contains(lastExtraDamageRoll)) {
+            hero.modifyStaminaSilent(-extraDamageAmount);
+            return extraDamageAmount;
+        }
+        return 0;
+    }
+    
+    public int getLastExtraDamageRoll() {
+        return lastExtraDamageRoll;
     }
 }
