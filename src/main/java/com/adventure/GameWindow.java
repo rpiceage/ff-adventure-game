@@ -853,11 +853,11 @@ public class GameWindow extends JFrame {
                         // Scale: dark pixels get up to 100% opacity, bright pixels fade away more
                         if (brightness < 128) {
                             // Dark pixels: make them even darker (higher opacity)
-                            alpha = (int) (alpha * 1.4);
+                            alpha = (int) (alpha * 1.6);
                             if (alpha > 255) alpha = 255;
                         } else {
                             // Bright pixels: make them even more transparent
-                            alpha = (int) (alpha * 0.4);
+                            alpha = (int) (alpha * 0.3);
                         }
                         
                         int newRgb = (alpha << 24) | (r << 16) | (g << 8) | b;
