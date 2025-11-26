@@ -14,11 +14,16 @@ public class ActionButtonFactory {
     private final GameController controller;
     private final ChapterStateManager chapterState;
     private final Runnable onActionComplete;
+    private final Runnable onInventoryUpdate;
+    private final JPanel buttonPanel;
     
-    public ActionButtonFactory(GameController controller, ChapterStateManager chapterState, Runnable onActionComplete) {
+    public ActionButtonFactory(GameController controller, ChapterStateManager chapterState, 
+                              Runnable onActionComplete, Runnable onInventoryUpdate, JPanel buttonPanel) {
         this.controller = controller;
         this.chapterState = chapterState;
         this.onActionComplete = onActionComplete;
+        this.onInventoryUpdate = onInventoryUpdate;
+        this.buttonPanel = buttonPanel;
     }
     
     public List<JButton> createButtons(Action action, Map<String, Object> actionData) {
@@ -45,7 +50,8 @@ public class ActionButtonFactory {
     private List<JButton> createAddItemButtons(AddItemAction action, Map<String, Object> actionData) {
         List<JButton> buttons = new ArrayList<>();
         List<Action.Choice> choices = action.getChoices(actionData);
-        Integer maxItems = (Integer) actionData.get("maxItems");
+        Map<String, Object> addItemData = (Map<String, Object>) actionData.get("addItem");
+        Integer maxItems = addItemData.containsKey("maxItems") ? (Integer) addItemData.get("maxItems") : null;
         
         for (int i = 0; i < choices.size(); i++) {
             final int itemIndex = i;
@@ -54,6 +60,8 @@ public class ActionButtonFactory {
             
             JButton btn = new JButton(choice.text);
             btn.setBackground(new Color(0, 100, 0));
+            btn.setForeground(Color.WHITE);
+            btn.setOpaque(true);
             
             if (maxItems != null && chapterState.getTakenItemsCount() >= maxItems) {
                 btn.setEnabled(false);
@@ -64,7 +72,16 @@ public class ActionButtonFactory {
                 controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_TOOK_ITEM), itemName));
                 chapterState.incrementTakenItems();
                 btn.setEnabled(false);
-                onActionComplete.run();
+                onInventoryUpdate.run();
+                
+                // Disable all other addItem buttons if maxItems reached
+                if (maxItems != null && chapterState.getTakenItemsCount() >= maxItems) {
+                    for (Component c : buttonPanel.getComponents()) {
+                        if (c instanceof JButton && ((JButton) c).getBackground().equals(new Color(0, 100, 0))) {
+                            c.setEnabled(false);
+                        }
+                    }
+                }
             });
             
             buttons.add(btn);

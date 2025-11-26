@@ -43,7 +43,6 @@ public class GameWindow extends JFrame {
         this.notificationManager = new NotificationManager(this);
         this.chapterState = new ChapterStateManager();
         this.illustrationManager = new IllustrationManager(gameYamlPath);
-        this.actionButtonFactory = new ActionButtonFactory(controller, chapterState, this::updateDisplay);
         setTitle(adventure.title);
         setSize(UIConstants.WINDOW_WIDTH, UIConstants.WINDOW_HEIGHT);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -124,6 +123,10 @@ public class GameWindow extends JFrame {
         buttonScrollPane.setPreferredSize(new Dimension(0, UIConstants.BUTTON_PANEL_HEIGHT));
         buttonScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         buttonScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        
+        // Initialize action button factory after buttonPanel is created
+        this.actionButtonFactory = new ActionButtonFactory(controller, chapterState, 
+            this::updateDisplay, () -> inventoryPanel.updateItems(), buttonPanel);
         
         // Add listener to recalculate button panel height when viewport size changes
         buttonScrollPane.getViewport().addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -275,43 +278,9 @@ public class GameWindow extends JFrame {
                 if (action != null) {
                     if (action.getActionType() == com.adventure.actions.ActionType.MULTIPLE_BUTTONS) {
                         if (action instanceof com.adventure.actions.AddItemAction) {
-                            // Handle AddItemAction
-                            com.adventure.actions.AddItemAction addItemAction = (com.adventure.actions.AddItemAction) action;
-                            List<com.adventure.actions.Action.Choice> choices = action.getChoices(actionData);
-                            
-                            // Check for maxItems limit
-                            Map<String, Object> addItemData = (Map<String, Object>) actionData.get("addItem");
-                            Integer maxItems = addItemData.containsKey("maxItems") ? (Integer) addItemData.get("maxItems") : null;
-                            
-                            for (int i = 0; i < choices.size(); i++) {
-                                JButton btn = new JButton(choices.get(i).text);
-                                btn.setBackground(new Color(0, 100, 0)); // Dark green
-                                btn.setForeground(Color.WHITE);
-                                btn.setOpaque(true);
-                                int itemIndex = i;
-                                String itemName = choices.get(i).text.replace("Take ", "");
-                                
-                                // Disable button if maxItems reached
-                                if (maxItems != null && chapterState.getTakenItemsCount() >= maxItems) {
-                                    btn.setEnabled(false);
-                                }
-                                
-                                btn.addActionListener(e -> {
-                                    addItemAction.addItem(controller, actionData, itemIndex);
-                                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_TOOK_ITEM), itemName));
-                                    chapterState.incrementTakenItems();
-                                    btn.setEnabled(false);
-                                    inventoryPanel.updateItems(); // Only update items panel, not full display
-                                    
-                                    // Disable all other addItem buttons if maxItems reached
-                                    if (maxItems != null && chapterState.getTakenItemsCount() >= maxItems) {
-                                        for (Component c : buttonPanel.getComponents()) {
-                                            if (c instanceof JButton && ((JButton) c).getBackground().equals(new Color(0, 100, 0))) {
-                                                c.setEnabled(false);
-                                            }
-                                        }
-                                    }
-                                });
+                            // Use factory to create buttons
+                            List<JButton> buttons = actionButtonFactory.createButtons(action, actionData);
+                            for (JButton btn : buttons) {
                                 buttonPanel.add(btn);
                             }
                         } else if (action instanceof com.adventure.actions.CheckEventAction) {
