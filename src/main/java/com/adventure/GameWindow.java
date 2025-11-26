@@ -1,7 +1,6 @@
 package com.adventure;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -9,11 +8,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class GameWindow extends JFrame {
     private JTextArea textArea;
-    private JEditorPane displayPane;
     private JPanel buttonPanel;
     private JScrollPane buttonScrollPane;
     private HeroStatsPanel heroStatsPanel;
@@ -32,7 +29,6 @@ public class GameWindow extends JFrame {
     private JScrollPane textWithIllustrationPanel;
     private JPanel currentCenterPanel;
     private JPanel currentDicePanel;
-    private JLabel illustrationLabel;
 
     public GameWindow(Adventure adventure) {
         this(adventure, null);
