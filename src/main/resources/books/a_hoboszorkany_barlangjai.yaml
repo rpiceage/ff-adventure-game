@@ -1403,12 +1403,6 @@ chapters:
       actions:
         - display: |
             Az Agypusztító undorító csápjai összevissza rángatóznak, míg teljes erejével arra koncentrál, hogy magához vonzzon. Képtelen vagy ellenállni, és révületedben elindulsz a förtelmes lény felé. Reményvesztetten és tehetetlenül nézed, ahogy egyik csápját a nyakad köré tekeri. Gyengének érzed magad, és minden elsötétül előtted, amint az Agypusztító kezdi elszívni szellemi erődet.
-        - modify:
-            values:
-                - field: SKILL
-                  value: -2
-                - field: STAMINA
-                  value: -6
         - goto:
             - chapter: 526
               text: Tovább...

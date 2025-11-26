@@ -1,0 +1,22 @@
+title: Max Items Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You find a storage room with many items. You can only take 3 items.
+      - addItem:
+          maxItems: 3
+          items:
+            - name: Sword
+            - name: Shield
+            - name: Potion
+            - name: Ring
+            - name: Amulet
+      - goto:
+          - chapter: 1
+            text: Continue
+  - index: 1
+    actions:
+      - display: |
+          You leave with your items.

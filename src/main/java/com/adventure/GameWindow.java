@@ -39,6 +39,7 @@ public class GameWindow extends JFrame {
     private java.util.Set<Integer> chaptersWithExecutedRandomGoto = new java.util.HashSet<>();
     private int lastDisplayedChapter = -1;
     private int soldItemsCount = 0;
+    private int takenItemsCount = 0;
     private String gameYamlPath;
     private JLabel illustrationLabel;
 
@@ -275,6 +276,7 @@ public class GameWindow extends JFrame {
             int currentChapter = controller.getCurrentChapter().index;
             if (currentChapter != lastDisplayedChapter) {
                 soldItemsCount = 0; // Reset sold items count for new chapter
+                takenItemsCount = 0; // Reset taken items count for new chapter
                 updateIllustration(currentChapter); // Update illustration for new chapter
                 if (currentDicePanel != null) {
                     // Extract text scroll pane from wrapper before removing
@@ -339,6 +341,11 @@ public class GameWindow extends JFrame {
                             // Handle AddItemAction
                             com.adventure.actions.AddItemAction addItemAction = (com.adventure.actions.AddItemAction) action;
                             List<com.adventure.actions.Action.Choice> choices = action.getChoices(actionData);
+                            
+                            // Check for maxItems limit
+                            Map<String, Object> addItemData = (Map<String, Object>) actionData.get("addItem");
+                            Integer maxItems = addItemData.containsKey("maxItems") ? (Integer) addItemData.get("maxItems") : null;
+                            
                             for (int i = 0; i < choices.size(); i++) {
                                 JButton btn = new JButton(choices.get(i).text);
                                 btn.setBackground(new Color(0, 100, 0)); // Dark green
@@ -346,11 +353,27 @@ public class GameWindow extends JFrame {
                                 btn.setOpaque(true);
                                 int itemIndex = i;
                                 String itemName = choices.get(i).text.replace("Take ", "");
+                                
+                                // Disable button if maxItems reached
+                                if (maxItems != null && takenItemsCount >= maxItems) {
+                                    btn.setEnabled(false);
+                                }
+                                
                                 btn.addActionListener(e -> {
                                     addItemAction.addItem(controller, actionData, itemIndex);
                                     controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_TOOK_ITEM), itemName));
+                                    takenItemsCount++;
                                     btn.setEnabled(false);
                                     updateItemButtons(); // Only update items panel, not full display
+                                    
+                                    // Disable all other addItem buttons if maxItems reached
+                                    if (maxItems != null && takenItemsCount >= maxItems) {
+                                        for (Component c : buttonPanel.getComponents()) {
+                                            if (c instanceof JButton && ((JButton) c).getBackground().equals(new Color(0, 100, 0))) {
+                                                c.setEnabled(false);
+                                            }
+                                        }
+                                    }
                                 });
                                 buttonPanel.add(btn);
                             }
