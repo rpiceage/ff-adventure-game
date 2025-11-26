@@ -326,6 +326,7 @@
 - YAML format for adding items:
   ```yaml
   - addItem:
+      maxItems: 3  # optional: max items that can be taken in this chapter
       items:
         - name: Aranygyűrű
         - name: Sword
@@ -335,6 +336,8 @@
   - Each item in addItem action creates a "Take [ItemName]" button
   - Clicking "Take" button adds item to hero's inventory
   - Button becomes disabled after taking item (prevents duplicates)
+  - Optional `maxItems` field limits how many items can be taken in chapter
+  - After reaching maxItems, all remaining item buttons are disabled
   - Items persist across chapters
   - Duplicate items allowed (can take same item from different chapters)
 - Item UI:
@@ -456,6 +459,37 @@
   - No UI interaction required
   - Changes applied immediately
   - Useful for story events that reset attributes (losing items, near-death experiences)
+
+## Record Action System
+- Save and restore attribute values for temporary stat changes
+- YAML format for recording values:
+  ```yaml
+  # Save current value
+  - record:
+      set:
+        field: SKILL
+  
+  # Restore saved value
+  - record:
+      restore:
+        field: SKILL
+  
+  # Restore to initial/max value
+  - record:
+      restore:
+        field: STAMINA
+        initial: true
+  ```
+- Record mechanics:
+  - `set`: saves current value of specified attribute
+  - `restore`: restores previously saved value
+  - `restore` with `initial: true`: restores to initial/max value
+  - Valid attributes: SKILL, STAMINA, LUCK, GOLD, PROVISIONS
+  - Applied automatically when entering chapter (PASSIVE action)
+  - No notification shown (silent operation)
+- Record UI:
+  - No UI interaction required
+  - Useful for dream sequences, temporary debuffs, curses, etc.
 
 ## Check Parameter System
 - Conditional navigation based on hero attribute values
