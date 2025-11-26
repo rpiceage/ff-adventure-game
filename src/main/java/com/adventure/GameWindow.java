@@ -21,6 +21,7 @@ public class GameWindow extends JFrame {
     private GameController controller;
     private NotificationManager notificationManager;
     private ChapterStateManager chapterState;
+    private IllustrationManager illustrationManager;
     private com.adventure.ui.BattleUI battleUI;
     private com.adventure.ui.LuckUI luckUI;
     private com.adventure.ui.RandomModifyUI randomModifyUI;
@@ -30,7 +31,6 @@ public class GameWindow extends JFrame {
     private JScrollPane textWithIllustrationPanel;
     private JPanel currentCenterPanel;
     private JPanel currentDicePanel;
-    private String gameYamlPath;
     private JLabel illustrationLabel;
 
     public GameWindow(Adventure adventure) {
@@ -39,9 +39,9 @@ public class GameWindow extends JFrame {
     
     public GameWindow(Adventure adventure, String gameYamlPath) {
         this.controller = new GameController(adventure, gameYamlPath);
-        this.gameYamlPath = gameYamlPath;
         this.notificationManager = new NotificationManager(this);
         this.chapterState = new ChapterStateManager();
+        this.illustrationManager = new IllustrationManager(gameYamlPath);
         setTitle(adventure.title);
         setSize(UIConstants.WINDOW_WIDTH, UIConstants.WINDOW_HEIGHT);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -201,7 +201,18 @@ public class GameWindow extends JFrame {
             int currentChapter = controller.getCurrentChapter().index;
             if (currentChapter != chapterState.getLastDisplayedChapter()) {
                 chapterState.resetForNewChapter();
-                updateIllustration(currentChapter); // Update illustration for new chapter
+                
+                // Update illustration for new chapter
+                java.awt.image.BufferedImage illustration = illustrationManager.loadIllustration(currentChapter);
+                if (illustration != null) {
+                    try {
+                        java.lang.reflect.Method setIllustration = textArea.getClass().getMethod("setIllustration", java.awt.image.BufferedImage.class);
+                        setIllustration.invoke(textArea, illustration);
+                    } catch (Exception e) {
+                        // Method not available
+                    }
+                }
+                
                 if (currentDicePanel != null) {
                     // Extract text scroll pane from wrapper before removing
                     Component[] components = currentDicePanel.getComponents();
@@ -515,87 +526,6 @@ public class GameWindow extends JFrame {
         }
     }
 
-    private void updateIllustration(int chapterIndex) {
-        if (gameYamlPath == null) {
-            return;
-        }
-        
-        try {
-            // Extract folder name from yaml path
-            String fileName = gameYamlPath.substring(gameYamlPath.lastIndexOf('/') + 1);
-            String folderName = fileName.replace(".yaml", "");
-            
-            // Try to load chapter-specific illustration
-            String imagePath = "books/" + folderName + "/" + chapterIndex + ".jpg";
-            InputStream imageStream = getClass().getClassLoader().getResourceAsStream(imagePath);
-            
-            // If no chapter-specific image, try random image
-            if (imageStream == null) {
-                int randomIndex = new java.util.Random().nextInt(5) + 1;
-                imagePath = "books/" + folderName + "/rnd_0" + randomIndex + ".jpg";
-                imageStream = getClass().getClassLoader().getResourceAsStream(imagePath);
-            }
-            
-            if (imageStream != null) {
-                java.awt.image.BufferedImage originalImage = javax.imageio.ImageIO.read(imageStream);
-                imageStream.close();
-                
-                // Scale image to max 300px width
-                int targetWidth = UIConstants.ILLUSTRATION_WIDTH;
-                int targetHeight = (int) (originalImage.getHeight() * ((double) targetWidth / originalImage.getWidth()));
-                
-                // Create scaled image with adjusted transparency
-                // Make white pixels more transparent, keep black pixels darker
-                java.awt.image.BufferedImage transparentImage = new java.awt.image.BufferedImage(
-                    targetWidth, targetHeight, java.awt.image.BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g2d = transparentImage.createGraphics();
-                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                g2d.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
-                g2d.dispose();
-                
-                // Process pixels: make white more transparent, keep black darker
-                for (int y = 0; y < targetHeight; y++) {
-                    for (int x = 0; x < targetWidth; x++) {
-                        int rgb = transparentImage.getRGB(x, y);
-                        int r = (rgb >> 16) & 0xFF;
-                        int g = (rgb >> 8) & 0xFF;
-                        int b = rgb & 0xFF;
-                        
-                        // Calculate brightness (0-255)
-                        int brightness = (r + g + b) / 3;
-                        
-                        // Make alpha inversely proportional to brightness
-                        // Bright pixels (white) become very transparent
-                        // Dark pixels (black) become more opaque
-                        int alpha = 255 - brightness;
-                        // Scale: dark pixels get up to 100% opacity, bright pixels fade away more
-                        if (brightness < 128) {
-                            // Dark pixels: make them even darker (higher opacity)
-                            alpha = (int) (alpha * 1.6);
-                            if (alpha > 255) alpha = 255;
-                        } else {
-                            // Bright pixels: make them even more transparent
-                            alpha = (int) (alpha * 0.3);
-                        }
-                        
-                        int newRgb = (alpha << 24) | (r << 16) | (g << 8) | b;
-                        transparentImage.setRGB(x, y, newRgb);
-                    }
-                }
-                
-                // Set illustration on textArea using reflection
-                try {
-                    java.lang.reflect.Method setIllustration = textArea.getClass().getMethod("setIllustration", java.awt.image.BufferedImage.class);
-                    setIllustration.invoke(textArea, transparentImage);
-                } catch (Exception e) {
-                    // Method not available
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
     private void consumeProvision() {
         Hero hero = controller.getHero();
         

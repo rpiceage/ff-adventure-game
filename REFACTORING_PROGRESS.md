@@ -1,6 +1,6 @@
 # Refactoring Progress
 
-## Completed: Phases 1, 2, 3, 4, 5, 9
+## Completed: Phases 1, 2, 3, 4, 5, 6, 9
 
 ### Date: 2025-11-26
 
@@ -86,7 +86,20 @@
 - Self-contained inventory display
 - Cleaner separation of concerns
 
-#### 7. Updated GameWindow.java ✅
+#### 7. Created IllustrationManager.java ✅
+- Extracted illustration loading and processing logic
+- Handles chapter-specific and random illustrations
+- Processes image transparency for parchment overlay effect
+- Uses UIConstants for sizing
+
+**Benefits:**
+- Removed 1 field from GameWindow (gameYamlPath)
+- Removed updateIllustration() method (80 lines)
+- Self-contained image processing
+- Testable illustration logic
+- Cleaner separation of concerns
+
+#### 8. Updated GameWindow.java ✅
 - Replaced all magic numbers with UIConstants references
 - Replaced animation method calls with AnimationHelper
 - Replaced notification logic with NotificationManager
@@ -110,21 +123,22 @@
 - Duplicate code: 30+ lines
 
 **After:**
-- GameWindow: ~732 lines (272 lines removed, 27% reduction)
-- Fields: 28 (15 removed, 35% reduction)
+- GameWindow: ~652 lines (352 lines removed, 35% reduction)
+- Fields: 27 (16 removed, 37% reduction)
 - UIConstants: 42 lines (new)
 - AnimationHelper: 34 lines (new)
 - NotificationManager: 56 lines (new)
 - ChapterStateManager: 58 lines (new)
 - HeroStatsPanel: 145 lines (new)
 - InventoryPanel: 128 lines (new)
+- IllustrationManager: 86 lines (new)
 - Magic numbers in GameWindow: 0
 - Duplicate code: 0
 
 **Net Change:**
-- Total lines: +463 (new utility classes)
-- GameWindow reduction: -272 lines
-- Fields reduction: -15 fields
+- Total lines: +549 (new utility classes)
+- GameWindow reduction: -352 lines
+- Fields reduction: -16 fields
 - Code quality: Significantly improved
 - Maintainability: Much better
 - Testability: Improved with getter methods
