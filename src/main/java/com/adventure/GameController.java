@@ -39,6 +39,7 @@ public class GameController {
 
     private void registerActions() {
         actions.add(new DisplayAction());
+        actions.add(new WinAction());
         actions.add(new ModifyAction());
         actions.add(new RandomModifyAction());
         actions.add(new RandomGotoAction());
@@ -119,6 +120,9 @@ public class GameController {
             for (Action action : actions) {
                 if (action instanceof DisplayAction && action.canHandle(actionData)) {
                     return ((DisplayAction) action).getDisplayText(actionData);
+                }
+                if (action instanceof WinAction && action.canHandle(actionData)) {
+                    return ((WinAction) action).getWinText(actionData);
                 }
             }
         }

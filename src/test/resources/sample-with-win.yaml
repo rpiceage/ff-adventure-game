@@ -1,0 +1,14 @@
+title: Win Action Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You have completed your quest!
+      - goto:
+          - chapter: 1
+            text: Claim victory
+  - index: 1
+    actions:
+      - win: |
+          Congratulations! You have won the game! Your heroic deeds will be remembered forever. The kingdom is saved and peace has returned to the land.
