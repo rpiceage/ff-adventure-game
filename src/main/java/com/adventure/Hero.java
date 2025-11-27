@@ -102,6 +102,11 @@ public class Hero {
         int newValue = this.stamina + delta;
         this.stamina = Math.max(0, Math.min(newValue, maxStamina));
     }
+    
+    public void modifySkillSilent(int delta) {
+        int newValue = this.skill + delta;
+        this.skill = Math.max(0, Math.min(newValue, maxSkill));
+    }
 
     public void modifyLuckSilent(int delta) {
         int newValue = this.luck + delta;

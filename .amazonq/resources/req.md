@@ -233,8 +233,20 @@
   - Clicking escape costs 2 STAMINA and navigates to escape chapter
   - Optional `battleText` to inform player about escape option (added to battle log)
 - Battle extra damage:
-  - Optional `extraHeroDamage` field for additional damage after each turn
-  - YAML format:
+  - Optional `extraHeroDamage` field for additional damage
+  - Two formats supported:
+  - Format 1: Attribute damage on every enemy hit (simple format)
+    ```yaml
+    extraHeroDamage:
+      skill: 1      # Hero loses 1 SKILL when hit (in addition to 2 STAMINA)
+      stamina: 1    # Hero loses extra 1 STAMINA when hit (total 3 STAMINA)
+      luck: 1       # Hero loses 1 LUCK when hit
+    ```
+    - Applied automatically when enemy wins a turn
+    - Can specify skill, stamina, and/or luck damage
+    - Damage applied silently (no separate notification)
+    - Used in chapter 481 of halaltalizman.yaml
+  - Format 2: Random extra damage after each turn (dice-based format)
     ```yaml
     extraHeroDamage:
       everyTurn: true
@@ -247,11 +259,11 @@
               - 2
               - 3
     ```
-  - After normal turn completes, "Roll for extra damage" button appears
-  - Player rolls die, if result matches trigger values, hero loses specified stamina
-  - Extra damage die animates in new row in dice panel
-  - Dice panel height increases by 100px for extra damage row
-  - Result logged to battle log and adventure log
+    - After normal turn completes, "Roll for extra damage" button appears
+    - Player rolls die, if result matches trigger values, hero loses specified stamina
+    - Extra damage die animates in new row in dice panel
+    - Dice panel height increases by 100px for extra damage row
+    - Result logged to battle log and adventure log
   - All strings translated (English/Hungarian)
 - Battle ally:
   - Optional `ally` field for NPC that fights first

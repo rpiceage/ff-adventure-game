@@ -88,13 +88,24 @@ public class BattleUI {
         // Set extra damage if present
         if (battleData.containsKey("extraHeroDamage")) {
             Map<String, Object> extraDamageData = (Map<String, Object>) battleData.get("extraHeroDamage");
-            Map<String, Object> randomData = (Map<String, Object>) extraDamageData.get("randomExtraDamage");
-            int dice = (Integer) randomData.get("dice");
-            List<Map<String, Object>> damageList = (List<Map<String, Object>>) randomData.get("damage");
-            Map<String, Object> damageInfo = damageList.get(0);
-            int damageAmount = (Integer) damageInfo.get("stamina");
-            List<Integer> triggers = (List<Integer>) damageInfo.get("trigger");
-            currentBattle.setExtraDamage(dice, triggers, damageAmount);
+            
+            // Check for simple attribute damage format (skill, stamina, luck)
+            if (extraDamageData.containsKey("skill") || extraDamageData.containsKey("stamina") || extraDamageData.containsKey("luck")) {
+                Integer skillDamage = extraDamageData.containsKey("skill") ? (Integer) extraDamageData.get("skill") : null;
+                Integer staminaDamage = extraDamageData.containsKey("stamina") ? (Integer) extraDamageData.get("stamina") : null;
+                Integer luckDamage = extraDamageData.containsKey("luck") ? (Integer) extraDamageData.get("luck") : null;
+                currentBattle.setExtraAttributeDamage(skillDamage, staminaDamage, luckDamage);
+            }
+            // Check for random extra damage format
+            else if (extraDamageData.containsKey("randomExtraDamage")) {
+                Map<String, Object> randomData = (Map<String, Object>) extraDamageData.get("randomExtraDamage");
+                int dice = (Integer) randomData.get("dice");
+                List<Map<String, Object>> damageList = (List<Map<String, Object>>) randomData.get("damage");
+                Map<String, Object> damageInfo = damageList.get(0);
+                int damageAmount = (Integer) damageInfo.get("stamina");
+                List<Integer> triggers = (List<Integer>) damageInfo.get("trigger");
+                currentBattle.setExtraDamage(dice, triggers, damageAmount);
+            }
         }
         
         // Set ally if present

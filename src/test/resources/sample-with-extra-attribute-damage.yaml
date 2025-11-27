@@ -1,0 +1,19 @@
+title: Extra Attribute Damage Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You face a deadly enemy that drains your skill with each hit!
+      - battle:
+          enemies:
+            - enemy: Skill Drainer
+              skill: 8
+              stamina: 6
+          extraHeroDamage:
+            skill: 1
+          win: 1
+  - index: 1
+    actions:
+      - display: |
+          You won! Your skill was drained during the battle.

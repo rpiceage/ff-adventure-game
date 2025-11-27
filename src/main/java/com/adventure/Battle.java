@@ -26,6 +26,9 @@ public class Battle {
     private int lastExtraDamageRoll; // Last extra damage die roll
     private Enemy ally; // Optional ally that fights first
     private boolean allyPhase; // True if ally is currently fighting
+    private Integer extraSkillDamage; // Extra SKILL damage when hero is hit
+    private Integer extraStaminaDamage; // Extra STAMINA damage when hero is hit
+    private Integer extraLuckDamage; // Extra LUCK damage when hero is hit
 
     public Battle(Hero hero, String enemyName, int enemySkill, int enemyStamina) {
         this(hero, enemyName, enemySkill, enemyStamina, new Random());
@@ -53,6 +56,9 @@ public class Battle {
         this.lastExtraDamageRoll = 0;
         this.ally = null;
         this.allyPhase = false;
+        this.extraSkillDamage = null;
+        this.extraStaminaDamage = null;
+        this.extraLuckDamage = null;
     }
 
     public Battle(Hero hero, List<Enemy> enemies) {
@@ -84,6 +90,9 @@ public class Battle {
         this.lastExtraDamageRoll = 0;
         this.ally = null;
         this.allyPhase = false;
+        this.extraSkillDamage = null;
+        this.extraStaminaDamage = null;
+        this.extraLuckDamage = null;
     }
 
     public String getEnemyName() {
@@ -249,6 +258,17 @@ public class Battle {
         if (heroDamageTaken > 0) {
             hero.modifyStaminaSilent(-heroDamageTaken);
             turnResult.append(String.format(Messages.get(Messages.Key.BATTLE_HERO_TAKES_DAMAGE), heroDamageTaken)).append("\n");
+            
+            // Apply extra attribute damage if configured
+            if (extraSkillDamage != null && extraSkillDamage != 0) {
+                hero.modifySkillSilent(-extraSkillDamage);
+            }
+            if (extraStaminaDamage != null && extraStaminaDamage != 0) {
+                hero.modifyStaminaSilent(-extraStaminaDamage);
+            }
+            if (extraLuckDamage != null && extraLuckDamage != 0) {
+                hero.modifyLuckSilent(-extraLuckDamage);
+            }
         }
         
         // Check for interrupt condition
@@ -321,6 +341,12 @@ public class Battle {
         this.extraDamageDice = dice;
         this.extraDamageTriggers = triggers;
         this.extraDamageAmount = damageAmount;
+    }
+    
+    public void setExtraAttributeDamage(Integer skill, Integer stamina, Integer luck) {
+        this.extraSkillDamage = skill;
+        this.extraStaminaDamage = stamina;
+        this.extraLuckDamage = luck;
     }
     
     public boolean hasExtraDamage() {
