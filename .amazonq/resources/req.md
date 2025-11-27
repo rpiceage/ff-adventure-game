@@ -41,6 +41,7 @@
   - Recorded events
   - Visited chapters list
   - Adventure log entries
+  - Battle effect state (nextBattleAttackModifier and text)
 - Loading a save:
   - Restores complete game state
   - Loads correct game YAML from resources
@@ -698,18 +699,20 @@
 - Effect mechanics:
   - PASSIVE action type - applied automatically when entering chapter
   - Stores attackModifier and descriptive text
-  - Applied to next battle action in same chapter
+  - Applied to next battle encountered (can be in same or different chapter)
   - Modifier added to hero's attack strength calculation
-  - Effect cleared after battle completes
+  - Effect cleared only after battle completes
+  - Effect persists across chapter navigation and save/load operations
   - Can be combined with battle's built-in modifier field
 - Effect usage:
   - Useful for items/events that temporarily boost combat ability
-  - Example: magic amulet that helps in specific battle
-  - Effect persists until battle starts (not cleared by navigation)
+  - Example: magic amulet obtained in one chapter helps in battle in another chapter
+  - Effect remains active until consumed by a battle
 - Implementation:
   - GameController stores nextBattleAttackModifier and nextBattleEffectText
   - BattleUI applies effect when battle starts
   - Effect cleared after battle via clearNextBattleEffect()
+  - Effect state saved and restored with game saves
 
 ## UI Architecture
 - Separation of concerns between main window and feature-specific UI
