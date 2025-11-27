@@ -1,0 +1,21 @@
+title: Effect Test Adventure
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You find a magic amulet that will help you in the next battle!
+      - effect:
+          next:
+            attackModifier: 2
+            text: Magic Amulet (+2 Attack)
+      - battle:
+          enemies:
+            - enemy: Goblin
+              skill: 6
+              stamina: 6
+          win: 1
+  - index: 1
+    actions:
+      - display: |
+          You won! The amulet's power fades away.

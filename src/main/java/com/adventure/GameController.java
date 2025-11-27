@@ -12,6 +12,8 @@ public class GameController {
     private List<Action> actions;
     private AdventureLog adventureLog;
     private String gameYamlPath;
+    private Integer nextBattleAttackModifier;
+    private String nextBattleEffectText;
 
     public GameController(Adventure adventure) {
         this(adventure, null);
@@ -47,6 +49,7 @@ public class GameController {
         actions.add(new BattleAction());
         actions.add(new LuckAction());
         actions.add(new AttributeTestAction());
+        actions.add(new EffectAction());
         actions.add(new AddItemAction());
         actions.add(new LoseItemAction());
         actions.add(new UseItemAction());
@@ -211,5 +214,23 @@ public class GameController {
         
         // Go to saved chapter
         goToChapter(saveGame.getCurrentChapterIndex());
+    }
+    
+    public void setNextBattleEffect(int attackModifier, String text) {
+        this.nextBattleAttackModifier = attackModifier;
+        this.nextBattleEffectText = text;
+    }
+    
+    public Integer getNextBattleAttackModifier() {
+        return nextBattleAttackModifier;
+    }
+    
+    public String getNextBattleEffectText() {
+        return nextBattleEffectText;
+    }
+    
+    public void clearNextBattleEffect() {
+        this.nextBattleAttackModifier = null;
+        this.nextBattleEffectText = null;
     }
 }

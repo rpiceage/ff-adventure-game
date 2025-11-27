@@ -79,6 +79,12 @@ public class BattleUI {
             currentBattle.setModifier(value, text);
         }
         
+        // Apply effect from previous action if present
+        if (controller.getNextBattleAttackModifier() != null) {
+            currentBattle.setModifier(controller.getNextBattleAttackModifier(), controller.getNextBattleEffectText());
+            controller.clearNextBattleEffect();
+        }
+        
         // Set extra damage if present
         if (battleData.containsKey("extraHeroDamage")) {
             Map<String, Object> extraDamageData = (Map<String, Object>) battleData.get("extraHeroDamage");
