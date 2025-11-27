@@ -188,7 +188,7 @@ public class GameController {
     }
     
     public SaveGame createSaveGame() {
-        return new SaveGame(adventure.title, gameYamlPath, currentChapter.index, hero, adventureLog);
+        return new SaveGame(adventure.title, gameYamlPath, currentChapter.index, hero, adventureLog, nextBattleAttackModifier, nextBattleEffectText);
     }
     
     public void loadSaveGame(SaveGame saveGame) {
@@ -208,6 +208,10 @@ public class GameController {
         // Restore adventure log
         adventureLog.restoreEntries(saveGame.getLogEntries());
         adventureLog.log(Messages.get(Messages.Key.LOG_GAME_LOADED));
+        
+        // Restore battle effect
+        this.nextBattleAttackModifier = saveGame.getNextBattleAttackModifier();
+        this.nextBattleEffectText = saveGame.getNextBattleEffectText();
         
         // Clear modification history
         hero.clearModifications();

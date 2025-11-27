@@ -187,4 +187,58 @@ public class EffectActionFlowTest {
         // Enemy still wins but by less
         assertEquals(22, hero.getStamina());
     }
+    
+    @Test
+    public void testEffectSavedAndRestored() {
+        // Use controller that already has effect from sample-with-effect.yaml
+        assertEquals(2, controller.getNextBattleAttackModifier());
+        
+        // Create save game
+        SaveGame saveGame = controller.createSaveGame();
+        
+        // Verify effect is in save
+        assertEquals(2, saveGame.getNextBattleAttackModifier());
+        assertEquals("Magic Amulet (+2 Attack)", saveGame.getNextBattleEffectText());
+        
+        // Clear effect in controller
+        controller.clearNextBattleEffect();
+        assertNull(controller.getNextBattleAttackModifier());
+        
+        // Load save game
+        controller.loadSaveGame(saveGame);
+        
+        // Verify effect is restored
+        assertEquals(2, controller.getNextBattleAttackModifier());
+        assertEquals("Magic Amulet (+2 Attack)", controller.getNextBattleEffectText());
+    }
+    
+    @Test
+    public void testNullEffectSavedAndRestored() {
+        // Create controller with YAML that has no effect
+        Yaml yaml = new Yaml(new Constructor(Adventure.class, new LoaderOptions()));
+        InputStream input = getClass().getClassLoader().getResourceAsStream("sample-with-stats.yaml");
+        Adventure adv = yaml.load(input);
+        GameController ctrl = new GameController(adv);
+        
+        // No effect should be set
+        assertNull(ctrl.getNextBattleAttackModifier());
+        
+        // Create save game
+        SaveGame saveGame = ctrl.createSaveGame();
+        
+        // Verify null effect in save
+        assertNull(saveGame.getNextBattleAttackModifier());
+        assertNull(saveGame.getNextBattleEffectText());
+        
+        // Set effect in controller
+        ctrl.setNextBattleEffect(5, "Test");
+        assertNotNull(ctrl.getNextBattleAttackModifier());
+        
+        // Load save game with null effect
+        ctrl.loadSaveGame(saveGame);
+        
+        // Verify effect is cleared
+        assertNull(ctrl.getNextBattleAttackModifier());
+        assertNull(ctrl.getNextBattleEffectText());
+    }
 }

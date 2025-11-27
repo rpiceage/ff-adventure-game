@@ -23,11 +23,15 @@ public class SaveGame {
     private List<Integer> visitedChapters;
     private List<String> logEntries;
     
+    // Battle effect
+    private Integer nextBattleAttackModifier;
+    private String nextBattleEffectText;
+    
     public SaveGame() {
         // Default constructor for JSON deserialization
     }
     
-    public SaveGame(String gameTitle, String gameYamlPath, int currentChapterIndex, Hero hero, AdventureLog adventureLog) {
+    public SaveGame(String gameTitle, String gameYamlPath, int currentChapterIndex, Hero hero, AdventureLog adventureLog, Integer nextBattleAttackModifier, String nextBattleEffectText) {
         this.gameTitle = gameTitle;
         this.gameYamlPath = gameYamlPath;
         this.currentChapterIndex = currentChapterIndex;
@@ -45,6 +49,9 @@ public class SaveGame {
         this.events = hero.getEvents();
         this.visitedChapters = hero.getVisitedChapters();
         this.logEntries = adventureLog.getEntries();
+        
+        this.nextBattleAttackModifier = nextBattleAttackModifier;
+        this.nextBattleEffectText = nextBattleEffectText;
     }
     
     // Getters and setters
@@ -92,4 +99,10 @@ public class SaveGame {
     
     public List<String> getLogEntries() { return logEntries; }
     public void setLogEntries(List<String> logEntries) { this.logEntries = logEntries; }
+    
+    public Integer getNextBattleAttackModifier() { return nextBattleAttackModifier; }
+    public void setNextBattleAttackModifier(Integer nextBattleAttackModifier) { this.nextBattleAttackModifier = nextBattleAttackModifier; }
+    
+    public String getNextBattleEffectText() { return nextBattleEffectText; }
+    public void setNextBattleEffectText(String nextBattleEffectText) { this.nextBattleEffectText = nextBattleEffectText; }
 }
