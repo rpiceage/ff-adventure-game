@@ -686,6 +686,31 @@
   - All actions logged to adventure log
   - All strings translated (English/Hungarian)
 
+## Effect System
+- Temporary battle modifiers that apply to the next battle only
+- YAML format for effect:
+  ```yaml
+  - effect:
+      next:
+        attackModifier: 2
+        text: Magic Amulet (+2 Attack)
+  ```
+- Effect mechanics:
+  - PASSIVE action type - applied automatically when entering chapter
+  - Stores attackModifier and descriptive text
+  - Applied to next battle action in same chapter
+  - Modifier added to hero's attack strength calculation
+  - Effect cleared after battle completes
+  - Can be combined with battle's built-in modifier field
+- Effect usage:
+  - Useful for items/events that temporarily boost combat ability
+  - Example: magic amulet that helps in specific battle
+  - Effect persists until battle starts (not cleared by navigation)
+- Implementation:
+  - GameController stores nextBattleAttackModifier and nextBattleEffectText
+  - BattleUI applies effect when battle starts
+  - Effect cleared after battle via clearNextBattleEffect()
+
 ## UI Architecture
 - Separation of concerns between main window and feature-specific UI
 - GameWindow - main window, stats panel, navigation, items panel
