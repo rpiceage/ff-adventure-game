@@ -211,7 +211,7 @@
   - When an enemy dies, next enemy becomes active
   - Battle ends when all enemies dead or hero dies
 - Battle interrupt:
-  - Three types of interrupt conditions supported:
+  - Four types of interrupt conditions supported:
   - Type 1: Stamina-based interrupt
     - Optional `interrupt.stamina` threshold
     - Battle ends when first enemy's stamina reaches or goes below threshold
@@ -222,7 +222,17 @@
     - Battle ends after specified number of turns
     - Counts as hero victory regardless of enemy health
     - Used when external event interrupts battle
-  - Type 3: Conditional interrupt on hero win
+  - Type 3: Turn-won interrupt
+    - Optional `interrupt.turnWon` specifies number of hero wins
+    - Battle ends after hero wins specified number of turns
+    - Counts as hero victory regardless of enemy health
+    - YAML format:
+      ```yaml
+      interrupt:
+        turnWon: 4
+      ```
+    - Used in chapter 36 (Killer Willow battle)
+  - Type 4: Conditional interrupt on hero win
     - Optional `interrupt.everyTurnWon: true` with dice check
     - After each turn hero wins, rolls dice and checks trigger values
     - If roll matches trigger, battle ends and navigates to interrupt chapter

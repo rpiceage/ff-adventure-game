@@ -260,4 +260,52 @@ public class BattleInterruptTest {
         assertTrue(battle.wasInterrupted());
         assertEquals(55, battle.getInterrupt().getChapter());
     }
+    
+    @Test
+    public void testTurnWonInterrupt() {
+        Hero hero = new Hero(12, 24, 12, 0, 0);
+        Enemy enemy = new Enemy("Tree", 8, 20);
+        
+        Random fixedRandom = new Random() {
+            private int callCount = 0;
+            @Override
+            public int nextInt(int bound) {
+                if (bound == 6) {
+                    callCount++;
+                    // Hero wins all 4 turns
+                    return new int[]{4, 4, 0, 0,  // Turn 1
+                                     4, 4, 0, 0,  // Turn 2
+                                     4, 4, 0, 0,  // Turn 3
+                                     4, 4, 0, 0}[(callCount - 1) % 16]; // Turn 4
+                }
+                return super.nextInt(bound);
+            }
+        };
+        
+        Battle battle = new Battle(hero, List.of(enemy), fixedRandom, 0);
+        battle.setInterrupt(new TurnWonInterrupt(4));
+        
+        // Turn 1: Hero wins
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(18, enemy.getStamina());
+        
+        // Turn 2: Hero wins
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(16, enemy.getStamina());
+        
+        // Turn 3: Hero wins
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(14, enemy.getStamina());
+        
+        // Turn 4: Hero wins - battle ends
+        battle.executeTurn();
+        assertTrue(battle.isOver());
+        assertTrue(battle.wasInterrupted());
+        assertTrue(battle.heroWon());
+        assertEquals(12, enemy.getStamina()); // Enemy still alive
+        assertEquals(24, hero.getStamina()); // Hero not hurt
+    }
 }

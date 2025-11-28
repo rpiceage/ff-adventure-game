@@ -10,15 +10,13 @@ public class TurnWonInterrupt implements BattleInterrupt {
     
     @Override
     public boolean shouldCheck(Battle battle) {
-        if (battle.heroDealtDamageThisTurn()) {
-            heroWonTurns++;
-        }
-        return heroWonTurns >= turnsToWin;
+        return battle.heroDealtDamageThisTurn();
     }
     
     @Override
     public boolean isTriggered(Battle battle) {
-        return true;
+        heroWonTurns++;
+        return heroWonTurns >= turnsToWin;
     }
     
     @Override

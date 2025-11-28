@@ -1,0 +1,22 @@
+title: Turn Won Interrupt Test
+init:
+  gold: 0
+  provisions: 0
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          Battle ends after hero wins 4 turns.
+      - battle:
+          enemies:
+            - enemy: Killer Willow
+              skill: 8
+              stamina: 20
+          interrupt:
+            turnWon: 4
+          win: 2
+          winText: After four successful Rounds...
+  - index: 2
+    actions:
+      - display: |
+          You won!
