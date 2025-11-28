@@ -8,11 +8,15 @@ public class Enemy {
     private int heroDice2;
     private int enemyDice1;
     private int enemyDice2;
+    private Integer retreatThreshold;
+    private boolean retreated;
 
     public Enemy(String name, int skill, int stamina) {
         this.name = name;
         this.skill = skill;
         this.stamina = stamina;
+        this.retreatThreshold = null;
+        this.retreated = false;
     }
 
     public String getName() { return name; }
@@ -39,5 +43,25 @@ public class Enemy {
 
     public boolean isAlive() {
         return stamina > 0;
+    }
+    
+    public void setRetreatThreshold(Integer threshold) {
+        this.retreatThreshold = threshold;
+    }
+    
+    public Integer getRetreatThreshold() {
+        return retreatThreshold;
+    }
+    
+    public boolean hasRetreated() {
+        return retreated;
+    }
+    
+    public void retreat() {
+        this.retreated = true;
+    }
+    
+    public boolean isActive() {
+        return isAlive() && !retreated;
     }
 }

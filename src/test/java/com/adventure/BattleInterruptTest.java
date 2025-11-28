@@ -2,7 +2,9 @@ package com.adventure;
 
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -498,5 +500,95 @@ public class BattleInterruptTest {
         assertEquals(0, enemies.get(0).getStamina()); // Assassin dead
         assertEquals(5, enemies.get(1).getStamina()); // Scarface at threshold
         assertEquals(8, enemies.get(2).getStamina()); // Second Killer untouched
+    }
+    
+    @Test
+    public void testPerEnemyStaminaInterrupt() {
+        Hero hero = new Hero(12, 24, 12, 0, 0);
+        List<Enemy> enemies = List.of(
+            new Enemy("Tyucsev", 10, 12),
+            new Enemy("Kasszandra", 9, 10)
+        );
+        
+        Random fixedRandom = new Random() {
+            @Override
+            public int nextInt(int bound) {
+                if (bound == 6) {
+                    return 4; // Always roll 5
+                }
+                return super.nextInt(bound);
+            }
+        };
+        
+        Battle battle = new Battle(hero, enemies, fixedRandom, 1); // Sequential mode
+        Map<String, Integer> thresholds = new HashMap<>();
+        thresholds.put("Tyucsev", 2);
+        thresholds.put("Kasszandra", 4);
+        battle.setInterrupt(new PerEnemyStaminaInterrupt(thresholds));
+        
+        // Turn 1: Tyucsev takes damage (12 -> 10)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        
+        // Turn 2: Tyucsev takes damage (10 -> 8)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        
+        // Turn 3: Tyucsev takes damage (8 -> 6)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        
+        // Turn 4: Tyucsev takes damage (6 -> 4)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        
+        // Turn 5: Tyucsev takes damage (4 -> 2), reaches threshold - interrupt!
+        battle.executeTurn();
+        assertTrue(battle.isOver());
+        assertTrue(battle.wasInterrupted());
+        assertTrue(battle.heroWon());
+        assertEquals(2, enemies.get(0).getStamina()); // Tyucsev at threshold
+        assertEquals(10, enemies.get(1).getStamina()); // Kasszandra untouched
+    }
+    
+    @Test
+    public void testEnemyRetreat() {
+        Hero hero = new Hero(12, 24, 12, 0, 0);
+        Enemy kasszandra = new Enemy("Kasszandra", 9, 10);
+        kasszandra.setRetreatThreshold(4);
+        Enemy tyucsev = new Enemy("Tyucsev", 10, 12);
+        List<Enemy> enemies = List.of(kasszandra, tyucsev);
+        
+        Random fixedRandom = new Random() {
+            @Override
+            public int nextInt(int bound) {
+                if (bound == 6) {
+                    return 4; // Always roll 5
+                }
+                return super.nextInt(bound);
+            }
+        };
+        
+        Battle battle = new Battle(hero, enemies, fixedRandom, 1); // Sequential mode
+        
+        // Turn 1-3: Kasszandra takes damage (10 -> 8 -> 6 -> 4), retreats
+        battle.executeTurn();
+        battle.executeTurn();
+        battle.executeTurn();
+        
+        assertTrue(kasszandra.hasRetreated());
+        assertEquals(4, kasszandra.getStamina());
+        assertTrue(kasszandra.isAlive());
+        assertFalse(kasszandra.isActive());
+        
+        // Battle continues with Tyucsev
+        assertFalse(battle.isOver());
+        assertEquals(1, battle.getActiveEnemies().size());
+        assertEquals("Tyucsev", battle.getActiveEnemies().get(0).getName());
+        
+        // Turn 4: Tyucsev takes damage
+        battle.executeTurn();
+        assertEquals(10, tyucsev.getStamina());
+        assertFalse(battle.isOver());
     }
 }

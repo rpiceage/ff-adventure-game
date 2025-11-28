@@ -41,7 +41,17 @@ public class BattleUI {
             String name = (String) enemyData.get("enemy");
             int skill = (Integer) enemyData.get("skill");
             int stamina = (Integer) enemyData.get("stamina");
-            enemies.add(new Enemy(name, skill, stamina));
+            Enemy enemy = new Enemy(name, skill, stamina);
+            
+            // Set retreat threshold if present
+            if (enemyData.containsKey("retreat")) {
+                Map<String, Object> retreatData = (Map<String, Object>) enemyData.get("retreat");
+                if (retreatData.containsKey("stamina")) {
+                    enemy.setRetreatThreshold((Integer) retreatData.get("stamina"));
+                }
+            }
+            
+            enemies.add(enemy);
         }
         
         int mode = battleData.containsKey("mode") ? (Integer) battleData.get("mode") : 0;
@@ -77,6 +87,9 @@ public class BattleUI {
                 String enemyToDamage = (String) interruptData.get("enemyDamaged");
                 int damageThreshold = (Integer) interruptData.get("enemyDamagedStamina");
                 currentBattle.setInterrupt(new CombinedEnemyInterrupt(enemyToKill, enemyToDamage, damageThreshold));
+            } else if (interruptData.containsKey("perEnemy")) {
+                Map<String, Integer> enemyThresholds = (Map<String, Integer>) interruptData.get("perEnemy");
+                currentBattle.setInterrupt(new PerEnemyStaminaInterrupt(enemyThresholds));
             } else if (interruptData.containsKey("everyTurnWon") && (Boolean) interruptData.get("everyTurnWon")) {
                 int dice = (Integer) interruptData.get("dice");
                 List<Integer> triggers = (List<Integer>) interruptData.get("trigger");
@@ -154,6 +167,7 @@ public class BattleUI {
             for (int i = 0; i < enemies.size(); i++) {
                 JLabel label = new JLabel();
                 label.setFont(new Font("Arial", Font.PLAIN, 20));
+                label.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
                 battleStatsPanel.add(label);
                 // Create dummy radio button for compatibility with updateDisplay
                 JRadioButton dummyButton = new JRadioButton();
@@ -165,6 +179,7 @@ public class BattleUI {
             for (int i = 0; i < enemies.size(); i++) {
                 JRadioButton radioButton = new JRadioButton();
                 radioButton.setFont(new Font("Arial", Font.PLAIN, 20));
+                radioButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
                 final int index = i;
                 radioButton.addActionListener(e -> currentBattle.setSelectedEnemy(index));
                 enemyRadioButtons.add(radioButton);
@@ -229,8 +244,8 @@ public class BattleUI {
                     Messages.get(Messages.Key.SKILL), enemy.getSkill(),
                     Messages.get(Messages.Key.STAMINA), enemy.getStamina());
                 
-                // Bold the first alive enemy (current target)
-                if (enemy.isAlive() && currentBattle.getAliveEnemies().get(0) == enemy) {
+                // Bold the first active enemy (current target)
+                if (enemy.isActive() && !currentBattle.getActiveEnemies().isEmpty() && currentBattle.getActiveEnemies().get(0) == enemy) {
                     text = "<html><b>" + text + "</b></html>";
                 }
                 
@@ -252,11 +267,11 @@ public class BattleUI {
                 }
                 
                 radioButton.setText(text);
-                radioButton.setEnabled(enemy.isAlive());
+                radioButton.setEnabled(enemy.isActive());
                 
-                if (!enemy.isAlive() && radioButton.isSelected()) {
+                if (!enemy.isActive() && radioButton.isSelected()) {
                     for (int j = 0; j < enemies.size(); j++) {
-                        if (enemies.get(j).isAlive()) {
+                        if (enemies.get(j).isActive()) {
                             enemyRadioButtons.get(j).setSelected(true);
                             currentBattle.setSelectedEnemy(j);
                             break;

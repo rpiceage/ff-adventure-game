@@ -119,6 +119,10 @@ public class Battle {
     public List<Enemy> getAliveEnemies() {
         return enemies.stream().filter(Enemy::isAlive).collect(Collectors.toList());
     }
+    
+    public List<Enemy> getActiveEnemies() {
+        return enemies.stream().filter(Enemy::isActive).collect(Collectors.toList());
+    }
 
     public int getSelectedEnemyIndex() {
         return selectedEnemyIndex;
@@ -191,8 +195,8 @@ public class Battle {
                 allyPhase = false;
             }
         } else if (mode == 1) {
-            // Sequential mode: only fight the first alive enemy
-            Enemy enemy = getAliveEnemies().get(0);
+            // Sequential mode: only fight the first active enemy
+            Enemy enemy = getActiveEnemies().get(0);
             int i = enemies.indexOf(enemy);
             
             int heroDice1 = random.nextInt(6) + 1;
@@ -278,6 +282,16 @@ public class Battle {
             }
         }
         
+        // Check for enemy retreats
+        for (Enemy enemy : enemies) {
+            if (enemy.isAlive() && !enemy.hasRetreated() && 
+                enemy.getRetreatThreshold() != null && 
+                enemy.getStamina() <= enemy.getRetreatThreshold()) {
+                enemy.retreat();
+                turnResult.append(enemy.getName()).append(" retreats!\n");
+            }
+        }
+        
         // Check for interrupt condition
         if (interrupt != null && interrupt.shouldCheck(this) && !interrupt.needsUI()) {
             if (interrupt.isTriggered(this)) {
@@ -290,11 +304,11 @@ public class Battle {
     }
 
     public boolean isOver() {
-        return hero.getStamina() == 0 || getAliveEnemies().isEmpty() || interrupted;
+        return hero.getStamina() == 0 || getActiveEnemies().isEmpty() || interrupted;
     }
 
     public boolean heroWon() {
-        return (getAliveEnemies().isEmpty() || interrupted) && hero.getStamina() > 0;
+        return (getActiveEnemies().isEmpty() || interrupted) && hero.getStamina() > 0;
     }
 
     public int getLastHeroDice1() { 

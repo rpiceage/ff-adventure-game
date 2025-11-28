@@ -211,7 +211,7 @@
   - When an enemy dies, next enemy becomes active
   - Battle ends when all enemies dead or hero dies
 - Battle interrupt:
-  - Seven types of interrupt conditions supported:
+  - Eight types of interrupt conditions supported:
   - Type 1: Stamina-based interrupt
     - Optional `interrupt.stamina` threshold
     - Battle ends when first enemy's stamina reaches or goes below threshold
@@ -290,6 +290,17 @@
         enemyDamagedStamina: 5
       ```
     - Used in chapter 167 (thieves battle)
+  - Type 8: Per-enemy stamina interrupt
+    - Optional `interrupt.perEnemy` with map of enemy names to stamina thresholds
+    - Battle ends when ANY specified enemy's stamina drops to their threshold or below
+    - Shows "Battle interrupted!" message
+    - YAML format:
+      ```yaml
+      interrupt:
+        perEnemy:
+          Tyucsev: 2
+          Kasszandra: 4
+      ```
 - Custom victory text:
   - Optional `winText` field for custom victory message
   - Replaces default "You have defeated all enemies!" message
@@ -340,6 +351,20 @@
     - Dice panel height increases by 100px for extra damage row
     - Result logged to battle log and adventure log
   - All strings translated (English/Hungarian)
+- Enemy retreat:
+  - Optional `retreat.stamina` field per enemy
+  - Enemy retreats (stops fighting) when stamina drops to threshold or below
+  - Retreated enemy remains alive but is removed from active combat
+  - Battle continues with remaining active enemies
+  - YAML format:
+    ```yaml
+    enemies:
+      - enemy: Kasszandra
+        skill: 9
+        stamina: 10
+        retreat:
+          stamina: 4
+    ```
 - Battle ally:
   - Optional `ally` field for NPC that fights first
   - YAML format:

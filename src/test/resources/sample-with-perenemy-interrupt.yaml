@@ -1,0 +1,28 @@
+title: Per-Enemy Stamina Interrupt Test
+init:
+  gold: 0
+  provisions: 0
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          Kasszandra retreats when stamina drops to 4. Battle ends when Tyucsev stamina drops to 2.
+      - battle:
+          enemies:
+            - enemy: Tyucsev
+              skill: 10
+              stamina: 12
+            - enemy: Kasszandra
+              skill: 9
+              stamina: 10
+              retreat:
+                stamina: 4
+          interrupt:
+            perEnemy:
+              Tyucsev: 2
+          win: 1
+          battleText: If Tyucsev's STAMINA drops to 2 or below...
+  - index: 1
+    actions:
+      - display: |
+          Battle interrupted!
