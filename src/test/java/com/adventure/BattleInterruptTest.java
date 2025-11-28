@@ -308,4 +308,56 @@ public class BattleInterruptTest {
         assertEquals(12, enemy.getStamina()); // Enemy still alive
         assertEquals(24, hero.getStamina()); // Hero not hurt
     }
+    
+    @Test
+    public void testEnemiesKilledInterrupt() {
+        Hero hero = new Hero(12, 24, 12, 0, 0);
+        List<Enemy> enemies = List.of(
+            new Enemy("Thief 1", 6, 7),
+            new Enemy("Thief 2", 5, 6)
+        );
+        
+        Random fixedRandom = new Random() {
+            private int callCount = 0;
+            @Override
+            public int nextInt(int bound) {
+                if (bound == 6) {
+                    callCount++;
+                    // Hero always wins
+                    return new int[]{4, 4, 0, 0,  // Turn 1
+                                     4, 4, 0, 0,  // Turn 2
+                                     4, 4, 0, 0,  // Turn 3
+                                     4, 4, 0, 0}[(callCount - 1) % 16]; // Turn 4
+                }
+                return super.nextInt(bound);
+            }
+        };
+        
+        Battle battle = new Battle(hero, enemies, fixedRandom, 0);
+        battle.setInterrupt(new EnemiesKilledInterrupt(1));
+        
+        // Turn 1: Thief 1 takes damage (7 -> 5)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(5, enemies.get(0).getStamina());
+        
+        // Turn 2: Thief 1 takes damage (5 -> 3)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(3, enemies.get(0).getStamina());
+        
+        // Turn 3: Thief 1 takes damage (3 -> 1)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(1, enemies.get(0).getStamina());
+        
+        // Turn 4: Thief 1 dies - battle ends
+        battle.executeTurn();
+        assertTrue(battle.isOver());
+        assertTrue(battle.wasInterrupted());
+        assertTrue(battle.heroWon());
+        assertEquals(0, enemies.get(0).getStamina()); // First enemy dead
+        assertEquals(6, enemies.get(1).getStamina()); // Second enemy alive
+        assertEquals(24, hero.getStamina()); // Hero not hurt
+    }
 }

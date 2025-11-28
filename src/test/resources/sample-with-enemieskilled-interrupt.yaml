@@ -1,0 +1,25 @@
+title: Enemies Killed Interrupt Test
+init:
+  gold: 0
+  provisions: 0
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          Battle ends when first enemy dies.
+      - battle:
+          enemies:
+            - enemy: First Thief
+              skill: 6
+              stamina: 7
+            - enemy: Second Thief
+              skill: 5
+              stamina: 6
+          interrupt:
+            enemiesKilled: 1
+          win: 2
+          winText: If you killed one...
+  - index: 2
+    actions:
+      - display: |
+          You won!

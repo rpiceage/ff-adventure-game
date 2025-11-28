@@ -64,6 +64,8 @@ public class BattleUI {
                 currentBattle.setInterrupt(new TurnInterrupt((Integer) interruptData.get("turn")));
             } else if (interruptData.containsKey("turnWon")) {
                 currentBattle.setInterrupt(new TurnWonInterrupt((Integer) interruptData.get("turnWon")));
+            } else if (interruptData.containsKey("enemiesKilled")) {
+                currentBattle.setInterrupt(new EnemiesKilledInterrupt((Integer) interruptData.get("enemiesKilled")));
             } else if (interruptData.containsKey("everyTurnWon") && (Boolean) interruptData.get("everyTurnWon")) {
                 int dice = (Integer) interruptData.get("dice");
                 List<Integer> triggers = (List<Integer>) interruptData.get("trigger");
