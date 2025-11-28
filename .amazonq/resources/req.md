@@ -246,6 +246,7 @@
     - Optional `interrupt.heroStamina` threshold with `page` for navigation
     - Battle ends when hero's stamina drops to threshold or below
     - Counts as hero victory (hero escapes/survives)
+    - Shows "Battle interrupted!" message instead of victory message
     - Navigates to specified chapter
     - YAML format:
       ```yaml
