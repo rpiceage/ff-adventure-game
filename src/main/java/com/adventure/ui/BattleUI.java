@@ -61,7 +61,9 @@ public class BattleUI {
             if (interruptData.containsKey("stamina")) {
                 currentBattle.setInterrupt(new StaminaInterrupt((Integer) interruptData.get("stamina")));
             } else if (interruptData.containsKey("turn")) {
-                currentBattle.setInterrupt(new TurnInterrupt((Integer) interruptData.get("turn")));
+                int turn = (Integer) interruptData.get("turn");
+                Integer page = interruptData.containsKey("page") ? (Integer) interruptData.get("page") : null;
+                currentBattle.setInterrupt(new TurnInterrupt(turn, page));
             } else if (interruptData.containsKey("turnWon")) {
                 currentBattle.setInterrupt(new TurnWonInterrupt((Integer) interruptData.get("turnWon")));
             } else if (interruptData.containsKey("enemiesKilled")) {

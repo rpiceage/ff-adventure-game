@@ -2,9 +2,15 @@ package com.adventure;
 
 public class TurnInterrupt implements BattleInterrupt {
     private final int turnLimit;
+    private final Integer chapter;
     
     public TurnInterrupt(int turnLimit) {
+        this(turnLimit, null);
+    }
+    
+    public TurnInterrupt(int turnLimit, Integer chapter) {
         this.turnLimit = turnLimit;
+        this.chapter = chapter;
     }
     
     @Override
@@ -29,11 +35,11 @@ public class TurnInterrupt implements BattleInterrupt {
     
     @Override
     public Integer getChapter() {
-        return null;
+        return chapter;
     }
     
     @Override
     public boolean isVictory() {
-        return true;
+        return false; // Turn interrupt is ambiguous, show "Battle interrupted!" message
     }
 }

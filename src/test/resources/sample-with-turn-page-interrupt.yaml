@@ -1,0 +1,27 @@
+title: Turn Interrupt with Page Test
+init:
+  gold: 0
+  provisions: 0
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          Battle ends after 5 turns and navigates to chapter 1.
+      - battle:
+          enemies:
+            - enemy: Temple Guard
+              skill: 7
+              stamina: 30
+          interrupt:
+            turn: 5
+            page: 1
+          battleText: If the Temple Guard is still alive after 5 Rounds...
+          win: 2
+  - index: 1
+    actions:
+      - display: |
+          The guard is still alive! You must flee!
+  - index: 2
+    actions:
+      - display: |
+          You defeated the guard!

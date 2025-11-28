@@ -412,4 +412,36 @@ public class BattleInterruptTest {
         assertEquals(15, enemy.getStamina()); // Enemy not hurt
         assertEquals(193, battle.getInterrupt().getChapter());
     }
+    
+    @Test
+    public void testTurnInterruptWithPage() {
+        Hero hero = new Hero(5, 24, 12, 0, 0);
+        Enemy enemy = new Enemy("Temple Guard", 10, 30);
+        
+        Random fixedRandom = new Random() {
+            @Override
+            public int nextInt(int bound) {
+                if (bound == 6) {
+                    return 0; // Always roll 1
+                }
+                return super.nextInt(bound);
+            }
+        };
+        
+        Battle battle = new Battle(hero, List.of(enemy), fixedRandom, 0);
+        battle.setInterrupt(new TurnInterrupt(5, 124));
+        
+        // Execute 5 turns (enemy always wins: 10+1+1=12 vs 5+1+1=7)
+        for (int i = 0; i < 5; i++) {
+            battle.executeTurn();
+        }
+        
+        // Battle should be interrupted after 5 turns
+        assertTrue(battle.isOver());
+        assertTrue(battle.wasInterrupted());
+        assertTrue(battle.heroWon());
+        assertEquals(30, enemy.getStamina()); // Enemy not hurt
+        assertEquals(14, hero.getStamina()); // Hero lost 10 stamina (2 per turn)
+        assertEquals(124, battle.getInterrupt().getChapter());
+    }
 }

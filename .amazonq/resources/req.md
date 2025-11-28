@@ -219,9 +219,17 @@
     - Enemy remains alive but battle is over
   - Type 2: Turn-based interrupt
     - Optional `interrupt.turn` specifies number of turns
+    - Optional `interrupt.page` specifies chapter to navigate to
     - Battle ends after specified number of turns
     - Counts as hero victory regardless of enemy health
     - Used when external event interrupts battle
+    - YAML format:
+      ```yaml
+      interrupt:
+        turn: 5
+        page: 124
+      ```
+    - Used in chapter 140 (Temple Guard battle)
   - Type 3: Turn-won interrupt
     - Optional `interrupt.turnWon` specifies number of hero wins
     - Battle ends after hero wins specified number of turns
