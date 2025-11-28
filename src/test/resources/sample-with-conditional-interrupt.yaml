@@ -1,0 +1,28 @@
+title: Conditional Interrupt Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You face a giant Hawk! Each time you land a successful hit, roll a die. If you roll a 1, you strike its eye and it flees!
+      - battle:
+          enemies:
+            - enemy: Giant Hawk
+              skill: 10
+              stamina: 16
+          interrupt:
+            everyTurnWon: true
+            dice: 1
+            trigger:
+              - 1
+            page: 1
+          win: 2
+          battleText: After each successful attack, roll for critical hit!
+  - index: 1
+    actions:
+      - display: |
+          You struck the Hawk's eye! It screeches in pain and flies away. You escape from its nest!
+  - index: 2
+    actions:
+      - display: |
+          You defeated the Hawk in normal combat. Well done!

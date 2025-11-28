@@ -18,6 +18,11 @@ public class Battle {
     private boolean interrupted; // Track if battle was interrupted
     private Integer escapeTurn; // Optional: turn after which escape is allowed
     private int currentTurn; // Track current turn number
+    private boolean interruptEveryTurnWon; // Optional: check for interrupt after each hero win
+    private Integer interruptDice; // Number of dice for interrupt check
+    private List<Integer> interruptTriggers; // Die values that trigger interrupt
+    private Integer interruptChapter; // Chapter to go to on interrupt
+    private boolean heroDealtDamageThisTurn; // Track if hero won this turn for conditional interrupt
     private int modifierValue; // Modifier to hero's attack strength
     private String modifierText; // Explanation text for the modifier
     private boolean hasExtraDamage; // Whether extra damage is enabled
@@ -30,6 +35,7 @@ public class Battle {
     private Integer extraSkillDamage; // Extra SKILL damage when hero is hit
     private Integer extraStaminaDamage; // Extra STAMINA damage when hero is hit
     private Integer extraLuckDamage; // Extra LUCK damage when hero is hit
+    private int[] lastInterruptRolls; // Individual dice rolls for interrupt check
 
     public Battle(Hero hero, String enemyName, int enemySkill, int enemyStamina) {
         this(hero, enemyName, enemySkill, enemyStamina, new Random());
@@ -61,6 +67,10 @@ public class Battle {
         this.extraSkillDamage = null;
         this.extraStaminaDamage = null;
         this.extraLuckDamage = null;
+        this.interruptEveryTurnWon = false;
+        this.interruptDice = null;
+        this.interruptTriggers = new ArrayList<>();
+        this.interruptChapter = null;
     }
 
     public Battle(Hero hero, List<Enemy> enemies) {
@@ -96,6 +106,10 @@ public class Battle {
         this.extraSkillDamage = null;
         this.extraStaminaDamage = null;
         this.extraLuckDamage = null;
+        this.interruptEveryTurnWon = false;
+        this.interruptDice = null;
+        this.interruptTriggers = new ArrayList<>();
+        this.interruptChapter = null;
     }
 
     public String getEnemyName() {
@@ -150,6 +164,8 @@ public class Battle {
         currentTurn++;
         StringBuilder turnResult = new StringBuilder();
         int heroDamageTaken = 0;
+        boolean heroDealtDamage = false;
+        heroDealtDamageThisTurn = false;
 
         if (allyPhase && ally != null && ally.isAlive()) {
             // Ally fights the first enemy
@@ -212,6 +228,8 @@ public class Battle {
 
             if (heroAttack > enemyAttack) {
                 enemy.setStamina(enemy.getStamina() - 2);
+                heroDealtDamage = true;
+                heroDealtDamageThisTurn = true;
                 turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
             } else if (enemyAttack > heroAttack) {
                 heroDamageTaken = 2;
@@ -244,6 +262,8 @@ public class Battle {
                 if (heroAttack > enemyAttack) {
                     if (i == selectedEnemyIndex) {
                         enemy.setStamina(enemy.getStamina() - 2);
+                        heroDealtDamage = true;
+                        heroDealtDamageThisTurn = true;
                         turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
                     } else {
                         turnResult.append(Messages.get(Messages.Key.BATTLE_WINS_NOT_TARGETING));
@@ -321,6 +341,53 @@ public class Battle {
     
     public void setInterruptTurn(Integer interruptTurn) {
         this.interruptTurn = interruptTurn;
+    }
+    
+    public void setConditionalInterrupt(int dice, List<Integer> triggers, int chapter) {
+        this.interruptEveryTurnWon = true;
+        this.interruptDice = dice;
+        this.interruptTriggers = triggers;
+        this.interruptChapter = chapter;
+    }
+    
+    public Integer getInterruptChapter() {
+        return interruptChapter;
+    }
+    
+    public boolean needsConditionalInterruptCheck() {
+        return interruptEveryTurnWon && !interrupted;
+    }
+    
+    public boolean checkConditionalInterrupt() {
+        if (!interruptEveryTurnWon) {
+            return false;
+        }
+        
+        int numDice = interruptDice != null ? interruptDice : 1;
+        lastInterruptRolls = new int[numDice];
+        int roll = 0;
+        for (int i = 0; i < numDice; i++) {
+            lastInterruptRolls[i] = random.nextInt(6) + 1;
+            roll += lastInterruptRolls[i];
+        }
+        
+        if (interruptTriggers.contains(roll)) {
+            interrupted = true;
+            return true;
+        }
+        return false;
+    }
+    
+    public int[] getLastInterruptRolls() {
+        return lastInterruptRolls;
+    }
+    
+    public int getInterruptDice() {
+        return interruptDice != null ? interruptDice : 1;
+    }
+    
+    public boolean heroDealtDamageThisTurn() {
+        return heroDealtDamageThisTurn;
     }
     
     public boolean wasInterrupted() {

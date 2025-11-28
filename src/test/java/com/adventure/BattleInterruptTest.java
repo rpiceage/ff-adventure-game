@@ -174,4 +174,90 @@ public class BattleInterruptTest {
         assertEquals(20, hero.getStamina()); // Hero took damage in turn 3
         assertEquals(18, enemy.getStamina()); // Enemy still alive
     }
+    
+    @Test
+    public void testConditionalInterruptOnHeroWin() {
+        Hero hero = new Hero(12, 24, 12, 0, 0);
+        Enemy enemy = new Enemy("Hawk", 10, 16);
+        
+        Random fixedRandom = new Random() {
+            private int callCount = 0;
+            @Override
+            public int nextInt(int bound) {
+                if (bound == 6) {
+                    callCount++;
+                    // Turn 1: Hero wins (dice 5+5=10), Enemy (dice 1+1=2), interrupt roll = 2 (no interrupt)
+                    // Turn 2: Hero wins (dice 5+5=10), Enemy (dice 1+1=2), interrupt roll = 1 (interrupt!)
+                    return new int[]{4, 4, 0, 0,  // Turn 1: hero wins (5+5 vs 1+1)
+                                     1,           // Interrupt check: roll 2 (no interrupt)
+                                     4, 4, 0, 0,  // Turn 2: hero wins (5+5 vs 1+1)
+                                     0}[(callCount - 1) % 10]; // Interrupt check: roll 1 (interrupt!)
+                }
+                return super.nextInt(bound);
+            }
+        };
+        
+        Battle battle = new Battle(hero, List.of(enemy), fixedRandom, 0);
+        battle.setConditionalInterrupt(1, List.of(1), 55);
+        
+        // Turn 1: Hero wins, interrupt check rolls 2 (no interrupt)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(14, enemy.getStamina());
+        
+        // Manually check for interrupt (simulating UI button click)
+        assertFalse(battle.checkConditionalInterrupt());
+        
+        // Turn 2: Hero wins, interrupt check rolls 1 (interrupt!)
+        battle.executeTurn();
+        assertFalse(battle.isOver()); // Not over yet, need to check interrupt
+        
+        // Manually check for interrupt (simulating UI button click)
+        assertTrue(battle.checkConditionalInterrupt());
+        assertTrue(battle.isOver());
+        assertTrue(battle.wasInterrupted());
+        assertEquals(55, battle.getInterruptChapter());
+        assertEquals(12, enemy.getStamina()); // Enemy still alive
+        assertEquals(24, hero.getStamina()); // Hero not hurt
+    }
+    
+    @Test
+    public void testConditionalInterruptOnlyWhenHeroWins() {
+        Hero hero = new Hero(12, 24, 12, 0, 0);
+        Enemy enemy = new Enemy("Strong Enemy", 12, 16);
+        
+        Random fixedRandom = new Random() {
+            private int callCount = 0;
+            @Override
+            public int nextInt(int bound) {
+                if (bound == 6) {
+                    callCount++;
+                    // Turn 1: Enemy wins (no interrupt check should happen)
+                    // Turn 2: Hero wins, interrupt roll = 1 (interrupt!)
+                    return new int[]{0, 0, 4, 4,  // Turn 1: enemy wins (1+1 vs 5+5)
+                                     4, 4, 0, 0,  // Turn 2: hero wins (5+5 vs 1+1)
+                                     0}[(callCount - 1) % 9]; // Interrupt check: roll 1
+                }
+                return super.nextInt(bound);
+            }
+        };
+        
+        Battle battle = new Battle(hero, List.of(enemy), fixedRandom, 0);
+        battle.setConditionalInterrupt(1, List.of(1), 55);
+        
+        // Turn 1: Enemy wins (no interrupt check)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(22, hero.getStamina());
+        
+        // Turn 2: Hero wins, interrupt check triggers
+        battle.executeTurn();
+        assertFalse(battle.isOver()); // Not over yet
+        
+        // Manually check for interrupt (simulating UI button click)
+        assertTrue(battle.checkConditionalInterrupt());
+        assertTrue(battle.isOver());
+        assertTrue(battle.wasInterrupted());
+        assertEquals(55, battle.getInterruptChapter());
+    }
 }

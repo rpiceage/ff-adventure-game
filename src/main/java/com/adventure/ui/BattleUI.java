@@ -64,6 +64,12 @@ public class BattleUI {
             if (interruptData.containsKey("turn")) {
                 currentBattle.setInterruptTurn((Integer) interruptData.get("turn"));
             }
+            if (interruptData.containsKey("everyTurnWon") && (Boolean) interruptData.get("everyTurnWon")) {
+                int dice = (Integer) interruptData.get("dice");
+                List<Integer> triggers = (List<Integer>) interruptData.get("trigger");
+                int chapter = (Integer) interruptData.get("page");
+                currentBattle.setConditionalInterrupt(dice, triggers, chapter);
+            }
         }
         
         // Set escape turn if present
@@ -254,6 +260,14 @@ public class BattleUI {
             if (currentBattle.heroWon()) {
                 Map<String, Object> battleData = (Map<String, Object>) battleActionData.get("battle");
                 
+                // Check if interrupted by conditional interrupt (everyTurnWon)
+                int targetChapter;
+                if (currentBattle.wasInterrupted() && currentBattle.getInterruptChapter() != null) {
+                    targetChapter = currentBattle.getInterruptChapter();
+                } else {
+                    targetChapter = (Integer) battleData.get("win");
+                }
+                
                 // Use winText if present, otherwise use default victory message
                 if (battleData.containsKey("winText")) {
                     textArea.append("\n" + battleData.get("winText"));
@@ -261,13 +275,11 @@ public class BattleUI {
                     textArea.append("\n" + Messages.get(Messages.Key.BATTLE_VICTORY_ALL));
                 }
                 
-                int winChapter = (Integer) battleData.get("win");
-                
                 JButton continueButton = new JButton(Messages.get(Messages.Key.BATTLE_CLOSE));
                 continueButton.addActionListener(e -> {
                     currentBattle = null;
                     controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_WON), controller.getHero().getStamina()));
-                    controller.goToChapter(winChapter);
+                    controller.goToChapter(targetChapter);
                     onComplete.run();
                 });
                 buttonPanel.add(continueButton);
@@ -437,6 +449,63 @@ public class BattleUI {
                                 extraAnimTimer.start();
                             });
                             buttonPanel.add(extraDamageButton);
+                            buttonPanel.revalidate();
+                            buttonPanel.repaint();
+                        } else if (currentBattle.needsConditionalInterruptCheck() && currentBattle.heroDealtDamageThisTurn() && !currentBattle.isOver()) {
+                            // Show conditional interrupt check button
+                            buttonPanel.removeAll();
+                            JButton interruptCheckButton = new JButton(Messages.get(Messages.Key.BATTLE_INTERRUPT_ROLL));
+                            interruptCheckButton.addActionListener(evt2 -> {
+                                interruptCheckButton.setEnabled(false);
+                                
+                                // Check for interrupt (rolls dice internally)
+                                boolean interrupted = currentBattle.checkConditionalInterrupt();
+                                int[] rolls = currentBattle.getLastInterruptRolls();
+                                
+                                // Show dice animation
+                                dicePanel.setPreferredSize(new Dimension(400, dicePanel.getPreferredSize().height + 100));
+                                dicePanel.revalidate();
+                                
+                                JPanel interruptRowPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+                                interruptRowPanel.setOpaque(false);
+                                
+                                JLabel interruptLabel = new JLabel(Messages.get(Messages.Key.BATTLE_INTERRUPT_ROLL) + ":");
+                                interruptLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                                interruptRowPanel.add(interruptLabel);
+                                
+                                AnimatedDicePanel interruptDicePanel = new AnimatedDicePanel(rolls);
+                                interruptRowPanel.add(interruptDicePanel);
+                                
+                                dicePanel.add(interruptRowPanel);
+                                dicePanel.revalidate();
+                                dicePanel.repaint();
+                                
+                                // Animate dice
+                                Timer interruptAnimTimer = new Timer(50, null);
+                                final int[] interruptCount = {0};
+                                interruptAnimTimer.addActionListener(evt3 -> {
+                                    if (interruptCount[0] < 20) {
+                                        interruptDicePanel.updateAnimation();
+                                        interruptCount[0]++;
+                                    } else {
+                                        interruptAnimTimer.stop();
+                                        interruptDicePanel.stopAnimation();
+                                        
+                                        String resultMsg;
+                                        if (interrupted) {
+                                            resultMsg = Messages.get(Messages.Key.BATTLE_INTERRUPT_SUCCESS);
+                                        } else {
+                                            resultMsg = Messages.get(Messages.Key.BATTLE_INTERRUPT_FAIL);
+                                        }
+                                        textArea.append("\n" + resultMsg + "\n\n");
+                                        currentBattle.appendToBattleLog(resultMsg + "\n\n");
+                                        
+                                        updateDisplay();
+                                    }
+                                });
+                                interruptAnimTimer.start();
+                            });
+                            buttonPanel.add(interruptCheckButton);
                             buttonPanel.revalidate();
                             buttonPanel.repaint();
                         } else {

@@ -211,10 +211,31 @@
   - When an enemy dies, next enemy becomes active
   - Battle ends when all enemies dead or hero dies
 - Battle interrupt:
-  - Optional `interrupt.stamina` threshold
-  - Battle ends when first enemy's stamina reaches or goes below threshold
-  - Counts as hero victory (enemy surrenders/flees)
-  - Enemy remains alive but battle is over
+  - Three types of interrupt conditions supported:
+  - Type 1: Stamina-based interrupt
+    - Optional `interrupt.stamina` threshold
+    - Battle ends when first enemy's stamina reaches or goes below threshold
+    - Counts as hero victory (enemy surrenders/flees)
+    - Enemy remains alive but battle is over
+  - Type 2: Turn-based interrupt
+    - Optional `interrupt.turn` specifies number of turns
+    - Battle ends after specified number of turns
+    - Counts as hero victory regardless of enemy health
+    - Used when external event interrupts battle
+  - Type 3: Conditional interrupt on hero win
+    - Optional `interrupt.everyTurnWon: true` with dice check
+    - After each turn hero wins, rolls dice and checks trigger values
+    - If roll matches trigger, battle ends and navigates to interrupt chapter
+    - YAML format:
+      ```yaml
+      interrupt:
+        everyTurnWon: true
+        dice: 1
+        trigger:
+          - 1
+        page: 55
+      ```
+    - Used for random battle interruptions (e.g., critical hit causes enemy to flee)
 - Custom victory text:
   - Optional `winText` field for custom victory message
   - Replaces default "You have defeated all enemies!" message
