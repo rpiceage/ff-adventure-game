@@ -1,0 +1,31 @@
+title: Hero Stamina Interrupt Test
+init:
+  gold: 0
+  provisions: 0
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          Battle ends when hero stamina drops to 6 or below.
+      - modify:
+          values:
+            - field: STAMINA
+              value: -16
+      - battle:
+          enemies:
+            - enemy: Death Knight
+              skill: 10
+              stamina: 15
+          interrupt:
+            heroStamina: 6
+            page: 1
+          win: 2
+          battleText: If your STAMINA drops to 6 or below...
+  - index: 1
+    actions:
+      - display: |
+          You barely escaped!
+  - index: 2
+    actions:
+      - display: |
+          You won!

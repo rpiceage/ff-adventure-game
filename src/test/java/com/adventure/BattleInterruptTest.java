@@ -360,4 +360,56 @@ public class BattleInterruptTest {
         assertEquals(6, enemies.get(1).getStamina()); // Second enemy alive
         assertEquals(24, hero.getStamina()); // Hero not hurt
     }
+    
+    @Test
+    public void testHeroStaminaInterrupt() {
+        Hero hero = new Hero(10, 24, 12, 0, 0);
+        Enemy enemy = new Enemy("Death Knight", 10, 15);
+        
+        Random fixedRandom = new Random() {
+            private int callCount = 0;
+            @Override
+            public int nextInt(int bound) {
+                if (bound == 6) {
+                    callCount++;
+                    // Enemy always wins
+                    return new int[]{0, 0, 4, 4,  // Turn 1
+                                     0, 0, 4, 4,  // Turn 2
+                                     0, 0, 4, 4}[(callCount - 1) % 12]; // Turn 3
+                }
+                return super.nextInt(bound);
+            }
+        };
+        
+        Battle battle = new Battle(hero, List.of(enemy), fixedRandom, 0);
+        battle.setInterrupt(new HeroStaminaInterrupt(6, 193));
+        
+        // Turn 1: Hero loses (24 -> 22)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(22, hero.getStamina());
+        
+        // Turn 2: Hero loses (22 -> 20)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(20, hero.getStamina());
+        
+        // Turn 3: Hero loses (20 -> 18)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(18, hero.getStamina());
+        
+        // Continue until hero stamina reaches 6
+        for (int i = 0; i < 6; i++) {
+            battle.executeTurn();
+        }
+        
+        // Hero stamina should be 6, battle interrupted
+        assertTrue(battle.isOver());
+        assertTrue(battle.wasInterrupted());
+        assertTrue(battle.heroWon());
+        assertEquals(6, hero.getStamina());
+        assertEquals(15, enemy.getStamina()); // Enemy not hurt
+        assertEquals(193, battle.getInterrupt().getChapter());
+    }
 }

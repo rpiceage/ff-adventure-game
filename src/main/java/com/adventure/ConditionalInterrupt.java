@@ -49,4 +49,9 @@ public class ConditionalInterrupt implements BattleInterrupt {
     public Integer getChapter() {
         return chapter;
     }
+    
+    @Override
+    public boolean isVictory() {
+        return true;
+    }
 }

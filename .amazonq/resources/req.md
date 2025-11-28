@@ -211,7 +211,7 @@
   - When an enemy dies, next enemy becomes active
   - Battle ends when all enemies dead or hero dies
 - Battle interrupt:
-  - Five types of interrupt conditions supported:
+  - Six types of interrupt conditions supported:
   - Type 1: Stamina-based interrupt
     - Optional `interrupt.stamina` threshold
     - Battle ends when first enemy's stamina reaches or goes below threshold
@@ -242,7 +242,19 @@
         enemiesKilled: 1
       ```
     - Used in chapter 66 (thieves battle)
-  - Type 5: Conditional interrupt on hero win
+  - Type 5: Hero stamina interrupt
+    - Optional `interrupt.heroStamina` threshold with `page` for navigation
+    - Battle ends when hero's stamina drops to threshold or below
+    - Counts as hero victory (hero escapes/survives)
+    - Navigates to specified chapter
+    - YAML format:
+      ```yaml
+      interrupt:
+        heroStamina: 6
+        page: 193
+      ```
+    - Used in chapter 91 (Death Knight battle)
+  - Type 6: Conditional interrupt on hero win
     - Optional `interrupt.everyTurnWon: true` with dice check
     - After each turn hero wins, rolls dice and checks trigger values
     - If roll matches trigger, battle ends and navigates to interrupt chapter

@@ -75,7 +75,7 @@ public class Messages {
         BATTLE_ALLY_LOSES_STAMINA,
         LOG_SOLD_ITEM,
         BATTLE_INTERRUPT_ROLL,
-        BATTLE_INTERRUPT_SUCCESS,
+        BATTLE_INTERRUPT_HAPPENS,
         BATTLE_INTERRUPT_FAIL
     }
     
@@ -356,7 +356,7 @@ public class Messages {
             "en", "Extra roll",
             "hu", "Extra dobás"
         )),
-        Map.entry(Key.BATTLE_INTERRUPT_SUCCESS, Map.of(
+        Map.entry(Key.BATTLE_INTERRUPT_HAPPENS, Map.of(
             "en", "Battle interrupted!",
             "hu", "Harc megszakítva!"
         )),

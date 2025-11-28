@@ -66,6 +66,10 @@ public class BattleUI {
                 currentBattle.setInterrupt(new TurnWonInterrupt((Integer) interruptData.get("turnWon")));
             } else if (interruptData.containsKey("enemiesKilled")) {
                 currentBattle.setInterrupt(new EnemiesKilledInterrupt((Integer) interruptData.get("enemiesKilled")));
+            } else if (interruptData.containsKey("heroStamina")) {
+                int threshold = (Integer) interruptData.get("heroStamina");
+                int chapter = (Integer) interruptData.get("page");
+                currentBattle.setInterrupt(new HeroStaminaInterrupt(threshold, chapter));
             } else if (interruptData.containsKey("everyTurnWon") && (Boolean) interruptData.get("everyTurnWon")) {
                 int dice = (Integer) interruptData.get("dice");
                 List<Integer> triggers = (List<Integer>) interruptData.get("trigger");
@@ -271,10 +275,20 @@ public class BattleUI {
                 }
                 
                 // Use winText if present, otherwise use default victory message
-                if (battleData.containsKey("winText")) {
-                    textArea.append("\n" + battleData.get("winText"));
+                // Skip victory message if interrupt is not a true victory (e.g., hero escapes)
+                boolean showVictoryMessage = !(currentBattle.wasInterrupted() && 
+                    currentBattle.getInterrupt() != null && 
+                    !currentBattle.getInterrupt().isVictory());
+                
+                if (showVictoryMessage) {
+                    if (battleData.containsKey("winText")) {
+                        textArea.append("\n" + battleData.get("winText"));
+                    } else {
+                        textArea.append("\n" + Messages.get(Messages.Key.BATTLE_VICTORY_ALL));
+                    }
                 } else {
-                    textArea.append("\n" + Messages.get(Messages.Key.BATTLE_VICTORY_ALL));
+                    // Show interrupt message for non-victory interrupts
+                    textArea.append("\n" + Messages.get(Messages.Key.BATTLE_INTERRUPT_HAPPENS));
                 }
                 
                 JButton continueButton = new JButton(Messages.get(Messages.Key.BATTLE_CLOSE));
@@ -495,7 +509,7 @@ public class BattleUI {
                                         
                                         String resultMsg;
                                         if (interrupted) {
-                                            resultMsg = Messages.get(Messages.Key.BATTLE_INTERRUPT_SUCCESS);
+                                            resultMsg = Messages.get(Messages.Key.BATTLE_INTERRUPT_HAPPENS);
                                         } else {
                                             resultMsg = Messages.get(Messages.Key.BATTLE_INTERRUPT_FAIL);
                                         }

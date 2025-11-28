@@ -1,15 +1,17 @@
 package com.adventure;
 
-public class TurnInterrupt implements BattleInterrupt {
-    private final int turnLimit;
+public class HeroStaminaInterrupt implements BattleInterrupt {
+    private final int threshold;
+    private final int chapter;
     
-    public TurnInterrupt(int turnLimit) {
-        this.turnLimit = turnLimit;
+    public HeroStaminaInterrupt(int threshold, int chapter) {
+        this.threshold = threshold;
+        this.chapter = chapter;
     }
     
     @Override
     public boolean shouldCheck(Battle battle) {
-        return battle.getCurrentTurn() >= turnLimit;
+        return battle.getHero().getStamina() <= threshold;
     }
     
     @Override
@@ -29,11 +31,11 @@ public class TurnInterrupt implements BattleInterrupt {
     
     @Override
     public Integer getChapter() {
-        return null;
+        return chapter;
     }
     
     @Override
     public boolean isVictory() {
-        return true;
+        return false; // Hero escapes, not a true victory
     }
 }

@@ -33,4 +33,9 @@ public class TurnWonInterrupt implements BattleInterrupt {
     public Integer getChapter() {
         return null;
     }
+    
+    @Override
+    public boolean isVictory() {
+        return true;
+    }
 }

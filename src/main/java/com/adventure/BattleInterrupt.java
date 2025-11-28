@@ -6,4 +6,5 @@ public interface BattleInterrupt {
     boolean needsUI();
     int[] getDiceRolls();
     Integer getChapter();
+    boolean isVictory(); // true if interrupt counts as victory, false if escape/survival
 }
