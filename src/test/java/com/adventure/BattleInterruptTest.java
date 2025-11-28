@@ -444,4 +444,59 @@ public class BattleInterruptTest {
         assertEquals(14, hero.getStamina()); // Hero lost 10 stamina (2 per turn)
         assertEquals(124, battle.getInterrupt().getChapter());
     }
+    
+    @Test
+    public void testCombinedEnemyInterrupt() {
+        Hero hero = new Hero(12, 24, 12, 0, 0);
+        List<Enemy> enemies = List.of(
+            new Enemy("Assassin", 6, 6),
+            new Enemy("Scarface", 7, 9),
+            new Enemy("Second Killer", 7, 8)
+        );
+        
+        Random fixedRandom = new Random() {
+            private int callCount = 0;
+            @Override
+            public int nextInt(int bound) {
+                if (bound == 6) {
+                    callCount++;
+                    // Hero always wins
+                    return new int[]{4, 4, 0, 0}[(callCount - 1) % 4];
+                }
+                return super.nextInt(bound);
+            }
+        };
+        
+        Battle battle = new Battle(hero, enemies, fixedRandom, 1); // Sequential mode
+        battle.setInterrupt(new CombinedEnemyInterrupt("Assassin", "Scarface", 5));
+        
+        // Turn 1: Assassin takes damage (6 -> 4)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(4, enemies.get(0).getStamina());
+        
+        // Turn 2: Assassin takes damage (4 -> 2)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(2, enemies.get(0).getStamina());
+        
+        // Turn 3: Assassin dies (2 -> 0), Scarface becomes active
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(0, enemies.get(0).getStamina());
+        
+        // Turn 4: Scarface takes damage (9 -> 7)
+        battle.executeTurn();
+        assertFalse(battle.isOver());
+        assertEquals(7, enemies.get(1).getStamina());
+        
+        // Turn 5: Scarface takes damage (7 -> 5), now at threshold - interrupt!
+        battle.executeTurn();
+        assertTrue(battle.isOver());
+        assertTrue(battle.wasInterrupted());
+        assertTrue(battle.heroWon());
+        assertEquals(0, enemies.get(0).getStamina()); // Assassin dead
+        assertEquals(5, enemies.get(1).getStamina()); // Scarface at threshold
+        assertEquals(8, enemies.get(2).getStamina()); // Second Killer untouched
+    }
 }

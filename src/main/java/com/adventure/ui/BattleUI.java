@@ -72,6 +72,11 @@ public class BattleUI {
                 int threshold = (Integer) interruptData.get("heroStamina");
                 int chapter = (Integer) interruptData.get("page");
                 currentBattle.setInterrupt(new HeroStaminaInterrupt(threshold, chapter));
+            } else if (interruptData.containsKey("enemyKilled") && interruptData.containsKey("enemyDamaged")) {
+                String enemyToKill = (String) interruptData.get("enemyKilled");
+                String enemyToDamage = (String) interruptData.get("enemyDamaged");
+                int damageThreshold = (Integer) interruptData.get("enemyDamagedStamina");
+                currentBattle.setInterrupt(new CombinedEnemyInterrupt(enemyToKill, enemyToDamage, damageThreshold));
             } else if (interruptData.containsKey("everyTurnWon") && (Boolean) interruptData.get("everyTurnWon")) {
                 int dice = (Integer) interruptData.get("dice");
                 List<Integer> triggers = (List<Integer>) interruptData.get("trigger");

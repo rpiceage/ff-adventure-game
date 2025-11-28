@@ -1,0 +1,30 @@
+title: Combined Enemy Interrupt Test
+init:
+  gold: 0
+  provisions: 0
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          Battle ends when Assassin is killed AND Scarface stamina drops to 5 or below.
+      - battle:
+          enemies:
+            - enemy: Assassin
+              skill: 6
+              stamina: 6
+            - enemy: Scarface
+              skill: 7
+              stamina: 9
+            - enemy: Second Killer
+              skill: 7
+              stamina: 8
+          interrupt:
+            enemyKilled: Assassin
+            enemyDamaged: Scarface
+            enemyDamagedStamina: 5
+          win: 1
+          battleText: If you killed the Assassin and reduced Scarface's STAMINA to 5 or below...
+  - index: 1
+    actions:
+      - display: |
+          You won!

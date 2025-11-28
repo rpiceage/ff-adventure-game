@@ -211,7 +211,7 @@
   - When an enemy dies, next enemy becomes active
   - Battle ends when all enemies dead or hero dies
 - Battle interrupt:
-  - Six types of interrupt conditions supported:
+  - Seven types of interrupt conditions supported:
   - Type 1: Stamina-based interrupt
     - Optional `interrupt.stamina` threshold
     - Battle ends when first enemy's stamina reaches or goes below threshold
@@ -277,6 +277,19 @@
         page: 55
       ```
     - Used for random battle interruptions (e.g., critical hit causes enemy to flee)
+  - Type 7: Combined enemy interrupt
+    - Optional `interrupt.enemyKilled`, `enemyDamaged`, and `enemyDamagedStamina`
+    - Battle ends when specific enemy is killed AND another specific enemy's stamina drops to threshold or below
+    - Both conditions must be met simultaneously
+    - Counts as hero victory
+    - YAML format:
+      ```yaml
+      interrupt:
+        enemyKilled: Assassin
+        enemyDamaged: Scarface
+        enemyDamagedStamina: 5
+      ```
+    - Used in chapter 167 (thieves battle)
 - Custom victory text:
   - Optional `winText` field for custom victory message
   - Replaces default "You have defeated all enemies!" message
