@@ -14,6 +14,7 @@ public class Battle {
     private StringBuilder battleLog;
     private int mode; // 0 = simultaneous (default), 1 = sequential
     private Integer interruptStamina; // Optional: battle ends when enemy reaches this stamina
+    private Integer interruptTurn; // Optional: battle ends after this many turns
     private boolean interrupted; // Track if battle was interrupted
     private Integer escapeTurn; // Optional: turn after which escape is allowed
     private int currentTurn; // Track current turn number
@@ -44,6 +45,7 @@ public class Battle {
         this.battleLog = new StringBuilder();
         this.mode = 0;
         this.interruptStamina = null;
+        this.interruptTurn = null;
         this.interrupted = false;
         this.escapeTurn = null;
         this.currentTurn = 0;
@@ -78,6 +80,7 @@ public class Battle {
         this.battleLog = new StringBuilder();
         this.mode = mode;
         this.interruptStamina = null;
+        this.interruptTurn = null;
         this.interrupted = false;
         this.escapeTurn = null;
         this.currentTurn = 0;
@@ -278,6 +281,11 @@ public class Battle {
                 interrupted = true;
             }
         }
+        
+        // Check for turn-based interrupt
+        if (interruptTurn != null && currentTurn >= interruptTurn) {
+            interrupted = true;
+        }
 
         lastTurnResult = turnResult.toString();
         battleLog.append(lastTurnResult).append("\n");
@@ -309,6 +317,10 @@ public class Battle {
     
     public void setInterruptStamina(Integer interruptStamina) {
         this.interruptStamina = interruptStamina;
+    }
+    
+    public void setInterruptTurn(Integer interruptTurn) {
+        this.interruptTurn = interruptTurn;
     }
     
     public boolean wasInterrupted() {

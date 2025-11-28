@@ -61,6 +61,9 @@ public class BattleUI {
             if (interruptData.containsKey("stamina")) {
                 currentBattle.setInterruptStamina((Integer) interruptData.get("stamina"));
             }
+            if (interruptData.containsKey("turn")) {
+                currentBattle.setInterruptTurn((Integer) interruptData.get("turn"));
+            }
         }
         
         // Set escape turn if present

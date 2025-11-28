@@ -1,0 +1,20 @@
+title: Turn-Based Interrupt Test
+language: en
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You encounter a massive Triceratops! The battle will end after 3 turns when another creature arrives.
+      - battle:
+          enemies:
+            - enemy: Triceratops
+              skill: 8
+              stamina: 30
+          interrupt:
+            turn: 3
+          win: 1
+          winText: After 3 turns, you hear a terrifying roar...
+  - index: 1
+    actions:
+      - display: |
+          A T-Rex appears! The Triceratops flees. You survived the encounter!
