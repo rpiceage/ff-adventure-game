@@ -55,20 +55,20 @@ public class BattleUI {
         }
         controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_STARTED), enemyNames));
         
-        // Set interrupt stamina if present
+        // Set interrupt if present
         if (battleData.containsKey("interrupt")) {
             Map<String, Object> interruptData = (Map<String, Object>) battleData.get("interrupt");
             if (interruptData.containsKey("stamina")) {
-                currentBattle.setInterruptStamina((Integer) interruptData.get("stamina"));
-            }
-            if (interruptData.containsKey("turn")) {
-                currentBattle.setInterruptTurn((Integer) interruptData.get("turn"));
-            }
-            if (interruptData.containsKey("everyTurnWon") && (Boolean) interruptData.get("everyTurnWon")) {
+                currentBattle.setInterrupt(new StaminaInterrupt((Integer) interruptData.get("stamina")));
+            } else if (interruptData.containsKey("turn")) {
+                currentBattle.setInterrupt(new TurnInterrupt((Integer) interruptData.get("turn")));
+            } else if (interruptData.containsKey("turnWon")) {
+                currentBattle.setInterrupt(new TurnWonInterrupt((Integer) interruptData.get("turnWon")));
+            } else if (interruptData.containsKey("everyTurnWon") && (Boolean) interruptData.get("everyTurnWon")) {
                 int dice = (Integer) interruptData.get("dice");
                 List<Integer> triggers = (List<Integer>) interruptData.get("trigger");
                 int chapter = (Integer) interruptData.get("page");
-                currentBattle.setConditionalInterrupt(dice, triggers, chapter);
+                currentBattle.setInterrupt(new ConditionalInterrupt(dice, triggers, chapter, new java.util.Random()));
             }
         }
         
@@ -260,10 +260,10 @@ public class BattleUI {
             if (currentBattle.heroWon()) {
                 Map<String, Object> battleData = (Map<String, Object>) battleActionData.get("battle");
                 
-                // Check if interrupted by conditional interrupt (everyTurnWon)
+                // Check if interrupted with custom chapter
                 int targetChapter;
-                if (currentBattle.wasInterrupted() && currentBattle.getInterruptChapter() != null) {
-                    targetChapter = currentBattle.getInterruptChapter();
+                if (currentBattle.wasInterrupted() && currentBattle.getInterrupt() != null && currentBattle.getInterrupt().getChapter() != null) {
+                    targetChapter = currentBattle.getInterrupt().getChapter();
                 } else {
                     targetChapter = (Integer) battleData.get("win");
                 }
@@ -451,16 +451,16 @@ public class BattleUI {
                             buttonPanel.add(extraDamageButton);
                             buttonPanel.revalidate();
                             buttonPanel.repaint();
-                        } else if (currentBattle.needsConditionalInterruptCheck() && currentBattle.heroDealtDamageThisTurn() && !currentBattle.isOver()) {
-                            // Show conditional interrupt check button
+                        } else if (currentBattle.needsInterruptUI() && !currentBattle.isOver()) {
+                            // Show interrupt check button
                             buttonPanel.removeAll();
                             JButton interruptCheckButton = new JButton(Messages.get(Messages.Key.BATTLE_INTERRUPT_ROLL));
                             interruptCheckButton.addActionListener(evt2 -> {
                                 interruptCheckButton.setEnabled(false);
                                 
                                 // Check for interrupt (rolls dice internally)
-                                boolean interrupted = currentBattle.checkConditionalInterrupt();
-                                int[] rolls = currentBattle.getLastInterruptRolls();
+                                boolean interrupted = currentBattle.checkInterrupt();
+                                int[] rolls = currentBattle.getInterrupt().getDiceRolls();
                                 
                                 // Show dice animation
                                 dicePanel.setPreferredSize(new Dimension(400, dicePanel.getPreferredSize().height + 100));
