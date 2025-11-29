@@ -18,6 +18,7 @@ public class Battle {
     private Integer escapeTurn; // Optional: turn after which escape is allowed
     private int currentTurn; // Track current turn number
     private boolean heroDealtDamageThisTurn; // Track if hero won this turn
+    private boolean enemyDealtDamageThisTurn; // Track if enemy won this turn
     private int modifierValue; // Modifier to hero's attack strength
     private String modifierText; // Explanation text for the modifier
     private boolean hasExtraDamage; // Whether extra damage is enabled
@@ -154,6 +155,7 @@ public class Battle {
         int heroDamageTaken = 0;
         boolean heroDealtDamage = false;
         heroDealtDamageThisTurn = false;
+        enemyDealtDamageThisTurn = false;
 
         if (allyPhase && ally != null && ally.isAlive()) {
             // Ally fights the first enemy
@@ -221,6 +223,7 @@ public class Battle {
                 turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
             } else if (enemyAttack > heroAttack) {
                 heroDamageTaken = 2;
+                enemyDealtDamageThisTurn = true;
                 turnResult.append(Messages.get(Messages.Key.BATTLE_HERO_LOSES));
             } else {
                 turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
@@ -258,6 +261,7 @@ public class Battle {
                     }
                 } else if (enemyAttack > heroAttack) {
                     heroDamageTaken += 2;
+                    enemyDealtDamageThisTurn = true;
                     turnResult.append(Messages.get(Messages.Key.BATTLE_HERO_LOSES));
                 } else {
                     turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
@@ -352,6 +356,10 @@ public class Battle {
     
     public boolean heroDealtDamageThisTurn() {
         return heroDealtDamageThisTurn;
+    }
+    
+    public boolean enemyDealtDamageThisTurn() {
+        return enemyDealtDamageThisTurn;
     }
     
     public boolean wasInterrupted() {

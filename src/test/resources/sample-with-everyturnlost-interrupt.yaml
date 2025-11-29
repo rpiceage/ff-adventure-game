@@ -1,0 +1,27 @@
+title: Sample with Every Turn Lost Interrupt
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You face a deadly monk. Every time he wins a turn, roll a die. If you roll 5 or 6, he delivers a fatal blow!
+      - battle:
+          enemies:
+            - enemy: Monk
+              skill: 11
+              stamina: 8
+          interrupt:
+            everyTurnLost: true
+            dice: 1
+            trigger:
+              - 5
+              - 6
+            page: 2
+          win: 1
+  - index: 1
+    actions:
+      - display: |
+          You defeated the monk!
+  - index: 2
+    actions:
+      - display: |
+          The monk's fatal blow strikes you down!

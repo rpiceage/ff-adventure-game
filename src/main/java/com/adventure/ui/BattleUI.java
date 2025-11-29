@@ -95,6 +95,11 @@ public class BattleUI {
                 List<Integer> triggers = (List<Integer>) interruptData.get("trigger");
                 int chapter = (Integer) interruptData.get("page");
                 currentBattle.setInterrupt(new ConditionalInterrupt(dice, triggers, chapter, new java.util.Random()));
+            } else if (interruptData.containsKey("everyTurnLost") && (Boolean) interruptData.get("everyTurnLost")) {
+                int dice = (Integer) interruptData.get("dice");
+                List<Integer> triggers = (List<Integer>) interruptData.get("trigger");
+                int chapter = (Integer) interruptData.get("page");
+                currentBattle.setInterrupt(new EveryTurnLostInterrupt(dice, triggers, chapter, new java.util.Random()));
             }
         }
         

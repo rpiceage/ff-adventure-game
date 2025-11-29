@@ -301,6 +301,22 @@
           Tyucsev: 2
           Kasszandra: 4
       ```
+  - Type 9: Conditional interrupt on enemy win
+    - Optional `interrupt.everyTurnLost: true` with dice check
+    - After each turn enemy wins, rolls dice and checks trigger values
+    - If roll matches trigger, battle ends and navigates to interrupt chapter
+    - Shows "Battle interrupted!" message instead of victory message
+    - YAML format:
+      ```yaml
+      interrupt:
+        everyTurnLost: true
+        dice: 1
+        trigger:
+          - 5
+          - 6
+        page: 366
+      ```
+    - Used in chapter 288 (Scarlet Mantis monk battle)
 - Custom victory text:
   - Optional `winText` field for custom victory message
   - Replaces default "You have defeated all enemies!" message
