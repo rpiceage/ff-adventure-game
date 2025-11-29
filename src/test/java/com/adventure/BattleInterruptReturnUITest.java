@@ -57,8 +57,12 @@ public class BattleInterruptReturnUITest {
             JPanel battlePanel = battleUI.resume(savedBattle, savedData);
             assertNotNull(battlePanel);
             
+            // Find the JTextPane in the battle panel
+            javax.swing.JTextPane textPane = findTextPane(battlePanel);
+            assertNotNull(textPane, "Battle log text pane should be present");
+            
             // Verify battle log contains resumed message
-            String displayedText = textArea.getText();
+            String displayedText = textPane.getText();
             assertTrue(displayedText.contains("Battle resumed!"), "Battle log should contain 'Battle resumed!'");
             assertTrue(displayedText.contains("Turn 1 completed"), "Battle log should contain previous turns");
             
@@ -110,9 +114,26 @@ public class BattleInterruptReturnUITest {
             
             assertNotNull(battlePanel, "Battle panel should be created");
             
+            // Find the JTextPane in the battle panel
+            javax.swing.JTextPane textPane = findTextPane(battlePanel);
+            assertNotNull(textPane, "Battle log text pane should be present");
+            
             // Verify UI shows correct state
-            String battleLog = textArea.getText();
+            String battleLog = textPane.getText();
             assertTrue(battleLog.contains("Battle resumed!"), "Battle log should show resumed message");
         });
+    }
+    
+    private javax.swing.JTextPane findTextPane(java.awt.Container container) {
+        for (java.awt.Component comp : container.getComponents()) {
+            if (comp instanceof javax.swing.JTextPane) {
+                return (javax.swing.JTextPane) comp;
+            }
+            if (comp instanceof java.awt.Container) {
+                javax.swing.JTextPane found = findTextPane((java.awt.Container) comp);
+                if (found != null) return found;
+            }
+        }
+        return null;
     }
 }

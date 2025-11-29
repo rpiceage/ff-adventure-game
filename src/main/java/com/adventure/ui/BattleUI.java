@@ -3,6 +3,7 @@ package com.adventure.ui;
 import com.adventure.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class BattleUI {
     private JPanel dicePanel;
     private Map<String, Object> battleActionData;
     private JTextArea textArea;
+    private JTextPane battleLogPane; // Colored battle log
     private JPanel buttonPanel;
     private GameController controller;
     private GameWindow gameWindow;
@@ -211,7 +213,38 @@ public class BattleUI {
         topPanel.add(dicePanel, BorderLayout.CENTER);
         
         centerPanel.add(topPanel, BorderLayout.NORTH);
-        centerPanel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+        
+        // Create JTextPane for colored battle log with parchment background
+        battleLogPane = new JTextPane();
+        battleLogPane.setEditable(false);
+        battleLogPane.setFont(new Font("Arial", Font.BOLD, 24));
+        battleLogPane.setOpaque(false);
+        
+        JScrollPane scrollPane = new JScrollPane(battleLogPane);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        
+        // Create panel with parchment background
+        JPanel backgroundPanel = new JPanel(new BorderLayout()) {
+            private Image backgroundImage;
+            {
+                try {
+                    java.io.InputStream bgStream = getClass().getClassLoader().getResourceAsStream("pergament.jpg");
+                    backgroundImage = javax.imageio.ImageIO.read(bgStream);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (backgroundImage != null) {
+                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
+        backgroundPanel.add(scrollPane, BorderLayout.CENTER);
+        centerPanel.add(backgroundPanel, BorderLayout.CENTER);
         
         // Add battleText to battle log if present
         if (battleData.containsKey("battleText")) {
@@ -301,14 +334,44 @@ public class BattleUI {
         topPanel.add(dicePanel, BorderLayout.CENTER);
         
         centerPanel.add(topPanel, BorderLayout.NORTH);
-        centerPanel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+        
+        // Create JTextPane for colored battle log with parchment background
+        battleLogPane = new JTextPane();
+        battleLogPane.setEditable(false);
+        battleLogPane.setFont(new Font("Arial", Font.BOLD, 24));
+        battleLogPane.setOpaque(false);
+        
+        JScrollPane scrollPane = new JScrollPane(battleLogPane);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        
+        // Create panel with parchment background
+        JPanel backgroundPanel = new JPanel(new BorderLayout()) {
+            private Image backgroundImage;
+            {
+                try {
+                    java.io.InputStream bgStream = getClass().getClassLoader().getResourceAsStream("pergament.jpg");
+                    backgroundImage = javax.imageio.ImageIO.read(bgStream);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (backgroundImage != null) {
+                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
+        backgroundPanel.add(scrollPane, BorderLayout.CENTER);
+        centerPanel.add(backgroundPanel, BorderLayout.CENTER);
         
         // Add "Battle resumed!" message to battle log
         currentBattle.appendToBattleLog(Messages.get(Messages.Key.BATTLE_RESUMED) + "\n\n");
         
-        // Restore battle log in text area
-        textArea.setText(currentBattle.getBattleLog());
-        textArea.setCaretPosition(textArea.getDocument().getLength());
+        // Restore battle log
+        updateBattleLog();
         
         updateDisplay();
         return centerPanel;
@@ -367,7 +430,7 @@ public class BattleUI {
             }
         }
         
-        textArea.setText(currentBattle.getBattleLog());
+        updateBattleLog();
         buttonPanel.removeAll();
         
         if (currentBattle.isOver()) {
@@ -390,13 +453,13 @@ public class BattleUI {
                 
                 if (showVictoryMessage) {
                     if (battleData.containsKey("winText")) {
-                        textArea.append("\n" + battleData.get("winText"));
+                        appendMessage((String) battleData.get("winText"));
                     } else {
-                        textArea.append("\n" + Messages.get(Messages.Key.BATTLE_VICTORY_ALL));
+                        appendMessage(Messages.get(Messages.Key.BATTLE_VICTORY_ALL));
                     }
                 } else {
                     // Show interrupt message for non-victory interrupts
-                    textArea.append("\n" + Messages.get(Messages.Key.BATTLE_INTERRUPT_HAPPENS));
+                    appendMessage(Messages.get(Messages.Key.BATTLE_INTERRUPT_HAPPENS));
                 }
                 
                 JButton continueButton = new JButton(Messages.get(Messages.Key.BATTLE_CLOSE));
@@ -408,7 +471,7 @@ public class BattleUI {
                 });
                 buttonPanel.add(continueButton);
             } else {
-                textArea.append("\n" + Messages.get(Messages.Key.BATTLE_DEFEAT_GENERAL));
+                appendMessage(Messages.get(Messages.Key.BATTLE_DEFEAT_GENERAL));
                 currentBattle = null;
                 controller.getAdventureLog().log(Messages.get(Messages.Key.LOG_BATTLE_LOST));
                 onComplete.run();
@@ -509,8 +572,8 @@ public class BattleUI {
                             panel.stopAnimation();
                         }
                         
-                        // Update battle log and text area immediately after normal turn
-                        textArea.setText(currentBattle.getBattleLog());
+                        // Update battle log immediately after normal turn
+                        updateBattleLog();
                         gameWindow.updateHeroStats();
                         
                         // If extra damage is enabled, show extra damage button instead of updating display
@@ -557,12 +620,10 @@ public class BattleUI {
                                         String resultMsg;
                                         if (damage > 0) {
                                             resultMsg = String.format(Messages.get(Messages.Key.BATTLE_EXTRA_DAMAGE_HIT), damage);
-                                            textArea.append("\n" + resultMsg + "\n\n");
                                             currentBattle.appendToBattleLog(resultMsg + "\n\n");
                                             controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_EXTRA_DAMAGE), roll, String.format("%d STAMINA lost", damage)));
                                         } else {
                                             resultMsg = Messages.get(Messages.Key.BATTLE_EXTRA_DAMAGE_MISS);
-                                            textArea.append("\n" + resultMsg + "\n\n");
                                             currentBattle.appendToBattleLog(resultMsg + "\n\n");
                                             controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_EXTRA_DAMAGE), roll, "no damage"));
                                         }
@@ -621,7 +682,6 @@ public class BattleUI {
                                         } else {
                                             resultMsg = Messages.get(Messages.Key.BATTLE_INTERRUPT_FAIL);
                                         }
-                                        textArea.append("\n" + resultMsg + "\n\n");
                                         currentBattle.appendToBattleLog(resultMsg + "\n\n");
                                         
                                         updateDisplay();
@@ -775,5 +835,43 @@ public class BattleUI {
 
     public boolean isActive() {
         return currentBattle != null;
+    }
+    
+    private void appendMessage(String message) {
+        currentBattle.appendToBattleLog("\n" + message);
+        updateBattleLog();
+    }
+    
+    private void updateBattleLog() {
+        StyledDocument doc = battleLogPane.getStyledDocument();
+        try {
+            doc.remove(0, doc.getLength());
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+        
+        String log = currentBattle.getBattleLog();
+        String[] lines = log.split("\n");
+        
+        for (String line : lines) {
+            Color color = Color.BLACK;
+            if (line.contains(Messages.get(Messages.Key.BATTLE_HERO_LOSES)) || 
+                line.contains(Messages.get(Messages.Key.BATTLE_ALLY_LOSES_STAMINA).split(" ")[0])) {
+                color = new Color(180, 0, 0); // Dark red for hero/ally losses
+            } else if (line.contains(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA))) {
+                color = new Color(0, 120, 0); // Dark green for enemy losses
+            }
+            
+            SimpleAttributeSet attrs = new SimpleAttributeSet();
+            StyleConstants.setForeground(attrs, color);
+            
+            try {
+                doc.insertString(doc.getLength(), line + "\n", attrs);
+            } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        battleLogPane.setCaretPosition(doc.getLength());
     }
 }

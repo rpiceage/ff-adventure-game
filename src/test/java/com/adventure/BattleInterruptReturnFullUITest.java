@@ -75,9 +75,9 @@ public class BattleInterruptReturnFullUITest {
 
         // Verify battle is resumed - check for "Battle resumed!" message
         SwingUtilities.invokeAndWait(() -> {
-            JTextArea textArea = findTextArea(window);
-            assertNotNull(textArea, "Text area should be present");
-            String battleLog = textArea.getText();
+            javax.swing.JTextPane textPane = findTextPane(window);
+            assertNotNull(textPane, "Text area should be present");
+            String battleLog = textPane.getText();
             assertTrue(battleLog.contains("Battle resumed!"), "Battle log should show 'Battle resumed!'");
             
             JButton nextTurnButton = findButton(window, Messages.get(Messages.Key.BATTLE_NEXT_TURN));
@@ -122,6 +122,19 @@ public class BattleInterruptReturnFullUITest {
             }
             if (comp instanceof Container) {
                 JTextArea found = findTextArea((Container) comp);
+                if (found != null) return found;
+            }
+        }
+        return null;
+    }
+    
+    private javax.swing.JTextPane findTextPane(Container container) {
+        for (Component comp : container.getComponents()) {
+            if (comp instanceof javax.swing.JTextPane) {
+                return (javax.swing.JTextPane) comp;
+            }
+            if (comp instanceof Container) {
+                javax.swing.JTextPane found = findTextPane((Container) comp);
                 if (found != null) return found;
             }
         }

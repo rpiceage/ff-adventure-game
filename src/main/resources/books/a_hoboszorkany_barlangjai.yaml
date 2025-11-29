@@ -2078,7 +2078,7 @@ chapters:
                 - field: STAMINA
                   value: -4
         - goto:
-            - chapter: 174
+            - chapter: 98
               text: Ha még életben vagy...
     - index: 187
       actions:
