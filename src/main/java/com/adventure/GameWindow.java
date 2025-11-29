@@ -574,6 +574,20 @@ public class GameWindow extends JFrame {
                 } else {
                     // Same game - just load the save
                     controller.loadSaveGame(saveGame);
+                    
+                    // Restore heroStatsPanel if skull image was shown (after death)
+                    boolean hasSkull = false;
+                    for (java.awt.Component comp : getContentPane().getComponents()) {
+                        if (comp instanceof JLabel && ((JLabel) comp).getIcon() != null) {
+                            hasSkull = true;
+                            remove(comp);
+                            break;
+                        }
+                    }
+                    if (hasSkull) {
+                        add(heroStatsPanel, BorderLayout.EAST);
+                    }
+                    
                     updateDisplay();
                     JOptionPane.showMessageDialog(this, "Game loaded successfully!", "Load Game", JOptionPane.INFORMATION_MESSAGE);
                 }
