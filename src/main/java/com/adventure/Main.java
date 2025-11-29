@@ -23,6 +23,7 @@ public class Main {
             UIManager.put("Panel.background", darkBg);
             UIManager.put("Button.background", darkButton);
             UIManager.put("Button.foreground", Color.WHITE);
+            UIManager.put("Button.font", UIConstants.FONT_BUTTON);
             UIManager.put("Label.foreground", darkFg);
             UIManager.put("List.background", darkPanel);
             UIManager.put("List.foreground", darkFg);

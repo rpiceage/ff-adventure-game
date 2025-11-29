@@ -18,12 +18,14 @@ public class UIConstants {
     public static final int FONT_SIZE_LARGE = 20;
     public static final int FONT_SIZE_MEDIUM = 18;
     public static final int FONT_SIZE_SMALL = 16;
+    public static final int FONT_SIZE_BUTTON = 20;
     
     // Fonts
     public static final Font FONT_TITLE = new Font("Arial", Font.BOLD, FONT_SIZE_TITLE);
     public static final Font FONT_LARGE = new Font("Arial", Font.BOLD, FONT_SIZE_LARGE);
     public static final Font FONT_MEDIUM = new Font("Arial", Font.BOLD, FONT_SIZE_MEDIUM);
     public static final Font FONT_SMALL = new Font("Arial", Font.BOLD, FONT_SIZE_SMALL);
+    public static final Font FONT_BUTTON = new Font("Arial", Font.BOLD, FONT_SIZE_BUTTON);
     
     // Timing
     public static final int NOTIFICATION_DURATION_MS = 3000;
