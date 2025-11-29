@@ -4074,9 +4074,9 @@ chapters:
                 skill: 10
                 stamina: 12
             interrupt:
-              stamina: 4
+              perEnemy:
+                Tyucsev: 4
             win: 355
-            winText: Ha Tyucsev ÉLETEREJÉT 4-re vagy az alá csökkented...
     - index: 343
       actions:
         - display: |
