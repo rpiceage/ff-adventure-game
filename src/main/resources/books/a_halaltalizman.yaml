@@ -3783,9 +3783,9 @@ chapters:
                 skill: 8
                 stamina: 14
             interrupt:
-              stamina: 6
+              perEnemy:
+                Griff: 6
             win: 94
-            winText: Ha 6-ra, vagy az alá csökkented az ÉLETEREJÉT...
     - index: 314
       actions:
         - display: |
