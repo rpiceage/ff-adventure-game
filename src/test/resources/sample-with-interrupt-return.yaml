@@ -1,0 +1,26 @@
+title: Sample with Interrupt Return
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You face a monster. You can ask for help at any time.
+      - battle:
+          enemies:
+            - enemy: Monster
+              skill: 10
+              stamina: 12
+          escape:
+            turn: 0
+            chapter: 1
+            withoutDamage: true
+            buttonText: Ask for help
+            returnToBattle: true
+          win: 2
+  - index: 1
+    actions:
+      - interrupt: |
+          You call for help, but the wizard says the magic doesn't work. You must fight alone!
+  - index: 2
+    actions:
+      - display: |
+          You defeated the monster!

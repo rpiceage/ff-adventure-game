@@ -343,9 +343,25 @@
 - Battle escape:
   - Optional `escape.turn` specifies after which turn escape becomes available
   - Optional `escape.chapter` specifies where to go when escaping
+  - Optional `escape.withoutDamage: true` to escape without stamina cost (default: false, costs 2 STAMINA)
+  - Optional `escape.buttonText` for custom escape button text (default: "Escape")
+  - Optional `escape.returnToBattle: true` to return to battle after visiting escape chapter
   - Escape button appears alongside "Next Turn" button when turn >= escape.turn
-  - Clicking escape costs 2 STAMINA and navigates to escape chapter
-  - Optional `battleText` to inform player about escape option (added to battle log)
+  - When `returnToBattle` is true:
+    - Battle state is saved (turn count, enemy stamina, battle log, selected enemy)
+    - Escape chapter should have `interrupt` action to return
+    - After returning, battle resumes with preserved state
+    - "Battle resumed!" message added to battle log
+  - YAML format:
+    ```yaml
+    escape:
+      turn: 0
+      chapter: 158
+      withoutDamage: true
+      buttonText: Ask for help
+      returnToBattle: true
+    ```
+  - Used in chapters 189 and 201 (asking wizards for help during battle)
 - Battle extra damage:
   - Optional `extraHeroDamage` field for additional damage
   - Two formats supported:
@@ -514,6 +530,25 @@
   - No UI interaction required
   - Item buttons disappear when items are removed
   - Useful for story events (losing backpack, theft, etc.)
+
+## Interrupt Action System
+- Display-and-return action for reusable interrupt chapters
+- YAML format for interrupt action:
+  ```yaml
+  - interrupt: |
+      You call for help, but the wizard says the magic doesn't work. You must fight alone!
+  ```
+- Interrupt action mechanics:
+  - Displays text like a normal chapter
+  - Shows "Continue" button
+  - When clicked, returns to previous chapter if returnChapter is set
+  - Used with battle escape returnToBattle flag
+  - Enables reusable interrupt chapters that return to caller
+- Interrupt action UI:
+  - Text displayed in main text area with parchment background
+  - Single "Continue" button
+  - No other navigation options shown
+- Used in chapter 158 (wizard help during battle)
 
 ## Use Item System
 - Items can be used in specific chapters to navigate to different chapters

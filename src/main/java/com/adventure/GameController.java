@@ -14,6 +14,9 @@ public class GameController {
     private String gameYamlPath;
     private Integer nextBattleAttackModifier;
     private String nextBattleEffectText;
+    private Integer returnChapter; // Chapter to return to after interrupt
+    private Battle savedBattle; // Saved battle state for return
+    private Map<String, Object> savedBattleActionData; // Saved battle action data
 
     public GameController(Adventure adventure) {
         this(adventure, null);
@@ -40,6 +43,7 @@ public class GameController {
     private void registerActions() {
         actions.add(new DisplayAction());
         actions.add(new WinAction());
+        actions.add(new InterruptAction());
         actions.add(new ModifyAction());
         actions.add(new RandomModifyAction());
         actions.add(new RandomGotoAction());
@@ -117,13 +121,14 @@ public class GameController {
 
     public String getDisplayText() {
         for (Map<String, Object> actionData : currentChapter.actions) {
-            for (Action action : actions) {
-                if (action instanceof DisplayAction && action.canHandle(actionData)) {
-                    return ((DisplayAction) action).getDisplayText(actionData);
-                }
-                if (action instanceof WinAction && action.canHandle(actionData)) {
-                    return ((WinAction) action).getWinText(actionData);
-                }
+            if (actionData.containsKey("display")) {
+                return (String) actionData.get("display");
+            }
+            if (actionData.containsKey("win")) {
+                return (String) actionData.get("win");
+            }
+            if (actionData.containsKey("interrupt")) {
+                return (String) actionData.get("interrupt");
             }
         }
         return "";
@@ -240,5 +245,35 @@ public class GameController {
     public void clearNextBattleEffect() {
         this.nextBattleAttackModifier = null;
         this.nextBattleEffectText = null;
+    }
+    
+    public void setReturnChapter(int chapter) {
+        this.returnChapter = chapter;
+    }
+    
+    public Integer getReturnChapter() {
+        return returnChapter;
+    }
+    
+    public void clearReturnChapter() {
+        this.returnChapter = null;
+    }
+    
+    public void saveBattleState(Battle battle, Map<String, Object> actionData) {
+        this.savedBattle = battle;
+        this.savedBattleActionData = actionData;
+    }
+    
+    public Battle getSavedBattle() {
+        return savedBattle;
+    }
+    
+    public Map<String, Object> getSavedBattleActionData() {
+        return savedBattleActionData;
+    }
+    
+    public void clearSavedBattle() {
+        this.savedBattle = null;
+        this.savedBattleActionData = null;
     }
 }

@@ -2311,7 +2311,8 @@ chapters:
               turn: 0
               chapter: 158
               withoutDamage: true
-              withoutDamageText: Bármikor segítséget kérhetsz.
+              buttonText: Bármikor segítséget kérhetsz.
+              returnToBattle: true
             win: 176
     - index: 190
       actions:
@@ -2439,7 +2440,8 @@ chapters:
               turn: 0
               chapter: 158
               withoutDamage: true
-              withoutDamageText: Bármikor segítséget kérhetsz.
+              buttonText: Bármikor segítséget kérhetsz.
+              returnToBattle: true
             win: 176
     - index: 202
       actions:

@@ -185,6 +185,36 @@ public class GameWindow extends JFrame {
             }
         } else if (battleUI != null && battleUI.isActive()) {
             battleUI.updateDisplay();
+        } else if (controller.getSavedBattle() != null && 
+                   controller.getReturnChapter() != null &&
+                   controller.getCurrentChapter().index == controller.getReturnChapter()) {
+            // Auto-resume saved battle only if we're at the return chapter
+            Battle savedBattle = controller.getSavedBattle();
+            Map<String, Object> savedActionData = controller.getSavedBattleActionData();
+            controller.clearSavedBattle();
+            controller.clearReturnChapter();
+            
+            controller.getAdventureLog().log("  Battle resumed");
+            battleUI = new com.adventure.ui.BattleUI(textArea, buttonPanel, controller, this, () -> {
+                battleUI = null;
+                if (currentCenterPanel != null) {
+                    remove(currentCenterPanel);
+                    currentCenterPanel = null;
+                }
+                // Recreate scroll pane with textArea
+                textScrollPane = new JScrollPane(textArea);
+                textWithIllustrationPanel = textScrollPane;
+                add(textScrollPane, BorderLayout.CENTER);
+                revalidate();
+                repaint();
+                updateDisplay();
+            });
+            JPanel battlePanel = battleUI.resume(savedBattle, savedActionData);
+            remove(textWithIllustrationPanel);
+            add(battlePanel, BorderLayout.CENTER);
+            currentCenterPanel = battlePanel;
+            revalidate();
+            repaint();
         } else if (randomModifyUI != null) {
             // Random modify UI is already shown
         } else if (randomGotoUI != null) {
@@ -424,6 +454,10 @@ public class GameWindow extends JFrame {
             currentCenterPanel = testPanel;
             revalidate();
             repaint();
+        } else if (actionData.containsKey("interrupt")) {
+            // Execute interrupt action (returns to previous chapter)
+            action.execute(controller, actionData);
+            updateDisplay();
         }
     }
 

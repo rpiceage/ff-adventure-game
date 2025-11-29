@@ -76,7 +76,8 @@ public class Messages {
         LOG_SOLD_ITEM,
         BATTLE_INTERRUPT_ROLL,
         BATTLE_INTERRUPT_HAPPENS,
-        BATTLE_INTERRUPT_FAIL
+        BATTLE_INTERRUPT_FAIL,
+        BATTLE_RESUMED
     }
     
     private static final Map<Key, Map<String, String>> translations = Map.ofEntries(
@@ -363,6 +364,10 @@ public class Messages {
         Map.entry(Key.BATTLE_INTERRUPT_FAIL, Map.of(
             "en", "Nothing happens.",
             "hu", "Semmi sem történik."
+        )),
+        Map.entry(Key.BATTLE_RESUMED, Map.of(
+            "en", "Battle resumed!",
+            "hu", "Harc folytatódik!"
         ))
     );
     
