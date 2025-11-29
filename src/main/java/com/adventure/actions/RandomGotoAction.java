@@ -1,6 +1,7 @@
 package com.adventure.actions;
 
 import com.adventure.GameController;
+import com.adventure.Messages;
 import java.util.Map;
 
 public class RandomGotoAction implements Action {
@@ -21,6 +22,6 @@ public class RandomGotoAction implements Action {
 
     @Override
     public String getButtonText() {
-        return "Roll dice";
+        return Messages.get(Messages.Key.ROLL_DICE);
     }
 }
