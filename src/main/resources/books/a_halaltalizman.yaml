@@ -4351,8 +4351,6 @@ chapters:
                 - enemy: Tyucsev
                   skill: 10
                   stamina: 12
-                  interrupt:
-                    stamina: 4
                 - enemy: Kasszandra
                   skill: 9
                   stamina: 10
@@ -4360,6 +4358,9 @@ chapters:
                   retreat:
                     stamina: 4
             battleText:  Ha Kasszandra eltalál, minden alkalommal 3 ÉLETERŐ pontot sebez! Ha Kasszandra ÉLETEREJÉT 4-re vagy az alá csökkented, akkor hátratántorodik és Tyucsev a helyére lép, hogy fedezze.
+            interrupt:
+              perEnemy:
+                Tyucsev: 4
             winText: Ha Tyucsev ÉLETEREJE 4-re vagy az alá csökken...
             win: 353
     - index: 369
