@@ -4283,11 +4283,12 @@ chapters:
                 - enemy: Kapitány
                   skill: 8
                   stamina: 10
-                  interruptPageTurnWon: 393
                 - enemy: Elvira
                   skill: 6
                   stamina: 8
-            battleText: Ha bármelyik Fordulóban a Kapitány eltalál...
+            interrupt:
+              turnLost: 1
+              page: 393
             win: 376
     - index: 363
       actions:

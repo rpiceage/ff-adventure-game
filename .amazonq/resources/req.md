@@ -317,6 +317,18 @@
         page: 366
       ```
     - Used in chapter 288 (Scarlet Mantis monk battle)
+  - Type 10: Turn lost interrupt
+    - Optional `interrupt.turnLost` specifies number of enemy wins
+    - Optional `interrupt.page` specifies chapter to navigate to
+    - Battle ends after enemy wins specified number of turns
+    - Shows "Battle interrupted!" message instead of victory message
+    - YAML format:
+      ```yaml
+      interrupt:
+        turnLost: 1
+        page: 393
+      ```
+    - Used in chapter 362 (Captain and Elvira battle)
 - Custom victory text:
   - Optional `winText` field for custom victory message
   - Replaces default "You have defeated all enemies!" message

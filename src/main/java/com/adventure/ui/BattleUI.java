@@ -76,6 +76,10 @@ public class BattleUI {
                 currentBattle.setInterrupt(new TurnInterrupt(turn, page));
             } else if (interruptData.containsKey("turnWon")) {
                 currentBattle.setInterrupt(new TurnWonInterrupt((Integer) interruptData.get("turnWon")));
+            } else if (interruptData.containsKey("turnLost")) {
+                int turns = (Integer) interruptData.get("turnLost");
+                int chapter = (Integer) interruptData.get("page");
+                currentBattle.setInterrupt(new TurnLostInterrupt(turns, chapter));
             } else if (interruptData.containsKey("enemiesKilled")) {
                 currentBattle.setInterrupt(new EnemiesKilledInterrupt((Integer) interruptData.get("enemiesKilled")));
             } else if (interruptData.containsKey("heroStamina")) {

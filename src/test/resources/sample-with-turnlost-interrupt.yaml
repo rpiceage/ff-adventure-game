@@ -1,0 +1,26 @@
+title: Sample with Turn Lost Interrupt
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You face two guards. If either guard hits you once, reinforcements arrive!
+      - battle:
+          enemies:
+            - enemy: Captain
+              skill: 11
+              stamina: 10
+            - enemy: Guard
+              skill: 9
+              stamina: 8
+          interrupt:
+            turnLost: 1
+            page: 2
+          win: 1
+  - index: 1
+    actions:
+      - display: |
+          You defeated both guards before they could call for help!
+  - index: 2
+    actions:
+      - display: |
+          The guard's blow alerts the reinforcements. You are surrounded!
