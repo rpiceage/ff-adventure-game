@@ -51,11 +51,11 @@ public class SellItemTest {
         hero.removeItem("Potion");
         assertEquals(2, hero.getInventory().size());
         assertEquals(150, hero.getGold());
-        assertFalse(hero.getInventory().contains("Potion"));
+        assertFalse(hero.hasItem("Potion"));
         
         // Verify remaining items
-        assertTrue(hero.getInventory().contains("Ring"));
-        assertTrue(hero.getInventory().contains("Amulet"));
+        assertTrue(hero.hasItem("Ring"));
+        assertTrue(hero.hasItem("Amulet"));
         
         // Max 3 items sold - cannot sell more in this chapter
         // (In UI, the 4th and 5th items would be disabled)

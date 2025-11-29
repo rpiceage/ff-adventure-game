@@ -59,7 +59,7 @@ public class HeroTest {
         hero.addItem("Sword");
         
         assertEquals(1, hero.getInventory().size());
-        assertEquals("Sword", hero.getInventory().get(0));
+        assertEquals("Sword", hero.getInventory().get(0).getName());
         assertTrue(hero.hasItem("Sword"));
     }
 

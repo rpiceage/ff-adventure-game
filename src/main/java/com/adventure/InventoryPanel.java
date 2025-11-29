@@ -39,8 +39,8 @@ public class InventoryPanel extends JPanel {
         Map<String, Integer> useItemMap = getUseItemMap();
         com.adventure.actions.SellItemAction sellItemAction = getSellItemAction();
         
-        for (String item : hero.getInventory()) {
-            JButton itemButton = new JButton(item);
+        for (Item item : hero.getInventory()) {
+            JButton itemButton = new JButton(item.getName());
             itemButton.setFont(UIConstants.FONT_SMALL);
             itemButton.setForeground(Color.WHITE);
             itemButton.setBackground(UIConstants.SEMI_TRANSPARENT_BLACK);
@@ -48,10 +48,10 @@ public class InventoryPanel extends JPanel {
             itemButton.setContentAreaFilled(false);
             itemButton.setAlignmentX(Component.LEFT_ALIGNMENT);
             
-            if (useItemMap.containsKey(item)) {
-                int targetChapter = useItemMap.get(item);
+            if (useItemMap.containsKey(item.getName())) {
+                int targetChapter = useItemMap.get(item.getName());
                 itemButton.addActionListener(e -> {
-                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_USED_ITEM), item, targetChapter));
+                    controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_USED_ITEM), item.getName(), targetChapter));
                     controller.goToChapter(targetChapter);
                     onItemUsed.run();
                 });
@@ -65,13 +65,38 @@ public class InventoryPanel extends JPanel {
                         hero.modifyGold(goldPerItem);
                         hero.removeItem(item);
                         chapterState.incrementSoldItems();
-                        controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_SOLD_ITEM), item, goldPerItem));
+                        controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_SOLD_ITEM), item.getName(), goldPerItem));
                         onStatsUpdate.run();
                         updateItems();
                     });
                 } else {
                     itemButton.setEnabled(false);
                 }
+            } else if (item.canUseAnyTime() && item.hasEffect()) {
+                // Potion or special item that can be used anytime
+                itemButton.addActionListener(e -> {
+                    // Check if battle is active
+                    if (controller.isBattleActive()) {
+                        JOptionPane.showMessageDialog(this, "Cannot use items during battle!", "Battle Active", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    
+                    item.use(hero);
+                    hero.removeItem(item);
+                    
+                    String attributeName = "";
+                    if (item.getName().contains(Messages.get(Messages.Key.POTION_SKILL))) {
+                        attributeName = Messages.get(Messages.Key.SKILL);
+                    } else if (item.getName().contains(Messages.get(Messages.Key.POTION_STAMINA))) {
+                        attributeName = Messages.get(Messages.Key.STAMINA);
+                    } else if (item.getName().contains(Messages.get(Messages.Key.POTION_LUCK))) {
+                        attributeName = Messages.get(Messages.Key.LUCK);
+                    }
+                    
+                    JOptionPane.showMessageDialog(this, String.format(Messages.get(Messages.Key.POTION_USED), attributeName), "Potion Used", JOptionPane.INFORMATION_MESSAGE);
+                    onStatsUpdate.run();
+                    updateItems();
+                });
             } else {
                 itemButton.addActionListener(e -> showItemCantUsePopup());
             }

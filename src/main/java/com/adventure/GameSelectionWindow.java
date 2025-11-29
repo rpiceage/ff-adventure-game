@@ -160,7 +160,18 @@ public class GameSelectionWindow extends JFrame {
                     Messages.setLanguage(adventure.language);
                 }
                 
-                new GameWindow(adventure, gameFile);
+                // Show potion selection if enabled
+                if (adventure.init != null && adventure.init.potions) {
+                    new PotionSelectionWindow(selectedPotion -> {
+                        GameWindow gameWindow = new GameWindow(adventure, gameFile);
+                        if (selectedPotion != null) {
+                            gameWindow.getController().getHero().addItem(Item.createPotion(selectedPotion));
+                            gameWindow.updateInventory();
+                        }
+                    });
+                } else {
+                    new GameWindow(adventure, gameFile);
+                }
                 dispose();
             }
         } catch (Exception e) {

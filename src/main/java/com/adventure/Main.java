@@ -44,7 +44,18 @@ public class Main {
                 Messages.setLanguage(adventure.language);
             }
             
-            new GameWindow(adventure);
+            // Show potion selection if enabled
+            if (adventure.init != null && adventure.init.potions) {
+                new PotionSelectionWindow(selectedPotion -> {
+                    GameWindow gameWindow = new GameWindow(adventure);
+                    if (selectedPotion != null) {
+                        gameWindow.getController().getHero().addItem(Item.createPotion(selectedPotion));
+                        gameWindow.updateInventory();
+                    }
+                });
+            } else {
+                new GameWindow(adventure);
+            }
         } else {
             // Show welcome menu
             new WelcomeWindow();

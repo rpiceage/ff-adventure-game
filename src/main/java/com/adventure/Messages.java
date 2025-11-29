@@ -77,7 +77,14 @@ public class Messages {
         BATTLE_INTERRUPT_ROLL,
         BATTLE_INTERRUPT_HAPPENS,
         BATTLE_INTERRUPT_FAIL,
-        BATTLE_RESUMED
+        BATTLE_RESUMED,
+        POTION_SELECTION_TITLE,
+        POTION_SELECTION_LABEL,
+        POTION_SELECTION_CONFIRM,
+        POTION_SKILL,
+        POTION_STAMINA,
+        POTION_LUCK,
+        POTION_USED
     }
     
     private static final Map<Key, Map<String, String>> translations = Map.ofEntries(
@@ -368,6 +375,34 @@ public class Messages {
         Map.entry(Key.BATTLE_RESUMED, Map.of(
             "en", "Battle resumed!",
             "hu", "Harc folytatódik!"
+        )),
+        Map.entry(Key.POTION_SELECTION_TITLE, Map.of(
+            "en", "Choose Your Potion",
+            "hu", "Válassz varázsitalt"
+        )),
+        Map.entry(Key.POTION_SELECTION_LABEL, Map.of(
+            "en", "Choose potion:",
+            "hu", "Válassz varázsitalt:"
+        )),
+        Map.entry(Key.POTION_SELECTION_CONFIRM, Map.of(
+            "en", "Confirm",
+            "hu", "Megerősítés"
+        )),
+        Map.entry(Key.POTION_SKILL, Map.of(
+            "en", "SKILL potion",
+            "hu", "ÜGYESSÉG varázsital"
+        )),
+        Map.entry(Key.POTION_STAMINA, Map.of(
+            "en", "STAMINA potion",
+            "hu", "ÉLETERŐ varázsital"
+        )),
+        Map.entry(Key.POTION_LUCK, Map.of(
+            "en", "LUCK potion",
+            "hu", "SZERENCSE varázsital"
+        )),
+        Map.entry(Key.POTION_USED, Map.of(
+            "en", "%s restored to maximum!",
+            "hu", "%s visszaállítva a maximumra!"
         ))
     );
     

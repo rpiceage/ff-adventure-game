@@ -45,7 +45,7 @@ public class SaveGame {
         this.maxStamina = hero.getInitialStamina();
         this.maxLuck = hero.getInitialLuck();
         
-        this.inventory = hero.getInventory();
+        this.inventory = hero.getInventory().stream().map(Item::getName).collect(java.util.stream.Collectors.toList());
         this.events = hero.getEvents();
         this.visitedChapters = hero.getVisitedChapters();
         this.logEntries = adventureLog.getEntries();

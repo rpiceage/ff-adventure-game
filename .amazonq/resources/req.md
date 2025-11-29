@@ -479,6 +479,7 @@
 
 ## Item System
 - Hero has inventory to collect items
+- Items are objects with name, useAnyTime flag, and optional effects
 - Items displayed as buttons in stats panel
 - YAML format for adding items:
   ```yaml
@@ -487,7 +488,9 @@
       items:
         - name: Aranygyűrű
         - name: Sword
-        - name: Potion
+        - name: Healing Potion
+          useAnyTime: true
+          effect: restoreStamina
   ```
 - Item mechanics:
   - Each item in addItem action creates a "Take [ItemName]" button
@@ -497,12 +500,51 @@
   - After reaching maxItems, all remaining item buttons are disabled
   - Items persist across chapters
   - Duplicate items allowed (can take same item from different chapters)
+- Item class:
+  - `name`: Item name displayed to player
+  - `useAnyTime`: Boolean flag - if true, item can be used at any time (except during battle)
+  - `effect`: ItemEffect functional interface that applies changes to hero
+- Special items with useAnyTime:
+  - Can be clicked at any time (except during battle)
+  - Execute their effect when used
+  - Automatically removed from inventory after use
+  - Effect types supported in YAML:
+    - `restoreSkill`: Restores SKILL to initial value
+    - `restoreStamina`: Restores STAMINA to initial value
+    - `restoreLuck`: Restores LUCK to initial value
 - Item UI:
   - Items section in stats panel below attributes
   - Each collected item shown as a button
-  - Clicking item button shows popup: "This item can't be used right now"
+  - Regular items show popup: "This item can't be used right now"
+  - useAnyTime items execute their effect when clicked
   - Items displayed in order collected
-- Items are stored as strings (item names)
+- Items stored as Item objects internally, serialized as strings for save/load
+
+## Potion Selection System
+- Optional initial potion selection at game start
+- YAML format in init section:
+  ```yaml
+  init:
+    gold: 10
+    provisions: 3
+    potions: true
+  ```
+- Potion selection mechanics:
+  - If `init.potions: true`, shows potion selection window before game starts
+  - Player chooses one of three potions: SKILL, STAMINA, or LUCK
+  - Selected potion added to inventory as useAnyTime item
+  - Each potion restores its corresponding attribute to initial value when used
+  - Potions removed from inventory after use
+- Potion selection UI:
+  - Modal window with title "Choose Your Potion" / "Válassz varázsitalt"
+  - Label: "Choose potion:" / "Válassz varázsitalt:"
+  - Three radio buttons: SKILL potion, STAMINA potion, LUCK potion
+  - Confirm button to proceed
+  - Must select a potion before confirming
+- Potion names:
+  - English: "SKILL potion", "STAMINA potion", "LUCK potion"
+  - Hungarian: "ÜGYESSÉG varázsital", "ÉLETERŐ varázsital", "SZERENCSE varázsital"
+- Potions are special useAnyTime items created via `Item.createPotion()`
 
 ## Lose Item System
 - Items can be removed from hero's inventory

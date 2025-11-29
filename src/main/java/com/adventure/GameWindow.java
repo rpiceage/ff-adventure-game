@@ -169,6 +169,7 @@ public class GameWindow extends JFrame {
             
             buttonPanel.removeAll();
             battleUI = null;
+            controller.setBattleActive(false);
             luckUI = null;
             attributeTestUI = null;
             
@@ -195,8 +196,10 @@ public class GameWindow extends JFrame {
             controller.clearReturnChapter();
             
             controller.getAdventureLog().log("  Battle resumed");
+            controller.setBattleActive(true);
             battleUI = new com.adventure.ui.BattleUI(textArea, buttonPanel, controller, this, () -> {
                 battleUI = null;
+                controller.setBattleActive(false);
                 if (currentCenterPanel != null) {
                     remove(currentCenterPanel);
                     currentCenterPanel = null;
@@ -359,6 +362,10 @@ public class GameWindow extends JFrame {
         heroStatsPanel.updateStats(battleUI != null);
     }
     
+    public void updateInventory() {
+        inventoryPanel.updateItems();
+    }
+    
     // Getters for testing
     public HeroStatsPanel getStatsPanel() { return heroStatsPanel; }
     public JLabel getStaminaLabel() { return heroStatsPanel.getStaminaLabel(); }
@@ -368,8 +375,10 @@ public class GameWindow extends JFrame {
     private void handleSingleButtonAction(com.adventure.actions.Action action, Map<String, Object> actionData) {
         if (actionData.containsKey("battle")) {
             controller.getAdventureLog().log("  Battle started");
+            controller.setBattleActive(true);
             battleUI = new com.adventure.ui.BattleUI(textArea, buttonPanel, controller, this, () -> {
                 battleUI = null;
+                controller.setBattleActive(false);
                 if (currentCenterPanel != null) {
                     remove(currentCenterPanel);
                     currentCenterPanel = null;

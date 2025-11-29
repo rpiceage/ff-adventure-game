@@ -17,6 +17,7 @@ public class GameController {
     private Integer returnChapter; // Chapter to return to after interrupt
     private Battle savedBattle; // Saved battle state for return
     private Map<String, Object> savedBattleActionData; // Saved battle action data
+    private boolean battleActive; // Track if battle is currently active
 
     public GameController(Adventure adventure) {
         this(adventure, null);
@@ -275,5 +276,13 @@ public class GameController {
     public void clearSavedBattle() {
         this.savedBattle = null;
         this.savedBattleActionData = null;
+    }
+    
+    public boolean isBattleActive() {
+        return battleActive;
+    }
+    
+    public void setBattleActive(boolean active) {
+        this.battleActive = active;
     }
 }

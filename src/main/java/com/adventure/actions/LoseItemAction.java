@@ -2,6 +2,7 @@ package com.adventure.actions;
 
 import com.adventure.GameController;
 import com.adventure.Hero;
+import com.adventure.Item;
 import com.adventure.Messages;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ public class LoseItemAction implements Action {
                 (List<String>) allData.get("except") : List.of();
             
             List<String> lostItems = hero.getInventory().stream()
+                .map(Item::getName)
                 .filter(item -> !except.contains(item))
                 .collect(Collectors.toList());
             

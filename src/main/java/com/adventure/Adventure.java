@@ -12,6 +12,7 @@ public class Adventure {
     public static class Init {
         public int gold;
         public int provisions;
+        public boolean potions;
     }
 
     public static class Chapter {

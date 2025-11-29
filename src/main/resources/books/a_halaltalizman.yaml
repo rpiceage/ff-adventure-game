@@ -3,7 +3,7 @@ language: hu
 init:
   provisions: 10
   gold: 0
-  #potions: true
+  potions: true
   #startingItems:
   #  - Kard
   #rules: |

@@ -26,9 +26,9 @@ public class LoseItemTest {
         controller.goToChapter(2);
         
         assertEquals(2, hero.getInventory().size());
-        assertFalse(hero.getInventory().contains("Shield"));
-        assertTrue(hero.getInventory().contains("Sword"));
-        assertTrue(hero.getInventory().contains("Potion"));
+        assertFalse(hero.hasItem("Shield"));
+        assertTrue(hero.hasItem("Sword"));
+        assertTrue(hero.hasItem("Potion"));
     }
     
     @Test
@@ -46,7 +46,7 @@ public class LoseItemTest {
         controller.goToChapter(3);
         
         assertEquals(1, hero.getInventory().size());
-        assertTrue(hero.getInventory().contains("Potion"));
+        assertTrue(hero.hasItem("Potion"));
     }
     
     @Test
@@ -65,7 +65,7 @@ public class LoseItemTest {
         controller.goToChapter(4);
         
         assertEquals(1, hero.getInventory().size());
-        assertTrue(hero.getInventory().contains("Sword"));
+        assertTrue(hero.hasItem("Sword"));
     }
     
     @Test

@@ -13,7 +13,7 @@ public class Hero {
     private int maxStamina;
     private int maxLuck;
     private List<String> lastModifications;
-    private List<String> inventory;
+    private List<Item> inventory;
     private List<String> events;
     private List<Integer> visitedChapters;
     private java.util.Map<String, Integer> savedAttributes;
@@ -122,23 +122,31 @@ public class Hero {
     }
 
     public void addItem(String itemName) {
-        inventory.add(itemName);
+        inventory.add(new Item(itemName));
+    }
+    
+    public void addItem(Item item) {
+        inventory.add(item);
     }
     
     public void removeItem(String itemName) {
-        inventory.remove(itemName);
+        inventory.removeIf(item -> item.getName().equals(itemName));
+    }
+    
+    public void removeItem(Item item) {
+        inventory.remove(item);
     }
     
     public void removeAllItemsExcept(List<String> except) {
-        inventory.removeIf(item -> !except.contains(item));
+        inventory.removeIf(item -> !except.contains(item.getName()));
     }
 
-    public List<String> getInventory() {
+    public List<Item> getInventory() {
         return new ArrayList<>(inventory);
     }
 
     public boolean hasItem(String itemName) {
-        return inventory.contains(itemName);
+        return inventory.stream().anyMatch(item -> item.getName().equals(itemName));
     }
 
     public void addEvent(String eventName) {
@@ -196,7 +204,12 @@ public class Hero {
     public void setMaxSkill(int maxSkill) { this.maxSkill = maxSkill; }
     public void setMaxStamina(int maxStamina) { this.maxStamina = maxStamina; }
     public void setMaxLuck(int maxLuck) { this.maxLuck = maxLuck; }
-    public void setInventory(List<String> inventory) { this.inventory = new ArrayList<>(inventory); }
+    public void setInventory(List<String> itemNames) { 
+        this.inventory = new ArrayList<>();
+        for (String name : itemNames) {
+            this.inventory.add(new Item(name));
+        }
+    }
     public void setEvents(List<String> events) { this.events = new ArrayList<>(events); }
     public void setVisitedChapters(List<Integer> visitedChapters) { this.visitedChapters = new ArrayList<>(visitedChapters); }
     
