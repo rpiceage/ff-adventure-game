@@ -18,9 +18,7 @@ public class GameSelectionWindow extends JFrame {
         this.welcomeWindow = welcomeWindow;
         
         setTitle("Select Game");
-        setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -72,6 +70,8 @@ public class GameSelectionWindow extends JFrame {
         
         JScrollPane scrollPane = new JScrollPane(panel);
         add(scrollPane);
+        pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
     

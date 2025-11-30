@@ -9,9 +9,7 @@ public class PotionSelectionWindow extends JFrame {
     
     public PotionSelectionWindow(Consumer<String> onConfirm) {
         setTitle(Messages.get(Messages.Key.POTION_SELECTION_TITLE));
-        setSize(400, 250);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setLocationRelativeTo(null);
         
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -62,6 +60,8 @@ public class PotionSelectionWindow extends JFrame {
         panel.add(confirmButton);
         
         add(panel);
+        pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 }
