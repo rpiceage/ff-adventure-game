@@ -11,14 +11,16 @@ public class InventoryPanel extends JPanel {
     private final ChapterStateManager chapterState;
     private final Runnable onItemUsed;
     private final Runnable onStatsUpdate;
+    private final NotificationManager notificationManager;
     
     public InventoryPanel(Hero hero, GameController controller, ChapterStateManager chapterState, 
-                         Runnable onItemUsed, Runnable onStatsUpdate) {
+                         Runnable onItemUsed, Runnable onStatsUpdate, NotificationManager notificationManager) {
         this.hero = hero;
         this.controller = controller;
         this.chapterState = chapterState;
         this.onItemUsed = onItemUsed;
         this.onStatsUpdate = onStatsUpdate;
+        this.notificationManager = notificationManager;
         
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setOpaque(false);
@@ -77,8 +79,7 @@ public class InventoryPanel extends JPanel {
                 itemButton.addActionListener(e -> {
                     // Check if battle is active
                     if (controller.isBattleActive()) {
-                        JOptionPane.showMessageDialog(this, "Cannot use items during battle!", "Battle Active", JOptionPane.WARNING_MESSAGE);
-                        return;
+                        return; // Silently ignore during battle
                     }
                     
                     item.use(hero);
@@ -93,7 +94,7 @@ public class InventoryPanel extends JPanel {
                         attributeName = Messages.get(Messages.Key.LUCK);
                     }
                     
-                    JOptionPane.showMessageDialog(this, String.format(Messages.get(Messages.Key.POTION_USED), attributeName), "Potion Used", JOptionPane.INFORMATION_MESSAGE);
+                    notificationManager.show(String.format(Messages.get(Messages.Key.POTION_USED), attributeName));
                     onStatsUpdate.run();
                     updateItems();
                 });

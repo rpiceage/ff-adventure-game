@@ -109,7 +109,7 @@ public class GameWindow extends JFrame {
         heroStatsPanel.add(itemsTitle);
         
         inventoryPanel = new InventoryPanel(controller.getHero(), controller, chapterState, 
-            this::updateDisplay, () -> heroStatsPanel.updateStats(battleUI != null));
+            this::updateDisplay, () -> heroStatsPanel.updateStats(battleUI != null), notificationManager);
         heroStatsPanel.add(inventoryPanel);
         
         add(heroStatsPanel, BorderLayout.EAST);
