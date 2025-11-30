@@ -41,7 +41,10 @@ public class Item {
         } else if (potionName.equals(Messages.get(Messages.Key.POTION_STAMINA))) {
             effect = hero -> hero.setStamina(hero.getInitialStamina());
         } else if (potionName.equals(Messages.get(Messages.Key.POTION_LUCK))) {
-            effect = hero -> hero.setLuck(hero.getInitialLuck());
+            effect = hero -> {
+                hero.setMaxLuck(hero.getInitialLuck() + 1);
+                hero.setLuck(hero.getInitialLuck());
+            };
         }
         
         return new Item(potionName, true, effect);

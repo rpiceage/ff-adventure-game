@@ -54,7 +54,7 @@ public class PotionTest {
     }
     
     @Test
-    public void testLuckPotionRestoresLuck() {
+    public void testLuckPotionRestoresLuckAndIncreasesMax() {
         Hero hero = new Hero(10, 20, 10);
         
         // Add LUCK potion
@@ -67,10 +67,12 @@ public class PotionTest {
         // Reduce luck
         hero.setLuck(3);
         assertEquals(3, hero.getLuck());
+        assertEquals(10, hero.getInitialLuck());
         
-        // Use potion
+        // Use potion - should increase max by 1 AND restore to new max
         luckPotion.use(hero);
-        assertEquals(10, hero.getLuck());
+        assertEquals(11, hero.getLuck()); // Restored to new max
+        assertEquals(11, hero.getInitialLuck()); // Max increased by 1
         
         // Remove potion after use
         hero.removeItem(luckPotion);
