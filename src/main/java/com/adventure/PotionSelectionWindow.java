@@ -19,6 +19,13 @@ public class PotionSelectionWindow extends JFrame {
         label.setFont(UIConstants.FONT_LARGE);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(label);
+        panel.add(Box.createVerticalStrut(10));
+        
+        // Add explanation text
+        JLabel explanationLabel = new JLabel(Messages.get(Messages.Key.POTION_SELECTION_EXPLANATION));
+        explanationLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        explanationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(explanationLabel);
         panel.add(Box.createVerticalStrut(20));
         
         ButtonGroup group = new ButtonGroup();

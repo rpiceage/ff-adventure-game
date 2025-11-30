@@ -80,6 +80,7 @@ public class Messages {
         BATTLE_RESUMED,
         POTION_SELECTION_TITLE,
         POTION_SELECTION_LABEL,
+        POTION_SELECTION_EXPLANATION,
         POTION_SELECTION_CONFIRM,
         POTION_SKILL,
         POTION_STAMINA,
@@ -383,6 +384,18 @@ public class Messages {
         Map.entry(Key.POTION_SELECTION_LABEL, Map.of(
             "en", "Choose potion:",
             "hu", "Válassz varázsitalt:"
+        )),
+        Map.entry(Key.POTION_SELECTION_EXPLANATION, Map.of(
+            "en", "<html><div style='text-align: center; width: 350px;'>" +
+                  "These potions will restore the chosen attribute to the initial value<br>" +
+                  "(and LUCK potion will even increase the initial value by one).<br>" +
+                  "One use only. Use it well! :)" +
+                  "</div></html>",
+            "hu", "<html><div style='text-align: center; width: 350px;'>" +
+                  "Ezek a varázsitalok visszaállítják a választott képességet a kezdeti értékre<br>" +
+                  "(és a SZERENCSE varázsital még eggyel növeli is a kezdeti értéket).<br>" +
+                  "Csak egyszer használható. Használd bölcsen! :)" +
+                  "</div></html>"
         )),
         Map.entry(Key.POTION_SELECTION_CONFIRM, Map.of(
             "en", "Confirm",
