@@ -633,7 +633,8 @@
 ## Check Event System
 - Conditional navigation based on recorded events or possessed items
 - Checks for BOTH events AND items (either triggers the "existing" path)
-- YAML format for checking events:
+- Two modes: event/item presence check OR item count check
+- YAML format for checking events/items:
   ```yaml
   - checkEvent:
       name:
@@ -645,15 +646,36 @@
         chapter: 374
         text: As you are wearing normal boots...
   ```
-- Check event mechanics:
+- YAML format for checking item count:
+  ```yaml
+  - checkEvent:
+      name:
+        - Gold Ring
+      numberOfItemChoices:
+        - number: 1
+          chapter: 10
+          text: I have one ring
+        - number: 3
+          chapter: 30
+          text: I have three rings
+        - number: 5
+          chapter: 50
+          text: I have five rings
+  ```
+- Check event mechanics (presence check):
   - Checks if hero has ANY of the listed events OR items
   - If found: shows "existing" button that navigates to existing chapter
   - If not found: shows "missing" button that navigates to missing chapter
   - Only ONE button is shown based on the check result
   - Multiple names can be checked (OR logic - any match triggers existing path)
+- Check event mechanics (item count check):
+  - Counts how many of the specified item the hero has
+  - Shows only the button matching the current item count
+  - Each numberOfItemChoices entry specifies exact number, target chapter, and button text
+  - Used for puzzles where exact item count matters (e.g., "How many gold rings do you have?")
 - Check event UI:
-  - Single button displayed based on event/item check
-  - Button text comes from existing or missing text field
+  - Single button displayed based on event/item check or item count
+  - Button text comes from existing/missing text field or numberOfItemChoices text
   - Seamlessly integrates with other navigation options
 
 ## Set Value System

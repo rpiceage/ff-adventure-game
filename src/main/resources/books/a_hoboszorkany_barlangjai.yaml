@@ -1908,7 +1908,7 @@ chapters:
     - index: 171
       actions:
         - display: |
-            A Hóboszorkány kincstárnoka halott, és így szabadon rendelkezhetsz a boszorkány vagyonával, bár az egészet képtelen vagy elvinni. Elhatározod, hogy megtöltöd a hátizsákodat arannyal - 600 Aranytallért találsz. De minden 50 Arany helyett ott kell hagynod valamit Felszerelési Tárgyaid közül, mert nincs elég hely a hátizsákodban.
+            A Hóboszorkány kincstárnoka halott, és így szabadon rendelkezhetsz a boszorkány vagyonával, bár az egészet képtelen vagy elvinni. Elhatározod, hogy megtöltöd a hátizsákodat arannyal - 600 Aranytallért találsz. De minden 50 Arany helyett ott kell hagynod valamit Felszerelési Tárgyaid közül, mert nincs elég hely a hátizsákodban. Aktiváld a Kalandlapon azokat a tárgyakat, amelyeket itt hagysz.
         - sellItem:
             all: 50
             maxItemCount: 12

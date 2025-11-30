@@ -1,0 +1,43 @@
+title: Sample with Number of Item Choices
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          You find three gold rings. Take them!
+      - addItem:
+          items:
+            - name: Gold Ring
+            - name: Gold Ring
+            - name: Gold Ring
+      - goto:
+          - chapter: 1
+            text: Continue
+  - index: 1
+    actions:
+      - display: |
+          The wizard asks: How many gold rings do you have?
+      - checkEvent:
+          name:
+            - Gold Ring
+          numberOfItemChoices:
+            - number: 1
+              chapter: 10
+              text: I have one ring
+            - number: 2
+              chapter: 20
+              text: I have two rings
+            - number: 3
+              chapter: 30
+              text: I have three rings
+  - index: 10
+    actions:
+      - display: |
+          Wrong! You had one ring but needed three.
+  - index: 20
+    actions:
+      - display: |
+          Wrong! You had two rings but needed three.
+  - index: 30
+    actions:
+      - display: |
+          Correct! You have three rings. You win!

@@ -116,6 +116,12 @@ public class ActionButtonFactory {
     }
     
     private JButton createCheckEventButton(CheckEventAction action, Map<String, Object> actionData) {
+        // Check if this is a numberOfItemChoices check
+        if (action.isNumberOfItemCheck(actionData)) {
+            return createNumberOfItemCheckButtons(action, actionData);
+        }
+        
+        // Original event/item check
         List<Action.Choice> choices = action.getChoices(actionData);
         
         if (action.hasEventOrItem(controller, actionData)) {
@@ -135,6 +141,45 @@ public class ActionButtonFactory {
             });
             return btn;
         }
+    }
+    
+    private JButton createNumberOfItemCheckButtons(CheckEventAction action, Map<String, Object> actionData) {
+        List<Action.Choice> choices = action.getChoices(actionData);
+        
+        // Find which choice matches the current item count
+        for (int i = 0; i < choices.size(); i++) {
+            int chapter = action.getChapterForItemCount(controller, actionData, i);
+            // Check if this is the matching choice
+            Map<String, Object> checkData = (Map<String, Object>) actionData.get("checkEvent");
+            List<String> names = (List<String>) checkData.get("name");
+            String itemName = names.get(0);
+            
+            long itemCount = controller.getHero().getInventory().stream()
+                .filter(item -> item.getName().equals(itemName))
+                .count();
+            
+            List<Map<String, Object>> numberOfItemChoices = (List<Map<String, Object>>) checkData.get("numberOfItemChoices");
+            int expectedNumber = (Integer) numberOfItemChoices.get(i).get("number");
+            
+            if (itemCount == expectedNumber) {
+                final int finalChapter = chapter;
+                final int finalIndex = i;
+                JButton btn = new JButton(choices.get(finalIndex).text);
+                btn.addActionListener(e -> {
+                    controller.goToChapter(finalChapter);
+                    onActionComplete.run();
+                });
+                return btn;
+            }
+        }
+        
+        // If no match found, return first button as fallback
+        JButton btn = new JButton(choices.get(0).text);
+        btn.addActionListener(e -> {
+            controller.goToChapter(action.getChapterForItemCount(controller, actionData, 0));
+            onActionComplete.run();
+        });
+        return btn;
     }
     
     private JButton createCheckParameterButton(CheckParameterAction action, Map<String, Object> actionData) {
