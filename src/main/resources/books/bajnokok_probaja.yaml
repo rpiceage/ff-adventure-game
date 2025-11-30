@@ -167,7 +167,7 @@ chapters:
     - index: 12
       actions:
         - display: |
-            Amikor megnyomod a gombot, kifordul egy nagy kőtábla az alagút baloldali falában. Átlépsz a nyíláson, és egy újabb alagútban találod magad. Nemsokára egy ajtóhoz érsz, amely a falban jobbra nyílik, és egy öreg seprűt szegeztek rá. Ha ki akarod nyitni az ajtót - lapozz a 246-ra. Ha inkább továbbmész az alagútban - lapozz a 346-ra.
+            Amikor megnyomod a gombot, kifordul egy nagy kőtábla az alagút baloldali falában. Átlépsz a nyíláson, és egy újabb alagútban találod magad. Nemsokára egy ajtóhoz érsz, amely a falban jobbra nyílik, és egy öreg seprűt szegeztek rá.
         - goto:
             - chapter: 246
               text: Ki akarod nyitni az ajtót?
@@ -204,7 +204,6 @@ chapters:
         - addItem:
             items:
             - name: Aranygyűrű
-              multiple: true
         - goto:
             - chapter: 285
               text: Jobbra fordulsz?
@@ -421,7 +420,6 @@ chapters:
         - addItem:
             items:
             - name: Aranygyűrű
-              multiple: true
         - goto:
             - chapter: 82
               text: Tovább...
@@ -664,7 +662,6 @@ chapters:
         - addItem:
             items:
             - name: Aranygyűrű
-              multiple: true
         - goto:
             - chapter: 263
               text: Tovább...
@@ -733,7 +730,7 @@ chapters:
     - index: 66
       actions:
         - display: |
-            Fürgén felkapod a hálót, miközben sikeresen kivéded a Csonttörő karcsapásait. Ismét célzol, és elveted a hálót. Dobj egy kockával!
+            Fürgén felkapod a hálót, miközben sikeresen kivéded a Csonttörő karcsapásait. Ismét célzol, és elveted a hálót. Dobj egy kockával! (This chapter needs to be checked.)
         - randomGoto:
             choices:
               - chapter: 255
@@ -1870,7 +1867,6 @@ chapters:
         - addItem:
             items:
             - name: Aranygyűrű
-              multiple: true
         - goto:
             - chapter: 307
               text: Be akarsz menni a barlangba?
@@ -2732,7 +2728,7 @@ chapters:
     - index: 255
       actions:
         - display: |
-            Átkozódsz, amikor hálód ismét üresen terül szét a földön. Vesztesz 1 SZERENCSE pontot! Dobj két kockával! Ha a kapott összeg ugyanannyi vagykevesebb, mint ÜGYESSÉG pontjaid száma - la pozz a 66-ra. Ha a kapott összeg nagyobb, mint ÜGYESSÉG pontjaid száma - lapozz a 334-re.
+            Átkozódsz, amikor hálód ismét üresen terül szét a földön. Vesztesz 1 SZERENCSE pontot!
         - modify:
             values:
                 - field: LUCK
@@ -2840,7 +2836,6 @@ chapters:
         - addItem:
             items:
             - name: Aranygyűrű
-              multiple: true
         - goto:
             - chapter: 109
               text: Tovább...
@@ -2980,7 +2975,6 @@ chapters:
         - addItem:
             items:
             - name: Aranygyűrű
-              multiple: true
         - goto:
             - chapter: 285
               text: Jobbra akarsz menni?
@@ -3028,7 +3022,6 @@ chapters:
         - addItem:
             items:
             - name: Aranygyűrű
-              multiple: true
         - goto:
             - chapter: 44
               text: Tovább...
@@ -3134,9 +3127,7 @@ chapters:
         - addItem:
             items:
             - name: Tőr
-              multiple: true
             - name: Tőr
-              multiple: true
         - goto:
             - chapter: 34
               text: Ki akarod nyitni a ládát?
@@ -3456,7 +3447,6 @@ chapters:
         - addItem:
             items:
             - name: Aranygyűrű
-              multiple: true
         - goto:
             - chapter: 150
               text: Tovább...
@@ -3669,7 +3659,6 @@ chapters:
         - addItem:
             items:
             - name: Aranygyűrű
-              multiple: true
         - goto:
             - chapter: 397
               text: Tovább...

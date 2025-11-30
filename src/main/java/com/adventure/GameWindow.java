@@ -318,6 +318,8 @@ public class GameWindow extends JFrame {
                             handleSingleButtonAction(action, actionData);
                         });
                         buttonPanel.add(actionButton);
+                    } else if (action.getActionType() == com.adventure.actions.ActionType.INPUT) {
+                        handleInputAction(action, actionData);
                     }
                 }
             }
@@ -468,6 +470,59 @@ public class GameWindow extends JFrame {
             action.execute(controller, actionData);
             updateDisplay();
         }
+    }
+
+    private void handleInputAction(com.adventure.actions.Action action, Map<String, Object> actionData) {
+        com.adventure.actions.InputAction inputAction = (com.adventure.actions.InputAction) action;
+        List<Map<String, Object>> answers = inputAction.getAnswers(actionData);
+        
+        JTextField inputField = new JTextField(10);
+        JButton submitButton = new JButton(Messages.get(Messages.Key.SUBMIT));
+        
+        submitButton.addActionListener(e -> {
+            String input = inputField.getText().trim();
+            if (input.isEmpty()) {
+                return;
+            }
+            
+            for (Map<String, Object> answer : answers) {
+                if (answer.containsKey("int")) {
+                    try {
+                        int userValue = Integer.parseInt(input);
+                        int correctValue = (Integer) answer.get("int");
+                        if (userValue == correctValue) {
+                            int chapter = (Integer) answer.get("chapter");
+                            controller.goToChapter(chapter);
+                            updateDisplay();
+                            return;
+                        }
+                    } catch (NumberFormatException ex) {
+                        // Invalid number, continue checking
+                    }
+                } else if (answer.containsKey("string")) {
+                    String correctValue = (String) answer.get("string");
+                    if (input.equalsIgnoreCase(correctValue)) {
+                        int chapter = (Integer) answer.get("chapter");
+                        controller.goToChapter(chapter);
+                        updateDisplay();
+                        return;
+                    }
+                }
+            }
+            
+            // Wrong answer - show notification and remove input field
+            notificationManager.show(Messages.get(Messages.Key.WRONG_ANSWER));
+            buttonPanel.remove(inputField);
+            buttonPanel.remove(submitButton);
+            recalculateButtonPanelHeight();
+            buttonPanel.revalidate();
+            buttonPanel.repaint();
+        });
+        
+        inputField.addActionListener(e -> submitButton.doClick());
+        
+        buttonPanel.add(inputField);
+        buttonPanel.add(submitButton);
     }
 
     private void consumeProvision() {

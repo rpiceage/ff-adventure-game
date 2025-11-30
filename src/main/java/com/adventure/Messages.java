@@ -85,7 +85,9 @@ public class Messages {
         POTION_SKILL,
         POTION_STAMINA,
         POTION_LUCK,
-        POTION_USED
+        POTION_USED,
+        SUBMIT,
+        WRONG_ANSWER
     }
     
     private static final Map<Key, Map<String, String>> translations = Map.ofEntries(
@@ -416,6 +418,14 @@ public class Messages {
         Map.entry(Key.POTION_USED, Map.of(
             "en", "%s restored to maximum!",
             "hu", "%s visszaállítva a maximumra!"
+        )),
+        Map.entry(Key.SUBMIT, Map.of(
+            "en", "Submit",
+            "hu", "Mehet"
+        )),
+        Map.entry(Key.WRONG_ANSWER, Map.of(
+            "en", "Wrong answer!",
+            "hu", "Rossz válasz!"
         ))
     );
     

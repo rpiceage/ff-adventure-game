@@ -903,6 +903,39 @@
   - Each chapter's randomGoto can only be executed once
 - Dice animation same as battle/luck/randomModify system
 
+## Input Action System
+- Player enters text or number to answer puzzles
+- YAML format for input action:
+  ```yaml
+  - input:
+      answers:
+        - int: 249        # Integer answer
+          chapter: 249
+        - string: secret  # String answer (case-insensitive)
+          chapter: 100
+  ```
+- Input mechanics:
+  - Player types answer in text field
+  - Pressing Enter or clicking Submit button checks answer
+  - Integer answers: exact match required
+  - String answers: case-insensitive comparison
+  - Correct answer: navigates to specified chapter
+  - Wrong answer: shows "Wrong answer!" notification and removes input field
+  - Multiple possible answers supported (different values → different chapters)
+- Input UI:
+  - Text field (10 columns) for player input
+  - Submit button (translated: "Submit" / "Mehet")
+  - Input field and button appear alongside other navigation options (goto buttons)
+  - After wrong answer: notification appears in lower-left corner, input removed
+  - Player can still use other navigation options (goto buttons) after wrong answer
+- All strings translated (English/Hungarian)
+- Used in chapter 35 of bajnokok_probaja.yaml (ring puzzle)
+
+## Sell Item System
+  - Dice panel stays visible until navigating to next chapter
+  - Each chapter's randomGoto can only be executed once
+- Dice animation same as battle/luck/randomModify system
+
 ## Sell Item System
 - Items can be sold for gold in specific chapters
 - YAML format for selling items:

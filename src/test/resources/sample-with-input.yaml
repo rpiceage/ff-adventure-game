@@ -1,0 +1,21 @@
+title: Input Test Adventure
+chapters:
+  - index: 0
+    actions:
+      - display: |
+          Enter the magic number to proceed (hint: it's 42).
+      - input:
+          answers:
+            - int: 42
+              chapter: 1
+      - goto:
+          - chapter: 2
+            text: I don't know the number
+  - index: 1
+    actions:
+      - display: |
+          Correct! You entered the magic number.
+  - index: 2
+    actions:
+      - display: |
+          You gave up without trying.
