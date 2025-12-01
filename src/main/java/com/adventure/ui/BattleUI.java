@@ -37,25 +37,8 @@ public class BattleUI {
     public JPanel start(Map<String, Object> battleAction) {
         this.battleActionData = battleAction;
         Map<String, Object> battleData = (Map<String, Object>) battleAction.get("battle");
-        List<Map<String, Object>> enemiesData = (List<Map<String, Object>>) battleData.get("enemies");
         
-        List<Enemy> enemies = new ArrayList<>();
-        for (Map<String, Object> enemyData : enemiesData) {
-            String name = (String) enemyData.get("enemy");
-            int skill = (Integer) enemyData.get("skill");
-            int stamina = (Integer) enemyData.get("stamina");
-            Enemy enemy = new Enemy(name, skill, stamina);
-            
-            // Set retreat threshold if present
-            if (enemyData.containsKey("retreat")) {
-                Map<String, Object> retreatData = (Map<String, Object>) enemyData.get("retreat");
-                if (retreatData.containsKey("stamina")) {
-                    enemy.setRetreatThreshold((Integer) retreatData.get("stamina"));
-                }
-            }
-            
-            enemies.add(enemy);
-        }
+        List<Enemy> enemies = createEnemies(battleData);
         
         int mode = battleData.containsKey("mode") ? (Integer) battleData.get("mode") : 0;
         currentBattle = new Battle(controller.getHero(), enemies, new java.util.Random(), mode);
@@ -68,101 +51,12 @@ public class BattleUI {
         }
         controller.getAdventureLog().log(String.format(Messages.get(Messages.Key.LOG_BATTLE_STARTED), enemyNames));
         
-        // Set interrupt if present
-        if (battleData.containsKey("interrupt")) {
-            Map<String, Object> interruptData = (Map<String, Object>) battleData.get("interrupt");
-            if (interruptData.containsKey("stamina")) {
-                currentBattle.setInterrupt(new StaminaInterrupt((Integer) interruptData.get("stamina")));
-            } else if (interruptData.containsKey("turn")) {
-                int turn = (Integer) interruptData.get("turn");
-                Integer page = interruptData.containsKey("page") ? (Integer) interruptData.get("page") : null;
-                currentBattle.setInterrupt(new TurnInterrupt(turn, page));
-            } else if (interruptData.containsKey("turnWon")) {
-                currentBattle.setInterrupt(new TurnWonInterrupt((Integer) interruptData.get("turnWon")));
-            } else if (interruptData.containsKey("turnLost")) {
-                int turns = (Integer) interruptData.get("turnLost");
-                int chapter = (Integer) interruptData.get("page");
-                currentBattle.setInterrupt(new TurnLostInterrupt(turns, chapter));
-            } else if (interruptData.containsKey("enemiesKilled")) {
-                currentBattle.setInterrupt(new EnemiesKilledInterrupt((Integer) interruptData.get("enemiesKilled")));
-            } else if (interruptData.containsKey("heroStamina")) {
-                int threshold = (Integer) interruptData.get("heroStamina");
-                int chapter = (Integer) interruptData.get("page");
-                currentBattle.setInterrupt(new HeroStaminaInterrupt(threshold, chapter));
-            } else if (interruptData.containsKey("enemyKilled") && interruptData.containsKey("enemyDamaged")) {
-                String enemyToKill = (String) interruptData.get("enemyKilled");
-                String enemyToDamage = (String) interruptData.get("enemyDamaged");
-                int damageThreshold = (Integer) interruptData.get("enemyDamagedStamina");
-                currentBattle.setInterrupt(new CombinedEnemyInterrupt(enemyToKill, enemyToDamage, damageThreshold));
-            } else if (interruptData.containsKey("perEnemy")) {
-                Map<String, Integer> enemyThresholds = (Map<String, Integer>) interruptData.get("perEnemy");
-                currentBattle.setInterrupt(new PerEnemyStaminaInterrupt(enemyThresholds));
-            } else if (interruptData.containsKey("everyTurnWon") && (Boolean) interruptData.get("everyTurnWon")) {
-                int dice = (Integer) interruptData.get("dice");
-                List<Integer> triggers = (List<Integer>) interruptData.get("trigger");
-                int chapter = (Integer) interruptData.get("page");
-                currentBattle.setInterrupt(new ConditionalInterrupt(dice, triggers, chapter, new java.util.Random()));
-            } else if (interruptData.containsKey("everyTurnLost") && (Boolean) interruptData.get("everyTurnLost")) {
-                int dice = (Integer) interruptData.get("dice");
-                List<Integer> triggers = (List<Integer>) interruptData.get("trigger");
-                int chapter = (Integer) interruptData.get("page");
-                currentBattle.setInterrupt(new EveryTurnLostInterrupt(dice, triggers, chapter, new java.util.Random()));
-            }
-        }
-        
-        // Set escape turn if present
-        if (battleData.containsKey("escape")) {
-            Map<String, Object> escapeData = (Map<String, Object>) battleData.get("escape");
-            if (escapeData.containsKey("turn")) {
-                currentBattle.setEscapeTurn((Integer) escapeData.get("turn"));
-            }
-        }
-        
-        // Set modifier if present
-        if (battleData.containsKey("modifier")) {
-            Map<String, Object> modifierData = (Map<String, Object>) battleData.get("modifier");
-            int value = (Integer) modifierData.get("value");
-            String text = (String) modifierData.get("text");
-            currentBattle.setModifier(value, text);
-        }
-        
-        // Apply effect from previous action if present
-        if (controller.getNextBattleAttackModifier() != null) {
-            currentBattle.setModifier(controller.getNextBattleAttackModifier(), controller.getNextBattleEffectText());
-            controller.clearNextBattleEffect();
-        }
-        
-        // Set extra damage if present
-        if (battleData.containsKey("extraHeroDamage")) {
-            Map<String, Object> extraDamageData = (Map<String, Object>) battleData.get("extraHeroDamage");
-            
-            // Check for simple attribute damage format (skill, stamina, luck)
-            if (extraDamageData.containsKey("skill") || extraDamageData.containsKey("stamina") || extraDamageData.containsKey("luck")) {
-                Integer skillDamage = extraDamageData.containsKey("skill") ? (Integer) extraDamageData.get("skill") : null;
-                Integer staminaDamage = extraDamageData.containsKey("stamina") ? (Integer) extraDamageData.get("stamina") : null;
-                Integer luckDamage = extraDamageData.containsKey("luck") ? (Integer) extraDamageData.get("luck") : null;
-                currentBattle.setExtraAttributeDamage(skillDamage, staminaDamage, luckDamage);
-            }
-            // Check for random extra damage format
-            else if (extraDamageData.containsKey("randomExtraDamage")) {
-                Map<String, Object> randomData = (Map<String, Object>) extraDamageData.get("randomExtraDamage");
-                int dice = (Integer) randomData.get("dice");
-                List<Map<String, Object>> damageList = (List<Map<String, Object>>) randomData.get("damage");
-                Map<String, Object> damageInfo = damageList.get(0);
-                int damageAmount = (Integer) damageInfo.get("stamina");
-                List<Integer> triggers = (List<Integer>) damageInfo.get("trigger");
-                currentBattle.setExtraDamage(dice, triggers, damageAmount);
-            }
-        }
-        
-        // Set ally if present
-        if (battleData.containsKey("ally")) {
-            Map<String, Object> allyData = (Map<String, Object>) battleData.get("ally");
-            String allyName = (String) allyData.get("name");
-            int allySkill = (Integer) allyData.get("skill");
-            int allyStamina = (Integer) allyData.get("stamina");
-            currentBattle.setAlly(allyName, allySkill, allyStamina);
-        }
+        setupInterrupts(battleData);
+        setupEscape(battleData);
+        setupModifier(battleData);
+        applyPreviousEffect();
+        setupExtraDamage(battleData);
+        setupAlly(battleData);
         
         centerPanel = new JPanel(new BorderLayout());
         battleStatsPanel = new JPanel();
@@ -174,98 +68,11 @@ public class BattleUI {
         enemyRadioButtons = new ArrayList<>();
         enemyButtonGroup = new ButtonGroup();
         
-        if (mode == 1) {
-            // Sequential mode: just show labels, no radio buttons
-            for (int i = 0; i < enemies.size(); i++) {
-                JLabel label = new JLabel();
-                label.setFont(new Font("Arial", Font.PLAIN, 20));
-                label.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-                battleStatsPanel.add(label);
-                // Create dummy radio button for compatibility with updateDisplay
-                JRadioButton dummyButton = new JRadioButton();
-                dummyButton.setVisible(false);
-                enemyRadioButtons.add(dummyButton);
-            }
-        } else {
-            // Simultaneous mode: show radio buttons for target selection
-            for (int i = 0; i < enemies.size(); i++) {
-                JRadioButton radioButton = new JRadioButton();
-                radioButton.setFont(new Font("Arial", Font.PLAIN, 20));
-                radioButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-                final int index = i;
-                radioButton.addActionListener(e -> currentBattle.setSelectedEnemy(index));
-                enemyRadioButtons.add(radioButton);
-                enemyButtonGroup.add(radioButton);
-                battleStatsPanel.add(radioButton);
-            }
-            
-            if (!enemies.isEmpty()) {
-                enemyRadioButtons.get(0).setSelected(true);
-            }
-        }
+        setupEnemyUI(enemies, mode);
         
-        dicePanel = DiceAnimator.createDicePanel("src/resources/table.jpg");
-        // In sequential mode, only show one enemy at a time
-        int dicePanelHeight = (mode == 1 ? 1 : enemies.size()) * 100; // 100px per enemy
-        dicePanel.setPreferredSize(new Dimension(400, dicePanelHeight));
+        setupBattlePanels(enemies, mode);
         
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(battleStatsPanel, BorderLayout.NORTH);
-        topPanel.add(dicePanel, BorderLayout.CENTER);
-        
-        centerPanel.add(topPanel, BorderLayout.NORTH);
-        
-        // Create JTextPane for colored battle log with parchment background
-        battleLogPane = new JTextPane();
-        battleLogPane.setEditable(false);
-        battleLogPane.setFont(new Font("Arial", Font.BOLD, 24));
-        battleLogPane.setOpaque(false);
-        
-        JScrollPane scrollPane = new JScrollPane(battleLogPane);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        
-        // Create panel with parchment background
-        JPanel backgroundPanel = new JPanel(new BorderLayout()) {
-            private Image backgroundImage;
-            {
-                try {
-                    java.io.InputStream bgStream = getClass().getClassLoader().getResourceAsStream("pergament.jpg");
-                    backgroundImage = javax.imageio.ImageIO.read(bgStream);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (backgroundImage != null) {
-                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-                }
-            }
-        };
-        backgroundPanel.add(scrollPane, BorderLayout.CENTER);
-        centerPanel.add(backgroundPanel, BorderLayout.CENTER);
-        
-        // Add battleText to battle log if present
-        if (battleData.containsKey("battleText")) {
-            currentBattle.appendToBattleLog((String) battleData.get("battleText") + "\n\n");
-        }
-        
-        // Add modifier text to battle log if present
-        if (currentBattle.getModifierText() != null) {
-            currentBattle.appendToBattleLog(currentBattle.getModifierText() + "\n\n");
-        }
-        
-        // Add ally stats to battle log if present
-        if (currentBattle.getAlly() != null) {
-            Enemy ally = currentBattle.getAlly();
-            String allyStats = String.format("%s (Ally) - %s: %d, %s: %d\n\n",
-                ally.getName(),
-                Messages.get(Messages.Key.SKILL), ally.getSkill(),
-                Messages.get(Messages.Key.STAMINA), ally.getStamina());
-            currentBattle.appendToBattleLog(allyStats);
-        }
+        initializeBattleLog(battleData);
         
         updateDisplay();
         return centerPanel;
@@ -748,7 +555,6 @@ public class BattleUI {
         private int[] currentValues;
         private double[] rotations;
         private Random rand = new Random();
-        private boolean animating = true;
         
         public AnimatedDicePanel(int... finalValues) {
             this.finalValues = finalValues;
@@ -771,7 +577,6 @@ public class BattleUI {
         }
         
         public void stopAnimation() {
-            animating = false;
             for (int i = 0; i < currentValues.length; i++) {
                 rotations[i] = 0;
                 currentValues[i] = finalValues[i];
@@ -874,5 +679,230 @@ public class BattleUI {
         }
         
         battleLogPane.setCaretPosition(doc.getLength());
+    }
+    
+    private List<Enemy> createEnemies(Map<String, Object> battleData) {
+        List<Map<String, Object>> enemiesData = (List<Map<String, Object>>) battleData.get("enemies");
+        List<Enemy> enemies = new ArrayList<>();
+        
+        for (Map<String, Object> enemyData : enemiesData) {
+            String name = (String) enemyData.get("enemy");
+            int skill = (Integer) enemyData.get("skill");
+            int stamina = (Integer) enemyData.get("stamina");
+            Enemy enemy = new Enemy(name, skill, stamina);
+            
+            // Set retreat threshold if present
+            if (enemyData.containsKey("retreat")) {
+                Map<String, Object> retreatData = (Map<String, Object>) enemyData.get("retreat");
+                if (retreatData.containsKey("stamina")) {
+                    enemy.setRetreatThreshold((Integer) retreatData.get("stamina"));
+                }
+            }
+            
+            enemies.add(enemy);
+        }
+        
+        return enemies;
+    }
+    
+    private void setupEscape(Map<String, Object> battleData) {
+        if (battleData.containsKey("escape")) {
+            Map<String, Object> escapeData = (Map<String, Object>) battleData.get("escape");
+            if (escapeData.containsKey("turn")) {
+                currentBattle.setEscapeTurn((Integer) escapeData.get("turn"));
+            }
+        }
+    }
+    
+    private void setupModifier(Map<String, Object> battleData) {
+        if (battleData.containsKey("modifier")) {
+            Map<String, Object> modifierData = (Map<String, Object>) battleData.get("modifier");
+            int value = (Integer) modifierData.get("value");
+            String text = (String) modifierData.get("text");
+            currentBattle.setModifier(value, text);
+        }
+    }
+    
+    private void applyPreviousEffect() {
+        if (controller.getNextBattleAttackModifier() != null) {
+            currentBattle.setModifier(controller.getNextBattleAttackModifier(), controller.getNextBattleEffectText());
+            controller.clearNextBattleEffect();
+        }
+    }
+    
+    private void setupExtraDamage(Map<String, Object> battleData) {
+        if (battleData.containsKey("extraHeroDamage")) {
+            Map<String, Object> extraDamageData = (Map<String, Object>) battleData.get("extraHeroDamage");
+            
+            // Check for simple attribute damage format (skill, stamina, luck)
+            if (extraDamageData.containsKey("skill") || extraDamageData.containsKey("stamina") || extraDamageData.containsKey("luck")) {
+                Integer skillDamage = extraDamageData.containsKey("skill") ? (Integer) extraDamageData.get("skill") : null;
+                Integer staminaDamage = extraDamageData.containsKey("stamina") ? (Integer) extraDamageData.get("stamina") : null;
+                Integer luckDamage = extraDamageData.containsKey("luck") ? (Integer) extraDamageData.get("luck") : null;
+                currentBattle.setExtraAttributeDamage(skillDamage, staminaDamage, luckDamage);
+            }
+            // Check for random extra damage format
+            else if (extraDamageData.containsKey("randomExtraDamage")) {
+                Map<String, Object> randomData = (Map<String, Object>) extraDamageData.get("randomExtraDamage");
+                int dice = (Integer) randomData.get("dice");
+                List<Map<String, Object>> damageList = (List<Map<String, Object>>) randomData.get("damage");
+                Map<String, Object> damageInfo = damageList.get(0);
+                int damageAmount = (Integer) damageInfo.get("stamina");
+                List<Integer> triggers = (List<Integer>) damageInfo.get("trigger");
+                currentBattle.setExtraDamage(dice, triggers, damageAmount);
+            }
+        }
+    }
+    
+    private void setupAlly(Map<String, Object> battleData) {
+        if (battleData.containsKey("ally")) {
+            Map<String, Object> allyData = (Map<String, Object>) battleData.get("ally");
+            String allyName = (String) allyData.get("name");
+            int allySkill = (Integer) allyData.get("skill");
+            int allyStamina = (Integer) allyData.get("stamina");
+            currentBattle.setAlly(allyName, allySkill, allyStamina);
+        }
+    }
+    
+    private void setupEnemyUI(List<Enemy> enemies, int mode) {
+        if (mode == 1) {
+            // Sequential mode: just show labels, no radio buttons
+            for (int i = 0; i < enemies.size(); i++) {
+                JLabel label = new JLabel();
+                label.setFont(new Font("Arial", Font.PLAIN, 20));
+                label.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+                battleStatsPanel.add(label);
+                // Create dummy radio button for compatibility with updateDisplay
+                JRadioButton dummyButton = new JRadioButton();
+                dummyButton.setVisible(false);
+                enemyRadioButtons.add(dummyButton);
+            }
+        } else {
+            // Simultaneous mode: show radio buttons for target selection
+            for (int i = 0; i < enemies.size(); i++) {
+                JRadioButton radioButton = new JRadioButton();
+                radioButton.setFont(new Font("Arial", Font.PLAIN, 20));
+                radioButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+                final int index = i;
+                radioButton.addActionListener(e -> currentBattle.setSelectedEnemy(index));
+                enemyRadioButtons.add(radioButton);
+                enemyButtonGroup.add(radioButton);
+                battleStatsPanel.add(radioButton);
+            }
+            
+            if (!enemies.isEmpty()) {
+                enemyRadioButtons.get(0).setSelected(true);
+            }
+        }
+    }
+    
+    private void setupBattlePanels(List<Enemy> enemies, int mode) {
+        dicePanel = DiceAnimator.createDicePanel("src/resources/table.jpg");
+        // In sequential mode, only show one enemy at a time
+        int dicePanelHeight = (mode == 1 ? 1 : enemies.size()) * 100; // 100px per enemy
+        dicePanel.setPreferredSize(new Dimension(400, dicePanelHeight));
+        
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(battleStatsPanel, BorderLayout.NORTH);
+        topPanel.add(dicePanel, BorderLayout.CENTER);
+        
+        centerPanel.add(topPanel, BorderLayout.NORTH);
+        
+        // Create JTextPane for colored battle log with parchment background
+        battleLogPane = new JTextPane();
+        battleLogPane.setEditable(false);
+        battleLogPane.setFont(new Font("Arial", Font.BOLD, 24));
+        battleLogPane.setOpaque(false);
+        
+        JScrollPane scrollPane = new JScrollPane(battleLogPane);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        
+        // Create panel with parchment background
+        JPanel backgroundPanel = new JPanel(new BorderLayout()) {
+            private Image backgroundImage;
+            {
+                try {
+                    java.io.InputStream bgStream = getClass().getClassLoader().getResourceAsStream("pergament.jpg");
+                    backgroundImage = javax.imageio.ImageIO.read(bgStream);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (backgroundImage != null) {
+                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
+        backgroundPanel.add(scrollPane, BorderLayout.CENTER);
+        centerPanel.add(backgroundPanel, BorderLayout.CENTER);
+    }
+    
+    private void initializeBattleLog(Map<String, Object> battleData) {
+        // Add battleText to battle log if present
+        if (battleData.containsKey("battleText")) {
+            currentBattle.appendToBattleLog((String) battleData.get("battleText") + "\n\n");
+        }
+        
+        // Add modifier text to battle log if present
+        if (currentBattle.getModifierText() != null) {
+            currentBattle.appendToBattleLog(currentBattle.getModifierText() + "\n\n");
+        }
+        
+        // Add ally stats to battle log if present
+        if (currentBattle.getAlly() != null) {
+            Enemy ally = currentBattle.getAlly();
+            String allyStats = String.format("%s (Ally) - %s: %d, %s: %d\n\n",
+                ally.getName(),
+                Messages.get(Messages.Key.SKILL), ally.getSkill(),
+                Messages.get(Messages.Key.STAMINA), ally.getStamina());
+            currentBattle.appendToBattleLog(allyStats);
+        }
+    }
+    
+    private void setupInterrupts(Map<String, Object> battleData) {
+        if (battleData.containsKey("interrupt")) {
+            Map<String, Object> interruptData = (Map<String, Object>) battleData.get("interrupt");
+            if (interruptData.containsKey("stamina")) {
+                currentBattle.setInterrupt(new StaminaInterrupt((Integer) interruptData.get("stamina")));
+            } else if (interruptData.containsKey("turn")) {
+                int turn = (Integer) interruptData.get("turn");
+                Integer page = interruptData.containsKey("page") ? (Integer) interruptData.get("page") : null;
+                currentBattle.setInterrupt(new TurnInterrupt(turn, page));
+            } else if (interruptData.containsKey("turnWon")) {
+                currentBattle.setInterrupt(new TurnWonInterrupt((Integer) interruptData.get("turnWon")));
+            } else if (interruptData.containsKey("turnLost")) {
+                int turns = (Integer) interruptData.get("turnLost");
+                int chapter = (Integer) interruptData.get("page");
+                currentBattle.setInterrupt(new TurnLostInterrupt(turns, chapter));
+            } else if (interruptData.containsKey("enemiesKilled")) {
+                currentBattle.setInterrupt(new EnemiesKilledInterrupt((Integer) interruptData.get("enemiesKilled")));
+            } else if (interruptData.containsKey("heroStamina")) {
+                int threshold = (Integer) interruptData.get("heroStamina");
+                int chapter = (Integer) interruptData.get("page");
+                currentBattle.setInterrupt(new HeroStaminaInterrupt(threshold, chapter));
+            } else if (interruptData.containsKey("enemyKilled") && interruptData.containsKey("enemyDamaged")) {
+                String enemyToKill = (String) interruptData.get("enemyKilled");
+                String enemyToDamage = (String) interruptData.get("enemyDamaged");
+                int damageThreshold = (Integer) interruptData.get("enemyDamagedStamina");
+                currentBattle.setInterrupt(new CombinedEnemyInterrupt(enemyToKill, enemyToDamage, damageThreshold));
+            } else if (interruptData.containsKey("perEnemy")) {
+                Map<String, Integer> enemyThresholds = (Map<String, Integer>) interruptData.get("perEnemy");
+                currentBattle.setInterrupt(new PerEnemyStaminaInterrupt(enemyThresholds));
+            } else if (interruptData.containsKey("everyTurnWon") && (Boolean) interruptData.get("everyTurnWon")) {
+                int dice = (Integer) interruptData.get("dice");
+                List<Integer> triggers = (List<Integer>) interruptData.get("trigger");
+                int chapter = (Integer) interruptData.get("page");
+                currentBattle.setInterrupt(new ConditionalInterrupt(dice, triggers, chapter, new java.util.Random()));
+            } else if (interruptData.containsKey("everyTurnLost") && (Boolean) interruptData.get("everyTurnLost")) {
+                int dice = (Integer) interruptData.get("dice");
+                List<Integer> triggers = (List<Integer>) interruptData.get("trigger");
+                int chapter = (Integer) interruptData.get("page");
+                currentBattle.setInterrupt(new EveryTurnLostInterrupt(dice, triggers, chapter, new java.util.Random()));
+            }
+        }
     }
 }
