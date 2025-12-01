@@ -154,121 +154,15 @@ public class Battle {
         currentTurn++;
         StringBuilder turnResult = new StringBuilder();
         int heroDamageTaken = 0;
-        boolean heroDealtDamage = false;
         heroDealtDamageThisTurn = false;
         enemyDealtDamageThisTurn = false;
 
         if (allyPhase && ally != null && ally.isAlive()) {
-            // Ally fights the first enemy
-            Enemy enemy = enemies.get(0);
-            
-            int allyDice1 = random.nextInt(6) + 1;
-            int allyDice2 = random.nextInt(6) + 1;
-            int allyAttack = ally.getSkill() + allyDice1 + allyDice2;
-
-            int enemyDice1 = random.nextInt(6) + 1;
-            int enemyDice2 = random.nextInt(6) + 1;
-            int enemyAttack = enemy.getSkill() + enemyDice1 + enemyDice2;
-
-            ally.setHeroDice(allyDice1, allyDice2);
-            ally.setEnemyDice(enemyDice1, enemyDice2);
-            enemy.setHeroDice(allyDice1, allyDice2);
-            enemy.setEnemyDice(enemyDice1, enemyDice2);
-
-            turnResult.append(String.format("%s: %d %s %s: %d - ",
-                ally.getName(), allyAttack, 
-                Messages.get(Messages.Key.BATTLE_VS), enemy.getName(), enemyAttack));
-
-            if (allyAttack > enemyAttack) {
-                enemy.setStamina(enemy.getStamina() - 2);
-                turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
-            } else if (enemyAttack > allyAttack) {
-                ally.setStamina(ally.getStamina() - 2);
-                turnResult.append(String.format(Messages.get(Messages.Key.BATTLE_ALLY_LOSES_STAMINA), ally.getName(), ally.getStamina()));
-            } else {
-                turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
-            }
-            turnResult.append("\n");
-            
-            // Check if ally phase is over
-            if (!ally.isAlive()) {
-                allyPhase = false;
-                turnResult.append(String.format(Messages.get(Messages.Key.LOG_BATTLE_ALLY_DIED), ally.getName())).append("\n");
-            } else if (!enemy.isAlive()) {
-                allyPhase = false;
-            }
+            heroDamageTaken = executeAllyTurn(turnResult);
         } else if (mode == 1) {
-            // Sequential mode: only fight the first active enemy
-            Enemy enemy = getActiveEnemies().get(0);
-            int i = enemies.indexOf(enemy);
-            
-            int heroDice1 = random.nextInt(6) + 1;
-            int heroDice2 = random.nextInt(6) + 1;
-            int heroAttack = hero.getSkill() + heroDice1 + heroDice2 + modifierValue;
-
-            int enemyDice1 = random.nextInt(6) + 1;
-            int enemyDice2 = random.nextInt(6) + 1;
-            int enemyAttack = enemy.getSkill() + enemyDice1 + enemyDice2;
-
-            enemy.setHeroDice(heroDice1, heroDice2);
-            enemy.setEnemyDice(enemyDice1, enemyDice2);
-
-            turnResult.append(String.format("%s: %d %s %s: %d - ",
-                Messages.get(Messages.Key.BATTLE_HERO), heroAttack, 
-                Messages.get(Messages.Key.BATTLE_VS), enemy.getName(), enemyAttack));
-
-            if (heroAttack > enemyAttack) {
-                enemy.setStamina(enemy.getStamina() - 2);
-                heroDealtDamage = true;
-                heroDealtDamageThisTurn = true;
-                turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
-            } else if (enemyAttack > heroAttack) {
-                heroDamageTaken = 2;
-                enemyDealtDamageThisTurn = true;
-                turnResult.append(Messages.get(Messages.Key.BATTLE_HERO_LOSES));
-            } else {
-                turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
-            }
-            turnResult.append("\n");
+            heroDamageTaken = executeSequentialTurn(turnResult);
         } else {
-            // Simultaneous mode: fight all alive enemies
-            for (int i = 0; i < enemies.size(); i++) {
-                Enemy enemy = enemies.get(i);
-                if (!enemy.isAlive()) continue;
-
-                int heroDice1 = random.nextInt(6) + 1;
-                int heroDice2 = random.nextInt(6) + 1;
-                int heroAttack = hero.getSkill() + heroDice1 + heroDice2 + modifierValue;
-
-                int enemyDice1 = random.nextInt(6) + 1;
-                int enemyDice2 = random.nextInt(6) + 1;
-                int enemyAttack = enemy.getSkill() + enemyDice1 + enemyDice2;
-
-                enemy.setHeroDice(heroDice1, heroDice2);
-                enemy.setEnemyDice(enemyDice1, enemyDice2);
-
-                turnResult.append(String.format("%s: %d %s %s: %d - ",
-                    Messages.get(Messages.Key.BATTLE_HERO), heroAttack, 
-                    Messages.get(Messages.Key.BATTLE_VS), enemy.getName(), enemyAttack));
-
-                if (heroAttack > enemyAttack) {
-                    if (i == selectedEnemyIndex) {
-                        enemy.setStamina(enemy.getStamina() - 2);
-                        heroDealtDamage = true;
-                        heroDealtDamageThisTurn = true;
-                        turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
-                    } else {
-                        turnResult.append(Messages.get(Messages.Key.BATTLE_WINS_NOT_TARGETING));
-                    }
-                } else if (enemyAttack > heroAttack) {
-                    heroDamageTaken += 2;
-                    enemyDealtDamageThisTurn = true;
-                    turnResult.append(Messages.get(Messages.Key.BATTLE_HERO_LOSES));
-                } else {
-                    turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
-                }
-                turnResult.append("\n");
-            }
+            heroDamageTaken = executeSimultaneousTurn(turnResult);
         }
 
         if (heroDamageTaken > 0) {
@@ -306,6 +200,126 @@ public class Battle {
 
         lastTurnResult = turnResult.toString();
         battleLog.append(lastTurnResult).append("\n");
+    }
+
+    private int executeAllyTurn(StringBuilder turnResult) {
+        Enemy enemy = enemies.get(0);
+        
+        int allyDice1 = random.nextInt(6) + 1;
+        int allyDice2 = random.nextInt(6) + 1;
+        int allyAttack = ally.getSkill() + allyDice1 + allyDice2;
+
+        int enemyDice1 = random.nextInt(6) + 1;
+        int enemyDice2 = random.nextInt(6) + 1;
+        int enemyAttack = enemy.getSkill() + enemyDice1 + enemyDice2;
+
+        ally.setHeroDice(allyDice1, allyDice2);
+        ally.setEnemyDice(enemyDice1, enemyDice2);
+        enemy.setHeroDice(allyDice1, allyDice2);
+        enemy.setEnemyDice(enemyDice1, enemyDice2);
+
+        turnResult.append(String.format("%s: %d %s %s: %d - ",
+            ally.getName(), allyAttack, 
+            Messages.get(Messages.Key.BATTLE_VS), enemy.getName(), enemyAttack));
+
+        if (allyAttack > enemyAttack) {
+            enemy.setStamina(enemy.getStamina() - 2);
+            turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
+        } else if (enemyAttack > allyAttack) {
+            ally.setStamina(ally.getStamina() - 2);
+            turnResult.append(String.format(Messages.get(Messages.Key.BATTLE_ALLY_LOSES_STAMINA), ally.getName(), ally.getStamina()));
+        } else {
+            turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
+        }
+        turnResult.append("\n");
+        
+        // Check if ally phase is over
+        if (!ally.isAlive()) {
+            allyPhase = false;
+            turnResult.append(String.format(Messages.get(Messages.Key.LOG_BATTLE_ALLY_DIED), ally.getName())).append("\n");
+        } else if (!enemy.isAlive()) {
+            allyPhase = false;
+        }
+        
+        return 0; // Ally takes damage, not hero
+    }
+
+    private int executeSequentialTurn(StringBuilder turnResult) {
+        Enemy enemy = getActiveEnemies().get(0);
+        
+        int heroDice1 = random.nextInt(6) + 1;
+        int heroDice2 = random.nextInt(6) + 1;
+        int heroAttack = hero.getSkill() + heroDice1 + heroDice2 + modifierValue;
+
+        int enemyDice1 = random.nextInt(6) + 1;
+        int enemyDice2 = random.nextInt(6) + 1;
+        int enemyAttack = enemy.getSkill() + enemyDice1 + enemyDice2;
+
+        enemy.setHeroDice(heroDice1, heroDice2);
+        enemy.setEnemyDice(enemyDice1, enemyDice2);
+
+        turnResult.append(String.format("%s: %d %s %s: %d - ",
+            Messages.get(Messages.Key.BATTLE_HERO), heroAttack, 
+            Messages.get(Messages.Key.BATTLE_VS), enemy.getName(), enemyAttack));
+
+        int heroDamageTaken = 0;
+        if (heroAttack > enemyAttack) {
+            enemy.setStamina(enemy.getStamina() - 2);
+            heroDealtDamageThisTurn = true;
+            turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
+        } else if (enemyAttack > heroAttack) {
+            heroDamageTaken = 2;
+            enemyDealtDamageThisTurn = true;
+            turnResult.append(Messages.get(Messages.Key.BATTLE_HERO_LOSES));
+        } else {
+            turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
+        }
+        turnResult.append("\n");
+        
+        return heroDamageTaken;
+    }
+
+    private int executeSimultaneousTurn(StringBuilder turnResult) {
+        int heroDamageTaken = 0;
+        
+        for (int i = 0; i < enemies.size(); i++) {
+            Enemy enemy = enemies.get(i);
+            if (!enemy.isAlive()) continue;
+
+            int heroDice1 = random.nextInt(6) + 1;
+            int heroDice2 = random.nextInt(6) + 1;
+            int heroAttack = hero.getSkill() + heroDice1 + heroDice2 + modifierValue;
+
+            int enemyDice1 = random.nextInt(6) + 1;
+            int enemyDice2 = random.nextInt(6) + 1;
+            int enemyAttack = enemy.getSkill() + enemyDice1 + enemyDice2;
+
+            enemy.setHeroDice(heroDice1, heroDice2);
+            enemy.setEnemyDice(enemyDice1, enemyDice2);
+
+            turnResult.append(String.format("%s: %d %s %s: %d - ",
+                Messages.get(Messages.Key.BATTLE_HERO), heroAttack, 
+                Messages.get(Messages.Key.BATTLE_VS), enemy.getName(), enemyAttack));
+
+            if (heroAttack > enemyAttack) {
+                if (i == selectedEnemyIndex) {
+                    enemy.setStamina(enemy.getStamina() - 2);
+                    heroDealtDamageThisTurn = true;
+                    turnResult.append(enemy.getName()).append(" ").append(Messages.get(Messages.Key.BATTLE_LOSES_STAMINA));
+                } else {
+                    turnResult.append(Messages.get(Messages.Key.BATTLE_WINS_NOT_TARGETING));
+                }
+            } else if (enemyAttack > heroAttack) {
+                heroDamageTaken += 2;
+                enemyDealtDamageThisTurn = true;
+                turnResult.append(Messages.get(Messages.Key.BATTLE_HERO_LOSES));
+            } else {
+                turnResult.append(Messages.get(Messages.Key.BATTLE_DRAW));
+            }
+            turnResult.append("\n");
+        }
+        
+        return heroDamageTaken;
     }
 
     public boolean isOver() {
@@ -406,7 +420,11 @@ public class Battle {
     }
     
     public int rollExtraDamage() {
-        lastExtraDamageRoll = random.nextInt(6) + 1;
+        int total = 0;
+        for (int i = 0; i < extraDamageDice; i++) {
+            total += random.nextInt(6) + 1;
+        }
+        lastExtraDamageRoll = total;
         if (extraDamageTriggers.contains(lastExtraDamageRoll)) {
             hero.modifyStaminaSilent(-extraDamageAmount);
             return extraDamageAmount;
