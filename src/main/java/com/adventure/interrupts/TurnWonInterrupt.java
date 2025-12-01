@@ -1,21 +1,24 @@
-package com.adventure;
+package com.adventure.interrupts;
 
-public class StaminaInterrupt implements BattleInterrupt {
-    private final int threshold;
+import com.adventure.Battle;
+
+public class TurnWonInterrupt implements BattleInterrupt {
+    private final int turnsToWin;
+    private int heroWonTurns = 0;
     
-    public StaminaInterrupt(int threshold) {
-        this.threshold = threshold;
+    public TurnWonInterrupt(int turnsToWin) {
+        this.turnsToWin = turnsToWin;
     }
     
     @Override
     public boolean shouldCheck(Battle battle) {
-        return !battle.getAliveEnemies().isEmpty();
+        return battle.heroDealtDamageThisTurn();
     }
     
     @Override
     public boolean isTriggered(Battle battle) {
-        Enemy firstEnemy = battle.getAliveEnemies().get(0);
-        return firstEnemy.getStamina() <= threshold && firstEnemy.getStamina() > 0;
+        heroWonTurns++;
+        return heroWonTurns >= turnsToWin;
     }
     
     @Override

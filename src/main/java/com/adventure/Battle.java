@@ -1,5 +1,6 @@
 package com.adventure;
 
+import com.adventure.interrupts.BattleInterrupt;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

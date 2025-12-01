@@ -1,6 +1,7 @@
 package com.adventure.ui;
 
 import com.adventure.*;
+import com.adventure.interrupts.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.*;

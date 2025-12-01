@@ -641,7 +641,7 @@ chapters:
     - index: 459
       actions:
         - display: |
-            Elóveszed a kalapácsot.
+            Előveszed a kalapácsot.
         - battle:
             enemies:
               - enemy: Kristályharcos
@@ -1073,10 +1073,6 @@ chapters:
       actions:
         - display: |
             Minthogy vizetek fogytán van, kissé aggódva indultok el délnek. Stubb, csak hogy vigasztaljon benneteket, közli, hogy másnap már Kőhidafalván lesztek. Csodálkozik viszont, hogy egyetlen Törpe ismerősével sem találkozott eddig. - Dehogynem szólal meg komoran Redswift -‚ bár nem hinném, hogy így akartad volna viszontlátni őt. - Egy sziklára mutat, körülbelül 50 méterre nyugatra. Egy Törpe véres testét pillantod meg a sziklának támasztva, feje félrebillent, meg sem moccan. A bárdját még mindig a kezében tartja, és akárki vagy akármi végzett is vele, nem járhat túl messze. Stubb a Törpéhez rohan, és keservesen jajveszékel: - Ez Morri, a kovács! - kiáltja. - Úgy látom, a Dombi Trollok tették! Temessük el Morrit, és amilyen gyorsan csak lehet, vigyük el a szörnyű hírt Kőhidafalvára. Itt van Morri kulacsa, fogd! Neki úgysem lesz már rá szüksége.
-        - modify:
-            values:
-                - field: STAMINA
-                  value: 1
         - goto:
             - chapter: 496
               text: Tovább...
@@ -2350,7 +2346,7 @@ chapters:
     - index: 211
       actions:
         - display: |
-            Stubbot a bosszúvágy hajtja, és gyorsan legyőzi a két Dombi Trollt, majd segít Redswiftnek a másvilágra küldeni a másik kettőt. Nem vesztegeti az időt azzal, hogy átkutassa a Trollok holmiját, hanem azonnal útra kel Kőhidafalvára. Követitek őt a faluba, ahol régi barátai köszöntik. Hamarosan kiderül, hogy a Törpék nagy bajban vannak. Bár  tudják, hogy a Dombi Trollok azért gyülekeznek, hogy megtámadják a falujukat, nincs erejük hozzá, hogy megvédjék magukat, mióta híres harci kalapácsukat ellopták Gillibran királytól. Stubb aggódik a kedvüket vesztett Törpékért, és elvisz benneteket egy fogadóba, hogy megismerkedjetek a barátjával, Nagylábbal. Nagylábtól megtudja, hogy egy sas lopta el a kalapácsot, de a Sötét Erdő fölött elejtette. - Meg kell találnunk! Nagyláb, azonnal indulnunk kell! - kiáltja Stubb, feledve saját baját. Feláll, és kezet nyújt nektek. - Sajnálom, barátaim - mondja -‚ de nem tudlak vendégül látni benneteket. Remélem, megértitek! - Aztán kimegy a fogadóból Nagylábbal együtt, és még egy utolsó pillantást vetsz az öreg Törpére. Redswift felsóhajt, és azt tanácsolja, hogy azonnal induljatok útnak a Holdkő-dombok felé. Mellesleg közli, hogy valamit el kell neked mondania, és bizonyos szempontból jó is, hogy Stubb nincs itt, és nem hallja. Szöget üt a fejedbe, vajon mit akarhat mondani Redswift, és ezen töprengsz, miközben továbbhaladtok Kőhidafalváról keletre, a Vörös-folyó mentén. Amíg a Dombi Trollok őrjáratát kémlelitek, ugyanez jár a fejetekben. A fák között megbújva Redswift hirtelen észrevesz három Dombi Trollt, amint a fegyvereiket élesítik egy kövön. Tedd próbára SZERENCSÉD!
+            Stubbot a bosszúvágy hajtja, és gyorsan legyőzi a két Dombi Trollt, majd segít Redswiftnek a másvilágra küldeni a másik kettőt. Nem vesztegeti az időt azzal, hogy átkutassa a Trollok holmiját, hanem azonnal útra kel Kőhidafalvára. Követitek őt a faluba, ahol régi barátai köszöntik. Hamarosan kiderül, hogy a Törpék nagy bajban vannak. Bár tudják, hogy a Dombi Trollok azért gyülekeznek, hogy megtámadják a falujukat, nincs erejük hozzá, hogy megvédjék magukat, mióta híres harci kalapácsukat ellopták Gillibran királytól. Stubb aggódik a kedvüket vesztett Törpékért, és elvisz benneteket egy fogadóba, hogy megismerkedjetek a barátjával, Nagylábbal. Nagylábtól megtudja, hogy egy sas lopta el a kalapácsot, de a Sötét Erdő fölött elejtette. - Meg kell találnunk! Nagyláb, azonnal indulnunk kell! - kiáltja Stubb, feledve saját baját. Feláll, és kezet nyújt nektek. - Sajnálom, barátaim - mondja -‚ de nem tudlak vendégül látni benneteket. Remélem, megértitek! - Aztán kimegy a fogadóból Nagylábbal együtt, és még egy utolsó pillantást vetsz az öreg Törpére. Redswift felsóhajt, és azt tanácsolja, hogy azonnal induljatok útnak a Holdkő-dombok felé. Mellesleg közli, hogy valamit el kell neked mondania, és bizonyos szempontból jó is, hogy Stubb nincs itt, és nem hallja. Szöget üt a fejedbe, vajon mit akarhat mondani Redswift, és ezen töprengsz, miközben továbbhaladtok Kőhidafalváról keletre, a Vörös-folyó mentén. Amíg a Dombi Trollok őrjáratát kémlelitek, ugyanez jár a fejetekben. A fák között megbújva Redswift hirtelen észrevesz három Dombi Trollt, amint a fegyvereiket élesítik egy kövön. Tedd próbára SZERENCSÉD!
         - luck:
             lucky: 218
             unlucky: 296
@@ -3050,7 +3046,7 @@ chapters:
     - index: 275
       actions:
         - display: |
-            Kinyújtott kezedben tartod a gömböt, melynek melege lassan átjárja testedet, és fényes derengés vesz körül. Olyan melegség tölt el, mint eddig soha. Nyersz 3 ÉLETERŐ és 1 Szerencse pontot! Meggyőzöd Redswiftet és Stubbot, hogy ez az energiagömb nekik is jót fog tenni. Kissé vonakodva ugyan, de átveszik tőled a gömböt, majd viszszahelyezitek a földre, és továbbmentek az alagútban.
+            Kinyújtott kezedben tartod a gömböt, melynek melege lassan átjárja testedet, és fényes derengés vesz körül. Olyan melegség tölt el, mint eddig soha. Nyersz 3 ÉLETERŐ és 1 Szerencse pontot! Meggyőzöd Redswiftet és Stubbot, hogy ez az energiagömb nekik is jót fog tenni. Kissé vonakodva ugyan, de átveszik tőled a gömböt, majd visszahelyezitek a földre, és továbbmentek az alagútban.
         - modify:
             values:
                 - field: STAMINA
@@ -3078,7 +3074,7 @@ chapters:
         - display: |
             Átvágtok a síkságon, de nem találkoztok semmiféle gonosz lénnyel. Kelet felől feltűnik a Tűz-hegy félelmetes alakja.
             - Vajon a varázsló még mindig uralja a Tűz-hegy mélyét? - kérdi Stubb kíváncsian. Már éppen válaszolnál, amikor észreveszed, hogy valaki közeledik felétek. Kardot rántasz, de amikor az a valaki a közeletekbe ér, látod, hogy nem más, mint egy öregember, aki egy zsákot cipel a hátán. Megáll előtted, és így szól:
-            - Tedd el a kardodat, nem sok értelme lenne, ha megölnél! Nincs vagyonom, ami értékes lenne számodra, Csupán egy információval tudok szolgálni, de az pénzbe kerül. Fizess 2 Aranyat, és nem bánod meg!
+            - Tedd el a kardodat, nem sok értelme lenne, ha megölnél! Nincs vagyonom, ami értékes lenne számodra, csupán egy információval tudok szolgálni, de az pénzbe kerül. Fizess 2 Aranyat, és nem bánod meg!
         - goto:
             - chapter: 69
               text: Fizetsz az öregnek?
@@ -3867,11 +3863,13 @@ chapters:
         - display: |
             Sokáig egyenesen halad az alagút, mígnem egy barlang szájánál ér véget. A falakat odabent vastagon borítja a jég, és a barlang közepén, egy jégemelvényen nagy üveggömböt pillantasz meg. A szemközti alagútból hirtelen egy Ork ront be, mire a gömb fényleni kezd. A belsejében egy arc körvonalai jelennek meg, és rémülten ismered fel benne a Hóboszorkányt! A képmás felnevet, és  beszélni kezd.
             - Bár megöltél - mondja dermesztő hangon -‚ még mindig nem győztél le! A szellemem még mindig a hatalmába keríthet! Csak figyelj! - Az Ork, aki eddig a gömb mellett állt, hirtelen a torkához kap, és fuldokolva megpróbálja leszakítani a nyakából az egyre szorosabbá váló láncot. Erőfeszítése teljesen hiábavaló, és csakhamar némán terül el a padlón. A Hóboszorkány képmása lenézően elmosolyodik: - Többé már nincs szükségem szolgákra, és tudom, hogy ti ketten még mindig viselitek az engedelmesség nyakláncát. Élvezettel fogom végignézni, amint meghaltok! Ez csak amolyan kis előzetes ízelítő lesz az előtt a haláltusa előtt, amit pimasz harcos barátotoknak tartogatok. - Nem akarod végignézni barátaid haldoklását, ezért azon kezded törni a fejed, vajon miképpen győzhetnéd le a Hóboszorkány szellemét. Mit teszel?
+            Parittyádból egy vasgolyót lősz ki a gömbre? Aktiváld a Kalandlapodon.
+        - useItem:
+            - item: Parittya
+              chapter: 216
         - goto:
             - chapter: 244
               text: Megpróbálod összezúzni a kardoddal a gömböt?
-            - chapter: 216
-              text: Parittyádból egy vasgolyót lősz ki a gömbre (ha van nálad)?
             - chapter: 304
               text: Átrohansz a barlangon a szemközti alagútba?
     - index: 340

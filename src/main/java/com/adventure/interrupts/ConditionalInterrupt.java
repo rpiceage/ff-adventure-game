@@ -1,16 +1,19 @@
-package com.adventure;
+package com.adventure.interrupts;
+
+import com.adventure.Battle;
 
 import java.util.List;
 import java.util.Random;
 
-public class EveryTurnLostInterrupt implements BattleInterrupt {
+public class ConditionalInterrupt implements BattleInterrupt {
     private final int dice;
     private final List<Integer> triggers;
     private final int chapter;
     private final Random random;
     private int[] lastRolls;
+    private boolean triggered = false;
     
-    public EveryTurnLostInterrupt(int dice, List<Integer> triggers, int chapter, Random random) {
+    public ConditionalInterrupt(int dice, List<Integer> triggers, int chapter, Random random) {
         this.dice = dice;
         this.triggers = triggers;
         this.chapter = chapter;
@@ -19,7 +22,7 @@ public class EveryTurnLostInterrupt implements BattleInterrupt {
     
     @Override
     public boolean shouldCheck(Battle battle) {
-        return battle.enemyDealtDamageThisTurn();
+        return battle.heroDealtDamageThisTurn() && !triggered;
     }
     
     @Override
@@ -30,7 +33,8 @@ public class EveryTurnLostInterrupt implements BattleInterrupt {
             lastRolls[i] = random.nextInt(6) + 1;
             total += lastRolls[i];
         }
-        return triggers.contains(total);
+        triggered = triggers.contains(total);
+        return triggered;
     }
     
     @Override
@@ -50,6 +54,6 @@ public class EveryTurnLostInterrupt implements BattleInterrupt {
     
     @Override
     public boolean isVictory() {
-        return false;
+        return true;
     }
 }

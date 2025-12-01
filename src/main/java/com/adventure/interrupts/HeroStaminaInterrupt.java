@@ -1,21 +1,19 @@
-package com.adventure;
+package com.adventure.interrupts;
 
-public class TurnInterrupt implements BattleInterrupt {
-    private final int turnLimit;
-    private final Integer chapter;
+import com.adventure.Battle;
+
+public class HeroStaminaInterrupt implements BattleInterrupt {
+    private final int threshold;
+    private final int chapter;
     
-    public TurnInterrupt(int turnLimit) {
-        this(turnLimit, null);
-    }
-    
-    public TurnInterrupt(int turnLimit, Integer chapter) {
-        this.turnLimit = turnLimit;
+    public HeroStaminaInterrupt(int threshold, int chapter) {
+        this.threshold = threshold;
         this.chapter = chapter;
     }
     
     @Override
     public boolean shouldCheck(Battle battle) {
-        return battle.getCurrentTurn() >= turnLimit;
+        return battle.getHero().getStamina() <= threshold;
     }
     
     @Override
@@ -40,6 +38,6 @@ public class TurnInterrupt implements BattleInterrupt {
     
     @Override
     public boolean isVictory() {
-        return false; // Turn interrupt is ambiguous, show "Battle interrupted!" message
+        return false; // Hero escapes, not a true victory
     }
 }

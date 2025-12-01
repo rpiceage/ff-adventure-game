@@ -1,22 +1,26 @@
-package com.adventure;
+package com.adventure.interrupts;
 
-public class HeroStaminaInterrupt implements BattleInterrupt {
-    private final int threshold;
+import com.adventure.Battle;
+
+public class TurnLostInterrupt implements BattleInterrupt {
+    private final int turnsToLose;
     private final int chapter;
+    private int enemyWonTurns = 0;
     
-    public HeroStaminaInterrupt(int threshold, int chapter) {
-        this.threshold = threshold;
+    public TurnLostInterrupt(int turnsToLose, int chapter) {
+        this.turnsToLose = turnsToLose;
         this.chapter = chapter;
     }
     
     @Override
     public boolean shouldCheck(Battle battle) {
-        return battle.getHero().getStamina() <= threshold;
+        return battle.enemyDealtDamageThisTurn();
     }
     
     @Override
     public boolean isTriggered(Battle battle) {
-        return true;
+        enemyWonTurns++;
+        return enemyWonTurns >= turnsToLose;
     }
     
     @Override
@@ -36,6 +40,6 @@ public class HeroStaminaInterrupt implements BattleInterrupt {
     
     @Override
     public boolean isVictory() {
-        return false; // Hero escapes, not a true victory
+        return false;
     }
 }

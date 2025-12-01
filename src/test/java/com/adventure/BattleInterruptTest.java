@@ -1,5 +1,8 @@
 package com.adventure;
 
+import com.adventure.*;
+import com.adventure.interrupts.*;
+
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,4 +1,6 @@
-package com.adventure;
+package com.adventure.interrupts;
+
+import com.adventure.Battle;
 
 import java.util.Map;
 
