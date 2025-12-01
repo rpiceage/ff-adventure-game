@@ -82,10 +82,11 @@ public class BattleUI {
         this.currentBattle = savedBattle;
         this.battleActionData = savedActionData;
         
+        List<Enemy> enemies = currentBattle.getEnemies();
+        int mode = currentBattle.getMode();
+        
         // Recreate the battle UI with saved state
         centerPanel = new JPanel(new BorderLayout());
-        
-        // Create battle stats panel
         battleStatsPanel = new JPanel();
         battleStatsPanel.setLayout(new BoxLayout(battleStatsPanel, BoxLayout.Y_AXIS));
         TitledBorder border = BorderFactory.createTitledBorder(Messages.get(Messages.Key.BATTLE_TITLE));
@@ -93,87 +94,20 @@ public class BattleUI {
         battleStatsPanel.setBorder(border);
         battleStatsPanel.setOpaque(false);
         
-        // Recreate enemy display matching start() method
         enemyRadioButtons = new ArrayList<>();
         enemyButtonGroup = new ButtonGroup();
-        List<Enemy> enemies = currentBattle.getEnemies();
-        int mode = currentBattle.getMode();
         
-        if (mode == 1) {
-            // Sequential mode: just show labels, no radio buttons
-            for (int i = 0; i < enemies.size(); i++) {
-                JLabel label = new JLabel();
-                label.setFont(new Font("Arial", Font.PLAIN, 20));
-                label.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-                battleStatsPanel.add(label);
-                // Create dummy radio button for compatibility with updateDisplay
-                JRadioButton dummyButton = new JRadioButton();
-                dummyButton.setVisible(false);
-                enemyRadioButtons.add(dummyButton);
-            }
-        } else {
-            // Simultaneous mode: show radio buttons for target selection
-            for (int i = 0; i < enemies.size(); i++) {
-                JRadioButton radioButton = new JRadioButton();
-                radioButton.setFont(new Font("Arial", Font.PLAIN, 20));
-                radioButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-                final int index = i;
-                radioButton.addActionListener(e -> currentBattle.setSelectedEnemy(index));
-                enemyRadioButtons.add(radioButton);
-                enemyButtonGroup.add(radioButton);
-                battleStatsPanel.add(radioButton);
-            }
-            
-            // Restore selected enemy
+        setupEnemyUI(enemies, mode);
+        
+        // Restore selected enemy for simultaneous mode
+        if (mode == 0) {
             int selectedIndex = currentBattle.getSelectedEnemyIndex();
             if (selectedIndex >= 0 && selectedIndex < enemyRadioButtons.size()) {
                 enemyRadioButtons.get(selectedIndex).setSelected(true);
             }
         }
         
-        // Create dice panel with background
-        dicePanel = DiceAnimator.createDicePanel("src/resources/table.jpg");
-        int dicePanelHeight = (mode == 1 ? 1 : enemies.size()) * 100;
-        dicePanel.setPreferredSize(new Dimension(400, dicePanelHeight));
-        
-        // Create top panel with battle stats and dice
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(battleStatsPanel, BorderLayout.NORTH);
-        topPanel.add(dicePanel, BorderLayout.CENTER);
-        
-        centerPanel.add(topPanel, BorderLayout.NORTH);
-        
-        // Create JTextPane for colored battle log with parchment background
-        battleLogPane = new JTextPane();
-        battleLogPane.setEditable(false);
-        battleLogPane.setFont(new Font("Arial", Font.BOLD, 24));
-        battleLogPane.setOpaque(false);
-        
-        JScrollPane scrollPane = new JScrollPane(battleLogPane);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        
-        // Create panel with parchment background
-        JPanel backgroundPanel = new JPanel(new BorderLayout()) {
-            private Image backgroundImage;
-            {
-                try {
-                    java.io.InputStream bgStream = getClass().getClassLoader().getResourceAsStream("pergament.jpg");
-                    backgroundImage = javax.imageio.ImageIO.read(bgStream);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (backgroundImage != null) {
-                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-                }
-            }
-        };
-        backgroundPanel.add(scrollPane, BorderLayout.CENTER);
-        centerPanel.add(backgroundPanel, BorderLayout.CENTER);
+        setupBattlePanels(enemies, mode);
         
         // Add "Battle resumed!" message to battle log
         currentBattle.appendToBattleLog(Messages.get(Messages.Key.BATTLE_RESUMED) + "\n\n");
