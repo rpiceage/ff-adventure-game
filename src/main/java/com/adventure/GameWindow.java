@@ -227,6 +227,40 @@ public class GameWindow extends JFrame {
         } else if (attributeTestUI != null) {
             // Attribute test UI is already shown
         } else {
+            // Check if there's a win action
+            boolean hasWinAction = false;
+            String winText = null;
+            for (Map<String, Object> actionData : controller.getCurrentChapter().actions) {
+                if (actionData.containsKey("win")) {
+                    hasWinAction = true;
+                    winText = actionData.get("win").toString().trim();
+                    break;
+                }
+            }
+            
+            if (hasWinAction) {
+                textArea.setText(winText);
+                textArea.setCaretPosition(0);
+                buttonPanel.removeAll();
+                
+                try {
+                    InputStream victoryStream = getClass().getClassLoader().getResourceAsStream("victory.png");
+                    BufferedImage victoryImage = ImageIO.read(victoryStream);
+                    // Scale image to fit window height
+                    int targetHeight = getHeight();
+                    int targetWidth = (int) (victoryImage.getWidth() * ((double) targetHeight / victoryImage.getHeight()));
+                    Image scaledImage = victoryImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+                    JLabel victoryLabel = new JLabel(new ImageIcon(scaledImage));
+                    remove(heroStatsPanel);
+                    add(victoryLabel, BorderLayout.EAST);
+                    revalidate();
+                    repaint();
+                } catch (Exception ex) {
+                    // Keep stats panel if image fails to load
+                }
+                return;
+            }
+            
             textArea.setText(controller.getDisplayText());
             textArea.setCaretPosition(0);
             buttonPanel.removeAll();
