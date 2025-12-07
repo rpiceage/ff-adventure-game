@@ -32,10 +32,21 @@ public class AttributeTestUI {
         Map<String, Object> testData = (Map<String, Object>) attributeTestAction.get("attributeTest");
         int numDice = (Integer) testData.get("dice");
         int modifier = testData.containsKey("modifier") ? (Integer) testData.get("modifier") : 0;
-        List<String> attributes = (List<String>) testData.get("attribute");
-        String attributeName = attributes.get(0);
         int successChapter = (Integer) testData.get("success");
         int failChapter = (Integer) testData.get("fail");
+        
+        // Check if target is specified (fixed value) or attribute (hero's attribute)
+        Integer targetValue = testData.containsKey("target") ? (Integer) testData.get("target") : null;
+        String attributeName = null;
+        String displayName = null;
+        
+        if (targetValue != null) {
+            displayName = "Target: " + targetValue;
+        } else {
+            List<String> attributes = (List<String>) testData.get("attribute");
+            attributeName = attributes.get(0);
+            displayName = Messages.get(Messages.Key.valueOf(attributeName));
+        }
         
         centerPanel = new JPanel(new BorderLayout());
         
@@ -45,12 +56,13 @@ public class AttributeTestUI {
         centerPanel.add(dicePanel, BorderLayout.NORTH);
         centerPanel.add(new JScrollPane(textArea), BorderLayout.CENTER);
         
-        // Display which attribute is being tested
-        String attributeDisplayName = Messages.get(Messages.Key.valueOf(attributeName));
-        textArea.setText(Messages.get(Messages.Key.ATTRIBUTE_TEST_TITLE) + " (" + attributeDisplayName + ")");
+        // Display which attribute or target is being tested
+        textArea.setText(Messages.get(Messages.Key.ATTRIBUTE_TEST_TITLE) + " (" + displayName + ")");
         buttonPanel.removeAll();
         
         JButton testButton = new JButton(Messages.get(Messages.Key.ATTRIBUTE_TEST_BUTTON));
+        final String finalAttributeName = attributeName;
+        final Integer finalTargetValue = targetValue;
         testButton.addActionListener(e -> {
             testButton.setEnabled(false);
             
@@ -61,8 +73,8 @@ public class AttributeTestUI {
                 total += diceValues[i];
             }
             
-            int heroAttribute = getHeroAttribute(attributeName);
-            boolean success = total <= heroAttribute;
+            int threshold = finalTargetValue != null ? finalTargetValue : getHeroAttribute(finalAttributeName);
+            boolean success = total <= threshold;
             
             DiceAnimator.DiceGroup[] groups = {
                 new DiceAnimator.DiceGroup("", diceValues)

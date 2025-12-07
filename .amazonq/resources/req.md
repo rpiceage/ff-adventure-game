@@ -477,6 +477,53 @@
   - "Continue" button to proceed to appropriate chapter
 - Dice animation same as battle system (spinning, white backgrounds)
 
+## Attribute Test System
+- Test hero attributes or fixed values with dice rolls
+- YAML format for attribute tests:
+  ```yaml
+  # Test against hero's attribute
+  - attributeTest:
+      dice: 2
+      attribute:
+        - SKILL
+      success: 100
+      fail: 200
+  
+  # Test against fixed target value
+  - attributeTest:
+      dice: 2
+      target: 9
+      success: 100
+      fail: 200
+  
+  # Test with modifier
+  - attributeTest:
+      dice: 2
+      attribute:
+        - LUCK
+      modifier: -2
+      success: 50
+      fail: 51
+  ```
+- Attribute test mechanics:
+  - Roll specified number of dice (1d6 each)
+  - Add optional modifier to total
+  - Compare against hero's attribute OR fixed target value
+  - If roll ≤ threshold: success → go to success chapter
+  - If roll > threshold: fail → go to fail chapter
+  - Two modes:
+    - Hero attribute mode: uses `attribute` field, compares against hero's SKILL/STAMINA/LUCK
+    - Fixed target mode: uses `target` field, compares against specified value
+- Attribute test UI:
+  - "Test your attribute!" button appears when attributeTest action is present
+  - Title shows attribute name (e.g., "Test your attribute! (SKILL)") or target value (e.g., "Test your attribute! (Target: 9)")
+  - Animated dice panel with table.jpg background
+  - Result message displayed in text area with parchment background
+  - "Continue" button to proceed to appropriate chapter
+- Dice animation same as battle/luck system (spinning, white backgrounds)
+- Used for skill checks, environmental challenges, NPC contests
+- Used in chapter 85 of hoboszorkany (Ash's SKILL test with target: 9)
+
 ## Item System
 - Hero has inventory to collect items
 - Items are objects with name, useAnyTime flag, and optional effects
