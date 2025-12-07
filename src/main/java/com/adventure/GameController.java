@@ -159,9 +159,15 @@ public class GameController {
     }
 
     public void goToChapter(int chapterIndex) {
+        goToChapter(chapterIndex, false);
+    }
+    
+    public void goToChapter(int chapterIndex, boolean skipModifiers) {
         currentChapter = getChapter(chapterIndex);
         hero.visitChapter(chapterIndex);
-        applyModifiers();
+        if (!skipModifiers) {
+            applyModifiers();
+        }
         String displayText = getDisplayText();
         adventureLog.log(String.format(Messages.get(Messages.Key.LOG_CHAPTER), chapterIndex));
         adventureLog.log(displayText.replaceAll("\\n", " "));
@@ -227,8 +233,8 @@ public class GameController {
         // Clear modification history
         hero.clearModifications();
         
-        // Go to saved chapter
-        goToChapter(saveGame.getCurrentChapterIndex());
+        // Go to saved chapter without applying modifiers (they were already applied before saving)
+        goToChapter(saveGame.getCurrentChapterIndex(), true);
     }
     
     public void setNextBattleEffect(int attackModifier, String text) {

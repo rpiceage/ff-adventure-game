@@ -472,7 +472,7 @@ chapters:
     - index: 43
       actions:
         - display: |
-            Felveszed a földről a kardodat, és átkutatod a Goblinok ruháját. Találsz náluk két tőrt, némi sós heringet, egy gyertyát és 2 Aranytallért - ezeket elteszed. A nyakukban lévő fém nyakláncok már nem világítanak többé, de nem tudod azokat levenni róluk. Minthogy nem tudod, van-e még több csapda a jégvermen túl, megpróbálod eldönteni, merre is menj tovább. Ha ezen az alagúton akarsz továbbmenni - lapozz a 88-ra. Ha inkább visszamész az elágazáshoz, és a másik utat választod, lapozz a 29-re.
+            Felveszed a földről a kardodat, és átkutatod a Goblinok ruháját. Találsz náluk két tőrt, némi sós heringet, egy gyertyát és 2 Aranytallért - ezeket elteszed. A nyakukban lévő fém nyakláncok már nem világítanak többé, de nem tudod azokat levenni róluk. Minthogy nem tudod, van-e még több csapda a jégvermen túl, megpróbálod eldönteni, merre is menj tovább.
         - addItem:
             items:
             - name: Tőr
@@ -483,6 +483,11 @@ chapters:
             values:
                 - field: GOLD
                   value: 2
+        - goto:
+            - chapter: 88
+              text: Ezen az alagúton akarsz továbbmenni?
+            - chapter: 29
+              text: Inkább visszamész az elágazáshoz, és a másik utat választod?
     - index: 44
       actions:
         - death: |
@@ -1297,7 +1302,7 @@ chapters:
     - index: 115
       actions:
         - display: |
-            Tőled balra a fák között egy magas embert veszel észre. Hegyes füle és szőke haja van. Zöld köpenyt visel, és éppen nyílvesszők faragásával van elfoglalva. Ez egy Elf, és külsőre igen hasonlít Redswiftre. Ha meg akarod kérdezni tőle, hogy hol él a Gyógyító - lapozz a 100-ra. Ha inkább rátámadsz a kardoddal - lapozz a 397-re.
+            Tőled balra a fák között egy magas embert veszel észre. Hegyes füle és szőke haja van. Zöld köpenyt visel, és éppen nyílvesszők faragásával van elfoglalva. Ez egy Elf, és külsőre igen hasonlít Redswiftre.
         - goto:
             - chapter: 100
               text: Meg akarod kérdezni tőle, hogy hol él a Gyógyító?
@@ -1952,7 +1957,7 @@ chapters:
     - index: 175
       actions:
         - display: |
-            Ash lövése remek: nyila a repülő Halálsólyom fejébe fúródik. A madár szárnya nem mozdul többé, és a ragadozó lezuhan a hegyoldalba. A domb túloldalán egy szurdok van, ahonnan Ash közli, hogy innen már egyedül kell továbbmenned, hogy megkeresd a Gyógyítót. Ash elmondja még, hogy a szurdokban addig menj keletnek, amíg egy sziklához nem érsz, melybe egy Főnix-fejet véstek. A Gyógyító ott lakik egy barlangban, éppen a főnixes szikla fölött. Megköszönöd Ashnek a segítségét, és búcsút véve tőle, leballagsz a szurdokba, ahol Ash tanácsának megfelelően keletnek fordulsz lapozz a 252-re.
+            Ash lövése remek: nyila a repülő Halálsólyom fejébe fúródik. A madár szárnya nem mozdul többé, és a ragadozó lezuhan a hegyoldalba. A domb túloldalán egy szurdok van, ahonnan Ash közli, hogy innen már egyedül kell továbbmenned, hogy megkeresd a Gyógyítót. Ash elmondja még, hogy a szurdokban addig menj keletnek, amíg egy sziklához nem érsz, melybe egy Főnix-fejet véstek. A Gyógyító ott lakik egy barlangban, éppen a főnixes szikla fölött. Megköszönöd Ashnek a segítségét, és búcsút véve tőle, leballagsz a szurdokba, ahol Ash tanácsának megfelelően keletnek fordulsz.
         - newEvent:
             name: útbaigazítás a Gyógyítóhoz
             description: A szurdokban addig menj keletnek, amíg egy sziklához nem érsz, melybe egy Főnix-fejet véstek. A Gyógyító ott lakik egy barlangban, éppen a főnixes szikla fölött.
@@ -3204,7 +3209,7 @@ chapters:
     - index: 286
       actions:
         - display: |
-            A Barbár egyetlen értéke egy réz karvédő és egy bőrzacskó, melyben három ezüst nyílhegy van. Elteszed a nyílhegyeket, és megnézed, mit véstek a karvédőbe. Néhány szót tudsz kibetűzni: „Az Erő Hatalom!” Ha fölveszed a karpántot - lapozz a 293 ra. Ha inkább zsebre vágod, és továbbmész a szurdokban - lapozz a 319-re.
+            A Barbár egyetlen értéke egy réz karvédő és egy bőrzacskó, melyben három ezüst nyílhegy van. Elteszed a nyílhegyeket, és megnézed, mit véstek a karvédőbe. Néhány szót tudsz kibetűzni: „Az Erő Hatalom!”
         - addItem:
             items:
             - name: 3 ezüst nyílhegy
@@ -3221,7 +3226,7 @@ chapters:
             items:
             - name: Karpánt
         - goto:
-            - chapter: 217
+            - chapter: 319
               text: Tovább...
     - index: 287
       actions:
@@ -3675,9 +3680,9 @@ chapters:
                 - field: STAMINA
                   value: 4
         - goto:
-            - chapter: 75
+            - chapter: 364
               text: Visszamész a köveken át a folyó túlsó partjára?
-            - chapter: 161
+            - chapter: 231
               text: Elindulsz fel a dombra a tisztás melletti ösvényen?
     - index: 321
       actions:
