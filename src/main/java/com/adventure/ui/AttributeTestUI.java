@@ -45,7 +45,9 @@ public class AttributeTestUI {
         centerPanel.add(dicePanel, BorderLayout.NORTH);
         centerPanel.add(new JScrollPane(textArea), BorderLayout.CENTER);
         
-        textArea.setText(Messages.get(Messages.Key.ATTRIBUTE_TEST_TITLE));
+        // Display which attribute is being tested
+        String attributeDisplayName = Messages.get(Messages.Key.valueOf(attributeName));
+        textArea.setText(Messages.get(Messages.Key.ATTRIBUTE_TEST_TITLE) + " (" + attributeDisplayName + ")");
         buttonPanel.removeAll();
         
         JButton testButton = new JButton(Messages.get(Messages.Key.ATTRIBUTE_TEST_BUTTON));
